@@ -1,50 +1,51 @@
-# Welcome to your Expo app 👋
+## 🚀 TradeYoMama – Krypto Trading App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Ein modernes React Native Expo-Projekt für Krypto-Trading mit Echtzeit-Daten. Entwickelt von **Colin, Jörg und Denis**.
 
-## Get started
+---
 
-1. Install dependencies
+## 🔧 Installation & Setup
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### 1️⃣ Repository klonen:
 
 ```bash
-npm run reset-project
+git clone https://github.com/USERNAME/TradeYoMama.git
+cd TradeYoMama
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2️⃣ Abhängigkeiten installieren:
 
-## Learn more
+```bash
+npm install
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### 3️⃣ App starten:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npx expo start
+```
 
-## Join the community
+### 4️⃣ Auf einem Gerät ausführen:
 
-Join our community of developers creating universal apps.
+- **Android:** `a` drücken
+- **iOS:** `i` drücken
+- **Web:** `w` drücken
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## 🔗 Technologien
+
+✅ **Frontend:** React Native + Expo  
+✅ **Navigation:** React Navigation (Stack & Tabs)  
+✅ **State Management:** Context API  
+✅ **Backend (später):** Node.js, Express, WebSockets  
+✅ **Styling:** Tailwind CSS / Styled Components  
+✅ **API-Handling:** Axios, WebSockets
+
+---
+
+## 🤝 Mitwirkende
+
+👨‍💻 **Denis** – Frontend & UI/UX  
+👨‍💻 **Jörg** – Backend & API-Anbindung  
+👨‍💻 **Colin** – Fullstack & Architektur
