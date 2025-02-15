@@ -1,9 +1,9 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import MarketsScreen from "../screens/MarketsScreen";
-import ShareScreen from "../screens/ShareScreen";
-import TradeScreen from "../screens/TradeScreen";
-import DiscoverScreen from "../screens/DiscoverScreen";
-import PortfolioScreen from "../screens/PortfolioScreen";
+import MarketsScreen from "../screens/Main/MarketsScreen";
+import ShareScreen from "../screens/Main/ShareScreen";
+import TradeScreen from "../screens/Main/TradeScreen";
+import DiscoverScreen from "../screens/Main/DiscoverScreen";
+import PortfolioScreen from "../screens/Main/PortfolioScreen";
 import { Ionicons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
