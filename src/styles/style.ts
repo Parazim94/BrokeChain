@@ -25,5 +25,8 @@ export function createStyles() {
       paddingHorizontal: 24,
       paddingVertical: 8,
     },
+    accent: {
+      color: "cadetblue",
+    },
   });
 }

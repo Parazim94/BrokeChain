@@ -21,21 +21,27 @@ export default function StackNavigator() {
   const styles = createStyles();
   const { colorTheme, setColorTheme } = useContext(ThemeContext);
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: styles.container.backgroundColor },
+      }}
+    >
       <Stack.Screen
         name="Main"
         component={TabNavigator}
         options={{
+          headerTintColor: styles.accent.color,
           title: "TradeYoMama",
           headerRight: () => (
             <View style={{ flexDirection: "row", marginRight: 15 }}>
               <TouchableOpacity
+                style={{ marginRight: 20 }}
                 onPress={() =>
                   setColorTheme(colorTheme === "light" ? "dark" : "light")
                 }
               >
                 {colorTheme === "dark" ? (
-                  <Ionicons name="sunny" size={24} color="black" />
+                  <Ionicons name="sunny" size={24} color="white" />
                 ) : (
                   <Ionicons name="moon" size={24} color="black" />
                 )}
@@ -44,12 +50,21 @@ export default function StackNavigator() {
               <TouchableOpacity
                 onPress={() => navigation.navigate("Search" as never)}
               >
-                <Ionicons name="search" size={24} style={{ marginRight: 20 }} />
+                <Ionicons
+                  name="search"
+                  size={24}
+                  style={{ marginRight: 20 }}
+                  color={styles.defaultText.color}
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => navigation.navigate("Settings" as never)}
               >
-                <Ionicons name="settings-outline" size={24} />
+                <Ionicons
+                  name="settings-outline"
+                  size={24}
+                  color={styles.defaultText.color}
+                />
               </TouchableOpacity>
             </View>
           ),
