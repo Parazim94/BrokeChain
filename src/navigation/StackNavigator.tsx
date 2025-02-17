@@ -5,7 +5,9 @@ import SettingsScreen from "../screens/Settings/SettingsScreen";
 import { View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-
+import { createStyles } from "../styles/style";
+import { useContext } from "react";
+import { ThemeContext } from "../context/ThemeContext";
 type StackParamList = {
   Main: undefined;
   Search: undefined;
@@ -16,7 +18,8 @@ const Stack = createStackNavigator<StackParamList>();
 
 export default function StackNavigator() {
   const navigation = useNavigation();
-
+  const styles = createStyles();
+  const { colorTheme, setColorTheme } = useContext(ThemeContext);
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -26,6 +29,18 @@ export default function StackNavigator() {
           title: "TradeYoMama",
           headerRight: () => (
             <View style={{ flexDirection: "row", marginRight: 15 }}>
+              <TouchableOpacity
+                onPress={() =>
+                  setColorTheme(colorTheme === "light" ? "dark" : "light")
+                }
+              >
+                {colorTheme === "dark" ? (
+                  <Ionicons name="sunny" size={24} color="black" />
+                ) : (
+                  <Ionicons name="moon" size={24} color="black" />
+                )}
+              </TouchableOpacity>
+
               <TouchableOpacity
                 onPress={() => navigation.navigate("Search" as never)}
               >
@@ -40,6 +55,7 @@ export default function StackNavigator() {
           ),
         }}
       />
+
       <Stack.Screen
         name="Search"
         component={SearchScreen}
