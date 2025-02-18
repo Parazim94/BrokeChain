@@ -2,16 +2,23 @@ import { createStackNavigator } from "@react-navigation/stack";
 import TabNavigator from "./TabNavigator";
 import SearchScreen from "../screens/Settings/SearchScreen";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
+import AuthScreen from "../screens/Auth/AuthScreen";
 import { View, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../styles/style";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
+import LoginScreen from "../screens/Auth/LoginScreen";
+import RegisterScreen from "../screens/Auth/RegisterScreen";
+
 type StackParamList = {
   Main: undefined;
   Search: undefined;
   Settings: undefined;
+  Auth: undefined;
+  Login: undefined;
+  Register: undefined;
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -20,6 +27,7 @@ export default function StackNavigator() {
   const navigation = useNavigation();
   const styles = createStyles();
   const { colorTheme, setColorTheme } = useContext(ThemeContext);
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -32,6 +40,18 @@ export default function StackNavigator() {
         options={{
           headerTintColor: styles.accent.color,
           title: "TradeYoMama",
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ marginLeft: 15 }}
+              onPress={() => navigation.navigate("Auth" as never)}
+            >
+              <Ionicons
+                name="person-circle"
+                size={28}
+                color={styles.defaultText.color}
+              />
+            </TouchableOpacity>
+          ),
           headerRight: () => (
             <View style={{ flexDirection: "row", marginRight: 15 }}>
               <TouchableOpacity
@@ -80,6 +100,21 @@ export default function StackNavigator() {
         name="Settings"
         component={SettingsScreen}
         options={{ title: "Einstellungen" }}
+      />
+      <Stack.Screen
+        name="Auth"
+        component={AuthScreen}
+        options={{ title: "Profil" }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ title: "Login" }}
+      />
+      <Stack.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{ title: "Registrieren" }}
       />
     </Stack.Navigator>
   );

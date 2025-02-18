@@ -10,6 +10,15 @@ export function createStyles() {
       width: "100%",
       backgroundColor: theme.background,
     },
+    input: {
+      width: "100%",
+      padding: 10,
+      marginVertical: 10,
+      borderWidth: 1,
+      borderColor: theme.text,
+      borderRadius: 5,
+      color: theme.text,
+    },
     mainContainer: {
       backgroundColor: theme.background,
     },
