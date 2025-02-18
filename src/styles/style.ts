@@ -37,24 +37,6 @@ export function createStyles() {
     accent: {
       color: "cadetblue",
     },
-    // Neuer Style für die Coin-Card
-    card: {
-      backgroundColor: theme.background,
-      padding: 8,
-      marginVertical: 8,
-      marginHorizontal: 16,
-      borderRadius: 8,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.3,
-      shadowRadius: 3,
-      elevation: 3,
-    },
-    coinIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      marginBottom: 8,
-    },
+ 
   });
 }
