@@ -47,7 +47,6 @@ export default function CryptoNews() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.defaultText}>📰 Krypto-News</Text>
       {loading ? (
         <ActivityIndicator size="large" color={styles.defaultText.color} />
       ) : (
