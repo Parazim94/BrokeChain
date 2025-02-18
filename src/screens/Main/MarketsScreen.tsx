@@ -1,8 +1,8 @@
 import { createStyles } from "@/src/styles/style";
-import { View, Text, FlatList, ActivityIndicator, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
-import { formatCurrency } from "@/src/utils/formatCurrency";
-import Sparkline from "@/src/components/Sparkline";
+import { useNavigation } from "@react-navigation/native";
+import MarketList from "@/src/components/MarketList";
 
 // Neuer Typ für CoinGecko-Daten inkl. Sparkline-Feld
 type Ticker = {
@@ -21,42 +21,13 @@ type Ticker = {
 
 export default function MarketsScreen() {
   const styles = createStyles();
+  const navigation = useNavigation();
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [sortCriterion, setSortCriterion] = useState<'cap' | 'vol'>('cap');
 
-  // Lokale Styles für FlatList, Cards, Zeilen und Text-Abhebung
-  const localStyles = StyleSheet.create({
-    flatList: {
-      paddingHorizontal: 16,
-      paddingVertical: 8,
-    },
-    card: {
-      backgroundColor: styles.container.backgroundColor,
-      padding: 12,
-      marginVertical: 8,
-      borderRadius: 8,
-      shadowColor: "#000",
-      shadowOffset: { width: 1, height: 3 },
-      shadowOpacity: 0.5,
-      shadowRadius: 8,
-      elevation: 5,
-      maxWidth: 400,
-      minWidth: 300,
-      marginHorizontal: "auto",
-    },
-    row: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginVertical: 4,
-    },
-    coinIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      marginRight: 8,
-    },
+  // Lokale Styles
+  const sortLocalStyles = StyleSheet.create({
     sortRow: {
       flexDirection: "row",
       justifyContent: "center",
@@ -69,18 +40,6 @@ export default function MarketsScreen() {
       paddingHorizontal: 8,
       borderRadius: 4,
       borderWidth: 1,
-    },
-    labelText: {
-      fontWeight: "bold",
-      marginRight: 4,
-      color: styles.defaultText.color,
-      textShadowOffset: { width: 1, height: 1 },
-      textShadowRadius: 1,
-    },
-    hr: {
-      height: 1,
-      backgroundColor: "gray",
-      marginVertical: 4,
     },
   });
 
@@ -116,11 +75,11 @@ export default function MarketsScreen() {
   return (
     <View style={styles.container}>
       {/* Sortier-Zeile */}
-      <View style={localStyles.sortRow}>
+      <View style={sortLocalStyles.sortRow}>
         <TouchableOpacity
           onPress={() => setSortCriterion("cap")}
           style={[
-            localStyles.sortButton,
+            sortLocalStyles.sortButton,
             { borderColor: sortCriterion === "cap" ? styles.accent.color : "gray" },
           ]}
         >
@@ -129,65 +88,21 @@ export default function MarketsScreen() {
         <TouchableOpacity
           onPress={() => setSortCriterion("vol")}
           style={[
-            localStyles.sortButton,
+            sortLocalStyles.sortButton,
             { borderColor: sortCriterion === "vol" ? styles.accent.color : "gray" },
           ]}
         >
           <Text style={styles.defaultText}>Vol</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        contentContainerStyle={localStyles.flatList}
-        data={sortedTickers}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={localStyles.card}>
-            {/* Neue erste Zeile: Icon, Name und Sparkline in einer Reihe */}
-            <View style={[localStyles.row, { alignItems: "center" }]}>
-              <Image source={{ uri: item.image }} style={localStyles.coinIcon} />
-              <Text style={[styles.defaultText, localStyles.labelText, { marginLeft: 8, flex: 1 }]}>
-                {item.name}
-              </Text>
-              <Sparkline prices={item.sparkline_in_7d.price} width={100} height={30} stroke="cadetblue" />
-            </View>
-            <View style={localStyles.hr} />
-            {/* Zweite Zeile: Preis und prozentuale Veränderung */}
-            <View style={localStyles.row}>
-              <Text style={[styles.defaultText, { fontFamily: "monospace" }]}>
-                {item.current_price.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $
-              </Text>
-              <Text style={[styles.defaultText, { color: item.price_change_percentage_24h < 0 ? "red" : "green" }]}>
-                {item.price_change_percentage_24h?.toFixed(2)}%
-              </Text>
-            </View>
-            {/* Dritte Zeile: High und Low nebeneinander */}
-            <View style={localStyles.row}>
-              <Text style={styles.defaultText}>
-                <Text style={localStyles.labelText}>High:</Text>
-                <Text style={styles.defaultText}>
-                  {" "}{item.high_24h.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $
-                </Text>
-              </Text>
-              <Text style={styles.defaultText}>
-                <Text style={localStyles.labelText}>Low:</Text>
-                <Text style={styles.defaultText}>
-                  {" "}{item.low_24h.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $
-                </Text>
-              </Text>
-            </View>
-            {/* Vierte Zeile: Volumen und Marktkapitalisierung nebeneinander */}
-            <View style={localStyles.row}>
-              <Text style={styles.defaultText}>
-                <Text style={localStyles.labelText}>Vol:</Text>
-                <Text style={styles.defaultText}> {formatCurrency(item.total_volume)}</Text>
-              </Text>
-              <Text style={styles.defaultText}>
-                <Text style={localStyles.labelText}>Cap:</Text>
-                <Text style={styles.defaultText}> {formatCurrency(item.market_cap)}</Text>
-              </Text>
-            </View>
-          </View>
-        )}
+      
+      {/* Marktliste als Komponente */}
+      <MarketList
+        tickers={sortedTickers}
+        onPressItem={(item) => navigation.navigate("Trade", { item })}
+        accentColor={styles.accent.color}
+        defaultTextColor={styles.defaultText.color}
+        containerBackground={styles.container.backgroundColor}
       />
     </View>
   );
