@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { createStyles } from "@/src/styles/style";
-import ChartTradingView from "@/src/components/ChartTradingView";
 import { useRoute, RouteProp } from "@react-navigation/native";
 
 type TradeScreenRouteParams = {
@@ -18,11 +17,7 @@ export default function TradeScreen() {
       <Text style={styles.defaultText}>
         💹 Trading-Bereich {coin ? `– ${coin.name}` : ""}
       </Text>
-      <ChartTradingView 
-        symbol={coin ? coin.symbol : "BTCUSDT"} 
-        interval="1h" 
-        limit={100} 
-      />
+  
     </View>
   );
 }
