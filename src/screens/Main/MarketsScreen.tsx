@@ -87,7 +87,6 @@ export default function MarketsScreen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Integriere sparkline=true
         const response = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true");
         const data: Ticker[] = await response.json();
         setTickers(data);
@@ -154,7 +153,7 @@ export default function MarketsScreen() {
             <View style={localStyles.hr} />
             {/* Zweite Zeile: Preis und prozentuale Veränderung */}
             <View style={localStyles.row}>
-              <Text style={styles.defaultText}>
+              <Text style={[styles.defaultText, { fontFamily: "monospace" }]}>
                 {item.current_price.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $
               </Text>
               <Text style={[styles.defaultText, { color: item.price_change_percentage_24h < 0 ? "red" : "green" }]}>
