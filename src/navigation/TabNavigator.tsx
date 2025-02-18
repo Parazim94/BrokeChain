@@ -43,27 +43,39 @@ export default function TabNavigator() {
       <Tab.Screen
         name="Markets"
         component={MarketsScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false,
+        tabBarActiveTintColor: styles.accent.color,
+         }}
       />
       <Tab.Screen
         name="Share"
         component={ShareScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false,
+        tabBarActiveTintColor: styles.accent.color,
+         }}
       />
       <Tab.Screen
         name="Trade"
         component={TradeScreen}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          tabBarActiveTintColor: styles.accent.color,   
+        }}
+        
       />
       <Tab.Screen
         name="Discover"
         component={DiscoverScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false,
+        tabBarActiveTintColor: styles.accent.color,
+         }}
       />
       <Tab.Screen
         name="Portfolio"
         component={PortfolioScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false,
+        tabBarActiveTintColor: styles.accent.color,
+         }}
       />
     </Tab.Navigator>
   );
