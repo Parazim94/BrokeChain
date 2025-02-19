@@ -7,7 +7,6 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.defaultText}>🔑 Login</Text>
       <TextInput placeholder="E-Mail" style={styles.input} />
       <TextInput placeholder="Passwort" secureTextEntry style={styles.input} />
       <Button title="Login" onPress={() => alert("✅ Eingeloggt!")} />

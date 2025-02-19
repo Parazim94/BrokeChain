@@ -1,0 +1,39 @@
+<svg width="500" height="300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hintergrund -->
+  <rect width="500" height="300" fill="#1D2022"/>
+
+  <!-- Kettenglied 1 -->
+  <g transform="translate(80,150) rotate(45)">
+    <ellipse cx="0" cy="0" rx="40" ry="20" stroke="white" stroke-width="8" fill="none"/>
+  </g>
+
+  <!-- Kettenglied 2 -->
+  <g transform="translate(160,150) rotate(-45)">
+    <ellipse cx="0" cy="0" rx="40" ry="20" stroke="white" stroke-width="8" fill="none"/>
+  </g>
+
+  <!-- Kettenglied 3 -->
+  <g transform="translate(240,150) rotate(45)">
+    <ellipse cx="0" cy="0" rx="40" ry="20" stroke="white" stroke-width="8" fill="none"/>
+  </g>
+
+  <!-- Kettenglied 4 (kaputt / gebrochen) -->
+  <!-- Hier wird ein Ellipsenbogen gezeichnet, der einen kleinen Abschnitt (zwischen ca. -20° und 20°) auslässt -->
+  <g transform="translate(320,150) rotate(-45)">
+    <path d="M 37.59,6.84 A 40,20 0 1,1 37.59,-6.84" 
+          stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <!-- Die Bruchstelle: Eine Linie in Akzentfarbe, die den Lückeneffekt unterstreicht -->
+    <line x1="37.59" y1="6.84" x2="37.59" y2="-6.84" 
+          stroke="#00a9d7" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- Kettenglied 5 -->
+  <g transform="translate(400,150) rotate(45)">
+    <ellipse cx="0" cy="0" rx="40" ry="20" stroke="white" stroke-width="8" fill="none"/>
+  </g>
+
+  <!-- Schriftzug "brokechain" -->
+  <text x="250" y="280" fill="white" font-family="Arial, sans-serif" font-size="24" text-anchor="middle">
+    brokechain
+  </text>
+</svg>

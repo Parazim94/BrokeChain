@@ -113,7 +113,7 @@ export default function MarketsScreen() {
       {/* Marktliste als Komponente */}
       <MarketList
         tickers={sortedTickers}
-        onPressItem={(item) => navigation.navigate("Trade", { item })}
+        onPressItem={(item) => navigation.navigate("Trade" as never, { item })}
         accentColor={styles.accent.color}
         defaultTextColor={styles.defaultText.color}
         containerBackground={styles.container.backgroundColor}

@@ -3,7 +3,7 @@ import TabNavigator from "./TabNavigator";
 import SearchScreen from "../screens/Settings/SearchScreen";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
 import AuthScreen from "../screens/Auth/AuthScreen";
-import { View, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../styles/style";
@@ -31,6 +31,15 @@ export default function StackNavigator() {
   return (
     <Stack.Navigator
       screenOptions={{
+        headerTitle: () => (
+          <View >
+          <Image
+            source={require("../../assets/images/Brokechain2.png")}
+            style={{ width: 60, height: 30, resizeMode: "contain" }}
+          />
+          <Text style={styles.defaultText}>Brokechain</Text>
+        </View>
+        ),
         headerStyle: { backgroundColor: styles.container.backgroundColor, shadowColor: "transparent"  },
         headerTintColor: styles.accent.color,
       }}
