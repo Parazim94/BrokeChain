@@ -31,7 +31,8 @@ export default function StackNavigator() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: styles.container.backgroundColor },
+        headerStyle: { backgroundColor: styles.container.backgroundColor, shadowColor: "transparent"  },
+        headerTintColor: styles.accent.color,
       }}
     >
       <Stack.Screen
@@ -39,19 +40,10 @@ export default function StackNavigator() {
         component={TabNavigator}
         options={{
           headerTintColor: styles.accent.color,
-          title: "TradeYoMama",
-          headerLeft: () => (
-            <TouchableOpacity
-              style={{ marginLeft: 15 }}
-              onPress={() => navigation.navigate("Auth" as never)}
-            >
-              <Ionicons
-                name="person-circle"
-                size={28}
-                color={styles.defaultText.color}
-              />
-            </TouchableOpacity>
-          ),
+          title: "Brokechain",
+          // headerLeft: () => (
+          
+          // ),
           headerRight: () => (
             <View style={{ flexDirection: "row", marginRight: 15 }}>
               <TouchableOpacity
@@ -61,9 +53,9 @@ export default function StackNavigator() {
                 }
               >
                 {colorTheme === "dark" ? (
-                  <Ionicons name="sunny" size={24} color="white" />
+                  <Ionicons name="sunny" size={24} color={styles.defaultText.color} />
                 ) : (
-                  <Ionicons name="moon" size={24} color="black" />
+                  <Ionicons name="moon" size={24} color={styles.defaultText.color} />
                 )}
               </TouchableOpacity>
 
@@ -86,6 +78,16 @@ export default function StackNavigator() {
                   color={styles.defaultText.color}
                 />
               </TouchableOpacity>
+              <TouchableOpacity
+              style={{ marginLeft: 15 }}
+              onPress={() => navigation.navigate("Auth" as never)}
+            >
+              <Ionicons
+                name="person-circle"
+                size={28}
+                color={styles.defaultText.color}
+              />
+            </TouchableOpacity>
             </View>
           ),
         }}

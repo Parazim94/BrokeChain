@@ -35,14 +35,14 @@ export default function MarketList({
 }: MarketListProps) {
   const localStyles = StyleSheet.create({
     flatList: {
-      paddingHorizontal: 16,
-      paddingVertical: 8,
+      padding: 8,
     },
     cardStyle: {
       backgroundColor: containerBackground,
-      maxWidth: 400,
+      maxWidth: 600,
       minWidth: 300,
       marginHorizontal: "auto",
+      width: "100%",
     },
     row: {
       flexDirection: "row",
