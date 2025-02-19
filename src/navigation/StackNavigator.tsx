@@ -31,16 +31,13 @@ export default function StackNavigator() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerTitle: () => (
-          <View >
-          <Image
-            source={require("../../assets/images/Brokechain2.png")}
-            style={{ width: 60, height: 30, resizeMode: "contain" }}
-          />
-          <Text style={styles.defaultText}>Brokechain</Text>
-        </View>
-        ),
-        headerStyle: { backgroundColor: styles.container.backgroundColor, shadowColor: "transparent"  },
+        // headerTitle: () => (
+
+        // ),
+        headerStyle: {
+          backgroundColor: styles.container.backgroundColor,
+          shadowColor: "transparent",
+        },
         headerTintColor: styles.accent.color,
       }}
     >
@@ -50,9 +47,15 @@ export default function StackNavigator() {
         options={{
           headerTintColor: styles.accent.color,
           title: "Brokechain",
-          // headerLeft: () => (
-          
-          // ),
+          headerLeft: () => (
+            <View style={{ marginLeft: 35 }}>
+              <Image
+                source={require("../../assets/images/Brokechain2.png")}
+                style={{ width: 60, height: 30, resizeMode: "contain" }}
+              />
+              <Text style={styles.defaultText}>Brokechain</Text>
+            </View>
+          ),
           headerRight: () => (
             <View style={{ flexDirection: "row", marginRight: 15 }}>
               <TouchableOpacity
@@ -62,9 +65,17 @@ export default function StackNavigator() {
                 }
               >
                 {colorTheme === "dark" ? (
-                  <Ionicons name="sunny" size={24} color={styles.defaultText.color} />
+                  <Ionicons
+                    name="sunny"
+                    size={24}
+                    color={styles.defaultText.color}
+                  />
                 ) : (
-                  <Ionicons name="moon" size={24} color={styles.defaultText.color} />
+                  <Ionicons
+                    name="moon"
+                    size={24}
+                    color={styles.defaultText.color}
+                  />
                 )}
               </TouchableOpacity>
 
@@ -88,15 +99,15 @@ export default function StackNavigator() {
                 />
               </TouchableOpacity>
               <TouchableOpacity
-              style={{ marginLeft: 15 }}
-              onPress={() => navigation.navigate("Auth" as never)}
-            >
-              <Ionicons
-                name="person-circle"
-                size={28}
-                color={styles.defaultText.color}
-              />
-            </TouchableOpacity>
+                style={{ marginLeft: 15 }}
+                onPress={() => navigation.navigate("Auth" as never)}
+              >
+                <Ionicons
+                  name="person-circle"
+                  size={28}
+                  color={styles.defaultText.color}
+                />
+              </TouchableOpacity>
             </View>
           ),
         }}
