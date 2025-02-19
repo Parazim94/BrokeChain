@@ -10,7 +10,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import MarketList from "@/src/components/MarketList";
 
-// Neuer Typ für CoinGecko-Daten inkl. Sparkline-Feld
 type Ticker = {
   id: string;
   name: string; // neu hinzugefügt
@@ -113,7 +112,7 @@ export default function MarketsScreen() {
       {/* Marktliste als Komponente */}
       <MarketList
         tickers={sortedTickers}
-        onPressItem={(item) => navigation.navigate("Trade", { item })}
+        onPressItem={(coin) => navigation.navigate("Trade", { coin })}
         accentColor={styles.accent.color}
         defaultTextColor={styles.defaultText.color}
         containerBackground={styles.container.backgroundColor}
