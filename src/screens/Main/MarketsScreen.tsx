@@ -1,5 +1,11 @@
 import { createStyles } from "@/src/styles/style";
-import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import MarketList from "@/src/components/MarketList";
@@ -24,7 +30,7 @@ export default function MarketsScreen() {
   const navigation = useNavigation();
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [sortCriterion, setSortCriterion] = useState<'cap' | 'vol'>('cap');
+  const [sortCriterion, setSortCriterion] = useState<"cap" | "vol">("cap");
 
   // Lokale Styles
   const sortLocalStyles = StyleSheet.create({
@@ -46,7 +52,7 @@ export default function MarketsScreen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=true");
+        const response = await fetch("http://localhost:7600/marketData");
         const data: Ticker[] = await response.json();
         setTickers(data);
       } catch (error) {
@@ -61,7 +67,9 @@ export default function MarketsScreen() {
 
   // Sorted Daten basierend auf dem ausgewählten Sortierkriterium
   const sortedTickers = [...tickers].sort((a, b) =>
-    sortCriterion === "cap" ? b.market_cap - a.market_cap : b.total_volume - a.total_volume
+    sortCriterion === "cap"
+      ? b.market_cap - a.market_cap
+      : b.total_volume - a.total_volume
   );
 
   if (loading) {
@@ -80,7 +88,10 @@ export default function MarketsScreen() {
           onPress={() => setSortCriterion("cap")}
           style={[
             sortLocalStyles.sortButton,
-            { borderColor: sortCriterion === "cap" ? styles.accent.color : "gray" },
+            {
+              borderColor:
+                sortCriterion === "cap" ? styles.accent.color : "gray",
+            },
           ]}
         >
           <Text style={styles.defaultText}>Cap</Text>
@@ -89,13 +100,16 @@ export default function MarketsScreen() {
           onPress={() => setSortCriterion("vol")}
           style={[
             sortLocalStyles.sortButton,
-            { borderColor: sortCriterion === "vol" ? styles.accent.color : "gray" },
+            {
+              borderColor:
+                sortCriterion === "vol" ? styles.accent.color : "gray",
+            },
           ]}
         >
           <Text style={styles.defaultText}>Vol</Text>
         </TouchableOpacity>
       </View>
-      
+
       {/* Marktliste als Komponente */}
       <MarketList
         tickers={sortedTickers}
