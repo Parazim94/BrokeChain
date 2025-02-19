@@ -52,7 +52,7 @@ export default function MarketsScreen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:7600/marketData");
+        const response = await fetch("https://broke-end.vercel.app/marketData");
         const data: Ticker[] = await response.json();
         setTickers(data);
       } catch (error) {
