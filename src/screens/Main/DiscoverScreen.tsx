@@ -24,6 +24,7 @@ interface NewsItem {
   title: string;
   pubDate: string;
   description: string;
+  content: string;
   enclosure?: { link: string };
 }
 
@@ -72,11 +73,11 @@ export default function CryptoNews() {
                   <Text style={newsStyles.newsDate}>Kein Bild</Text>
                 </View>
               )}
-              <View style={newsStyles.newsTextContainer}>
+              <View style={styles.container}>
                 <Text style={newsStyles.newsTitle}>{item.title}</Text>
                 <Text style={newsStyles.newsDate}>{item.pubDate}</Text>
-                <Text style={newsStyles.newsDescription} numberOfLines={2}>
-                  {item.description}
+                <Text style={newsStyles.newsDescription} numberOfLines={5}>
+                  {item.content.replace(/<[^>]+>/g, "")}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -93,16 +94,17 @@ function createNewsStyles() {
   return StyleSheet.create({
     newsCard: {
       flexDirection: "row",
+
       alignItems: "center",
-      backgroundColor: colorTheme === "dark" ? "#222" : "#f8f8f8",
+      backgroundColor: theme.background,
       padding: 12,
-      marginVertical: 5,
+      margin: 10,
       borderRadius: 10,
       shadowColor: "#000",
-      shadowOpacity: colorTheme === "dark" ? 0.4 : 0.1,
-      shadowOffset: { width: 0, height: 2 },
-      shadowRadius: 4,
-      elevation: 3,
+      shadowOffset: { width: 1, height: 3 },
+      shadowOpacity: 0.5,
+      shadowRadius: 8,
+      elevation: 5,
     },
     newsImage: {
       width: 80,
@@ -126,6 +128,7 @@ function createNewsStyles() {
     newsDescription: {
       fontSize: 14,
       color: theme.text,
+      overflow: "scroll",
     },
   });
 }

@@ -38,7 +38,7 @@ export function createStyles() {
       paddingVertical: 8,
     },
     accent: {
-      color: colorTheme === "dark" ? "#00c6ff" : "cadetblue",
+      color: "#00a9d7",
     },
   });
 }
