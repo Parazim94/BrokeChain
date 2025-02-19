@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, TouchableOpacity, StyleSheet, ViewStyle } from "react-native";
+import { ThemeContext } from "../context/ThemeContext";
+import { createStyles } from "../styles/style";
 
 interface CardProps {
   onPress: () => void;
@@ -8,6 +10,8 @@ interface CardProps {
 }
 
 export default function Card({ onPress, children, style }: CardProps) {
+const styles = createCardStyles();
+  
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={[styles.card, style]}>
@@ -17,16 +21,17 @@ export default function Card({ onPress, children, style }: CardProps) {
   );
 }
 
-const styles = StyleSheet.create({
+
+function createCardStyles() {
+  const { theme } = useContext(ThemeContext);
+return StyleSheet.create({
   card: {
-    backgroundColor: "white",
     padding: 12,
     marginVertical: 8,
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 1, height: 3 },
+    shadowColor: theme.text,
     shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 5,
   },
-});
+})};

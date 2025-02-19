@@ -31,9 +31,6 @@ export default function StackNavigator() {
   return (
     <Stack.Navigator
       screenOptions={{
-        // headerTitle: () => (
-
-        // ),
         headerStyle: {
           backgroundColor: styles.container.backgroundColor,
           shadowColor: "transparent",
@@ -46,12 +43,12 @@ export default function StackNavigator() {
         component={TabNavigator}
         options={{
           headerTintColor: styles.accent.color,
-          title: "Brokechain",
+          headerTitle: () => null,
           headerLeft: () => (
-            <View style={{ marginLeft: 35 }}>
+            <View style={{ marginLeft: 25 }}>
               <Image
                 source={require("../../assets/images/Brokechain2.png")}
-                style={{ width: 60, height: 30, resizeMode: "contain" }}
+                style={{ width: 65, height: 30, resizeMode: "contain", marginTop: 5 }}
               />
               <Text style={styles.defaultText}>Brokechain</Text>
             </View>
