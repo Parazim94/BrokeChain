@@ -46,15 +46,15 @@ export default function StackNavigator() {
           headerLeft: () => (
             <View style={{ marginLeft: 25 }}>
               <Image
-                source={require("../../assets/images/Brokechain2.png")}
+                source={require("../../assets/images/Brokechain3.png")}
                 style={{
-                  width: 65,
-                  height: 30,
+                  width: 90,
+                  height: 45,
                   resizeMode: "contain",
                   marginTop: 5,
                 }}
               />
-              <Text style={styles.defaultText}>Brokechain</Text>
+              {/* <Text style={styles.defaultText}>Brokechain</Text> */}
             </View>
           ),
           headerRight: () => (

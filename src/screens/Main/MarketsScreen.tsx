@@ -33,9 +33,8 @@ export default function MarketsScreen() {
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [sortCriterion, setSortCriterion] = useState<"cap" | "vol">("cap");
-  const [searchQuery, setSearchQuery] = useState(""); // Neuer State für Suchtext
-  const [isSearchActive, setIsSearchActive] = useState(false); // Neuer State für Suchmodus
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchActive, setIsSearchActive] = useState(false); 
   // Lokale Styles
   const sortLocalStyles = StyleSheet.create({
     sortRow: {
@@ -57,8 +56,13 @@ export default function MarketsScreen() {
     const fetchData = async () => {
       try {
         const response = await fetch("https://broke-end.vercel.app/marketData");
-        const data: Ticker[] = await response.json();
-        setTickers(data);
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setTickers(data);
+        } else {
+          console.error("Unerwartetes Datenformat:", data);
+          setTickers([]);
+        }
       } catch (error) {
         console.error("Fehler beim Abrufen der CoinGecko-Daten:", error);
       } finally {
