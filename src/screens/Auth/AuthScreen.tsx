@@ -9,7 +9,6 @@ export default function AuthScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.defaultText}>🔐 Willkommen im Profil</Text>
 
       <TouchableOpacity
         style={styles.navButton}

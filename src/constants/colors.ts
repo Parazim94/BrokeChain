@@ -1,13 +1,13 @@
 const Colors = {
   light: {
     text: "#1D2022",
-    background: "#dadee1",
+    background: "white",
     icon: "black",
   },
   dark: {
-    text: "#dadee1",
+    text: "white",
     background: "#1D2022",
-    icon: "#dadee1",
+    icon: "white",
   },
 };
 export default Colors;

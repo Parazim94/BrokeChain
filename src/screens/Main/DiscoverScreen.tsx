@@ -57,6 +57,7 @@ export default function CryptoNews() {
       {loading ? (
         <ActivityIndicator size="large" color={styles.defaultText.color} />
       ) : (
+        
         <FlatList
           data={news}
           style={{ width: "100%" }}
@@ -140,11 +141,9 @@ function createNewsStyles() {
       margin: 8,
       borderRadius: 10,
       shadowColor: theme.text, 
-      shadowOpacity: 0.5,
+      shadowOpacity: 0.2,
       shadowRadius: 8,
       elevation: 5,
-      minWidth: 300,
-      maxWidth: 600,
     },
     newsTopRow: {
       flexDirection: "row",

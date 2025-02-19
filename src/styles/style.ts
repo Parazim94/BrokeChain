@@ -20,7 +20,7 @@ export function createStyles() {
       borderColor: theme.text,
       borderRadius: 5,
       color: theme.text,
-      backgroundColor: colorTheme === "dark" ? "#333" : "#fff",
+      backgroundColor: theme.background,
     },
     mainContainer: {
       backgroundColor: theme.background,
@@ -36,6 +36,7 @@ export function createStyles() {
       borderWidth: 1,
       paddingHorizontal: 24,
       paddingVertical: 8,
+      marginBottom: 10,
     },
     accent: {
       color: "#00a9d7",

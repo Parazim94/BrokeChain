@@ -5,10 +5,12 @@ import {
   ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
+  TextInput, // Neuer Import für TextInput
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import MarketList from "@/src/components/MarketList";
+import { Ionicons } from "@expo/vector-icons";
 
 // Neuer Typ für CoinGecko-Daten inkl. Sparkline-Feld
 type Ticker = {
@@ -31,6 +33,8 @@ export default function MarketsScreen() {
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [sortCriterion, setSortCriterion] = useState<"cap" | "vol">("cap");
+  const [searchQuery, setSearchQuery] = useState(""); // Neuer State für Suchtext
+  const [isSearchActive, setIsSearchActive] = useState(false); // Neuer State für Suchmodus
 
   // Lokale Styles
   const sortLocalStyles = StyleSheet.create({
@@ -72,6 +76,11 @@ export default function MarketsScreen() {
       : b.total_volume - a.total_volume
   );
 
+  // Filtere die Ticker basierend auf dem Suchtext
+  const filteredTickers = sortedTickers.filter(ticker =>
+    ticker.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -82,6 +91,15 @@ export default function MarketsScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
+      {isSearchActive && (
+        <TextInput
+          placeholder="Suche..."
+          value={searchQuery}
+          onChangeText={text => setSearchQuery(text)}
+          style={[styles.input]}
+        />
+      )}
       {/* Sortier-Zeile */}
       <View style={sortLocalStyles.sortRow}>
         <TouchableOpacity
@@ -108,11 +126,20 @@ export default function MarketsScreen() {
         >
           <Text style={styles.defaultText}>Vol</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setIsSearchActive(prev => !prev)} // Umschalten des Suchmodus
+          style={[
+            sortLocalStyles.sortButton,
+            { borderColor: styles.accent.color },
+          ]}
+        >
+          <Ionicons name="search" size={18} color={styles.defaultText.color} />
+        </TouchableOpacity>
       </View>
 
-      {/* Marktliste als Komponente */}
+      {/* Marktliste als Komponente: Jetzt mit gefilterter Liste */}
       <MarketList
-        tickers={sortedTickers}
+        tickers={filteredTickers}
         onPressItem={(item) => navigation.navigate("Trade" as never, { item })}
         accentColor={styles.accent.color}
         defaultTextColor={styles.defaultText.color}

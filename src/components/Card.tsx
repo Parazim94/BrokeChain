@@ -30,8 +30,8 @@ return StyleSheet.create({
     marginVertical: 8,
     borderRadius: 8,
     shadowColor: theme.text,
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.2,
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 15,
   },
 })};

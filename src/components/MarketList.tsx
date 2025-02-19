@@ -35,12 +35,12 @@ export default function MarketList({
 }: MarketListProps) {
   const localStyles = StyleSheet.create({
     flatList: {
-      padding: 8,
+      padding: 1,
     },
     cardStyle: {
       backgroundColor: containerBackground,
       maxWidth: 600,
-      minWidth: 300,
+      minWidth: 280,
       marginHorizontal: "auto",
       width: "100%",
     },

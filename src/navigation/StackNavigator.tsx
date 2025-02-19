@@ -1,6 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import TabNavigator from "./TabNavigator";
-import SearchScreen from "../screens/Settings/SearchScreen";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
 import AuthScreen from "../screens/Auth/AuthScreen";
 import { View, Text, TouchableOpacity, Image } from "react-native";
@@ -48,7 +47,12 @@ export default function StackNavigator() {
             <View style={{ marginLeft: 25 }}>
               <Image
                 source={require("../../assets/images/Brokechain2.png")}
-                style={{ width: 65, height: 30, resizeMode: "contain", marginTop: 5 }}
+                style={{
+                  width: 65,
+                  height: 30,
+                  resizeMode: "contain",
+                  marginTop: 5,
+                }}
               />
               <Text style={styles.defaultText}>Brokechain</Text>
             </View>
@@ -75,18 +79,17 @@ export default function StackNavigator() {
                   />
                 )}
               </TouchableOpacity>
-
               <TouchableOpacity
-                onPress={() => navigation.navigate("Search" as never)}
+               
+                onPress={() => navigation.navigate("Auth" as never)}
               >
                 <Ionicons
-                  name="search"
-                  size={24}
-                  style={{ marginRight: 20 }}
-                  color={styles.defaultText.color}
+                  name="person-circle"
+                  size={28}
+                  color={styles.accent.color}
                 />
               </TouchableOpacity>
-              <TouchableOpacity
+              <TouchableOpacity style={{ marginLeft: 15 }}
                 onPress={() => navigation.navigate("Settings" as never)}
               >
                 <Ionicons
@@ -95,26 +98,11 @@ export default function StackNavigator() {
                   color={styles.defaultText.color}
                 />
               </TouchableOpacity>
-              <TouchableOpacity
-                style={{ marginLeft: 15 }}
-                onPress={() => navigation.navigate("Auth" as never)}
-              >
-                <Ionicons
-                  name="person-circle"
-                  size={28}
-                  color={styles.defaultText.color}
-                />
-              </TouchableOpacity>
             </View>
           ),
         }}
       />
 
-      <Stack.Screen
-        name="Search"
-        component={SearchScreen}
-        options={{ title: "Suche" }}
-      />
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
