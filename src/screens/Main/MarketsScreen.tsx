@@ -87,12 +87,6 @@ export default function MarketsScreen() {
     }
   });
   setInterval(() => fetchData(), 5000);
-  // Sorted Daten basierend auf dem ausgewählten Sortierkriterium
-  const sortedTickers = [...tickers].sort((a, b) =>
-    sortCriterion === "cap"
-      ? b.market_cap - a.market_cap
-      : b.total_volume - a.total_volume
-  );
 
   // Filtere die Ticker basierend auf dem Suchtext
   const filteredTickers = sortedTickers.filter((ticker) =>
