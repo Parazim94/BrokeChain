@@ -11,6 +11,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import MarketList from "@/src/components/MarketList";
 import { Ionicons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 
 // Neuer Typ für CoinGecko-Daten inkl. Sparkline-Feld
 type Ticker = {
@@ -42,6 +43,15 @@ export default function MarketsScreen() {
       justifyContent: "center",
       alignItems: "center",
       marginVertical: 8,
+    },
+    picker: {
+      height: 30,
+      width: 50,
+      borderWidth: 1,
+      borderRadius: 4,
+      borderColor: styles.defaultText.color,
+      color: styles.defaultText.color,
+      backgroundColor: styles.container.backgroundColor,
     },
     sortButton: {
       marginHorizontal: 12,
@@ -96,42 +106,21 @@ export default function MarketsScreen() {
   return (
     <View style={styles.container}>
       {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
-      {isSearchActive && (
-        <TextInput
-          placeholder="Suche..."
-          value={searchQuery}
-          onChangeText={text => setSearchQuery(text)}
-          style={[styles.input]}
-        />
-      )}
-      {/* Sortier-Zeile */}
+    
+      {/* Sortier-Zeile ersetzt die bisherigen Buttons durch einen Picker */}
       <View style={sortLocalStyles.sortRow}>
-        <TouchableOpacity
-          onPress={() => setSortCriterion("cap")}
-          style={[
-            sortLocalStyles.sortButton,
-            {
-              borderColor:
-                sortCriterion === "cap" ? styles.accent.color : "gray",
-            },
-          ]}
+        <Text style={styles.defaultText}>Sort:   </Text>
+        <Picker
+          selectedValue={sortCriterion}
+          style={sortLocalStyles.picker}
+          onValueChange={(itemValue) => setSortCriterion(itemValue)}
+          dropdownIconColor={styles.accent.color}          
         >
-          <Text style={styles.defaultText}>Cap</Text>
-        </TouchableOpacity>
+          <Picker.Item label="Cap" value="cap" />
+          <Picker.Item label="Vol" value="vol" />
+        </Picker>
         <TouchableOpacity
-          onPress={() => setSortCriterion("vol")}
-          style={[
-            sortLocalStyles.sortButton,
-            {
-              borderColor:
-                sortCriterion === "vol" ? styles.accent.color : "gray",
-            },
-          ]}
-        >
-          <Text style={styles.defaultText}>Vol</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => setIsSearchActive(prev => !prev)} // Umschalten des Suchmodus
+          onPress={() => setIsSearchActive(prev => !prev)}
           style={[
             sortLocalStyles.sortButton,
             { borderColor: styles.accent.color },
@@ -140,7 +129,15 @@ export default function MarketsScreen() {
           <Ionicons name="search" size={18} color={styles.defaultText.color} />
         </TouchableOpacity>
       </View>
-
+  {isSearchActive && (
+        <TextInput
+          placeholder="Suche..."
+          placeholderTextColor={styles.defaultText.color}
+          value={searchQuery}
+          onChangeText={text => setSearchQuery(text)}
+          style={[styles.input, { marginHorizontal:"auto"}]}
+        />
+      )}
       {/* Marktliste als Komponente: Jetzt mit gefilterter Liste */}
       <MarketList
         tickers={filteredTickers}

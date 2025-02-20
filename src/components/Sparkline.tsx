@@ -1,5 +1,6 @@
 import React from "react";
 import Svg, { Polyline } from "react-native-svg";
+import { createStyles } from "@/src/styles/style";
 
 type SparklineProps = {
   prices: number[];
@@ -17,6 +18,7 @@ export default function Sparkline({
   strokeWidth = 2,
 }: SparklineProps) {
   if (!prices || prices.length === 0) return null;
+  const style= createStyles();
   const min = Math.min(...prices);
   const max = Math.max(...prices);
   const scaleY = (value: number) =>

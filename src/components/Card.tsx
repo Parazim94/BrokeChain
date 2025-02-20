@@ -27,11 +27,12 @@ function createCardStyles() {
 return StyleSheet.create({
   card: {
     padding: 12,
-    marginVertical: 8,
+    margin: 8,
     borderRadius: 8,
     shadowColor: theme.text,
     shadowOpacity: 0.2,
     shadowRadius: 8,
-    elevation: 15,
+    elevation: 5,
+    maxWidth: "85%",
   },
 })};

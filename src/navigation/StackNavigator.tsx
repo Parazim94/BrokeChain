@@ -8,6 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../styles/style";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
+import { AuthContext } from "../context/AuthContext";  // Neuer Import
 import LoginScreen from "../screens/Auth/LoginScreen";
 import RegisterScreen from "../screens/Auth/RegisterScreen";
 
@@ -18,6 +19,7 @@ type StackParamList = {
   Auth: undefined;
   Login: undefined;
   Register: undefined;
+  Portfolio: undefined;
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -26,6 +28,7 @@ export default function StackNavigator() {
   const navigation = useNavigation();
   const styles = createStyles();
   const { colorTheme, setColorTheme } = useContext(ThemeContext);
+  const { isLoggedIn } = useContext(AuthContext);  // isLoggedIn aus AuthContext
 
   return (
     <Stack.Navigator
@@ -44,9 +47,9 @@ export default function StackNavigator() {
           headerTintColor: styles.accent.color,
           headerTitle: () => null,
           headerLeft: () => (
-            <View style={{ marginLeft: 25 }}>
+            <View style={{ marginLeft: 15 }}>
               <Image
-                source={require("../../assets/images/Brokechain3.png")}
+                source={require("../../assets/images/Brokechain3.svg")}
                 style={{
                   width: 90,
                   height: 45,
@@ -80,8 +83,12 @@ export default function StackNavigator() {
                 )}
               </TouchableOpacity>
               <TouchableOpacity
-               
-                onPress={() => navigation.navigate("Auth" as never)}
+                // Profil-Icon: wenn isLoggedIn true, navigieren Sie zum Portfolio, sonst zum Auth-Screen
+                onPress={() =>
+                  navigation.navigate(
+                    isLoggedIn ? "Portfolio" as never : "Auth" as never
+                  )
+                }
               >
                 <Ionicons
                   name="person-circle"

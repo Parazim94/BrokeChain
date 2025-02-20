@@ -14,6 +14,7 @@ export function createStyles() {
     },
     input: {
       width: "100%",
+      maxWidth: 300,
       padding: 10,
       marginVertical: 10,
       borderWidth: 1,
@@ -29,15 +30,7 @@ export function createStyles() {
       color: theme.text,
       backgroundColor: theme.background,
     },
-    navButton: {
-      backgroundColor: theme.background,
-      borderColor: theme.text,
-      borderRadius: 5,
-      borderWidth: 1,
-      paddingHorizontal: 24,
-      paddingVertical: 8,
-      marginBottom: 10,
-    },
+    // navButton styling removed – lokale Definition in den Komponenten, wo benötigt.
     accent: {
       color: "#00a9d7",
     },
