@@ -62,7 +62,7 @@ export default function CryptoNews() {
           contentContainerStyle={{ alignItems: "center" }}
           keyExtractor={(item) => item.guid}
           renderItem={({ item }) => (
-            <Card onPress={() => setExpandedNews(expandedNews === item.guid ? null : item.guid)}>
+            <Card onPress={() => setExpandedNews(expandedNews === item.guid ? null : item.guid)} > 
               {/* Obere Zeile: Bild und Header */}
               <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
                 {item.enclosure?.link ? (
@@ -118,6 +118,7 @@ export default function CryptoNews() {
 
 function createNewsStyles() {
   const { colorTheme, theme } = useContext(ThemeContext);
+  const styles = createStyles();  
   return StyleSheet.create({
     newsTopRow: {
       flexDirection: "row",
@@ -142,7 +143,7 @@ function createNewsStyles() {
     },
     newsDate: {
       fontSize: 12,
-      color: colorTheme === "dark" ? "#bbb" : "gray",
+      color: "gray",
     },
     newsContent: {
       marginTop: 4,
@@ -150,18 +151,6 @@ function createNewsStyles() {
     newsDescription: {
       fontSize: 14,
       color: theme.text,
-    },
-    newsCard: {
-      backgroundColor: theme.background,
-      padding: 12,
-      margin: 8,
-      borderRadius: 10,
-      shadowColor: theme.text,
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 5,
-      width: "95%",
-      maxWidth: 600,
     },
   });
 }

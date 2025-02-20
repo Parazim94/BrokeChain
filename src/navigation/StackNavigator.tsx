@@ -11,7 +11,8 @@ import { ThemeContext } from "../context/ThemeContext";
 import { AuthContext } from "../context/AuthContext";  
 import LoginScreen from "../screens/Auth/LoginScreen";
 import RegisterScreen from "../screens/Auth/RegisterScreen";
-import AnimatedLogo from "../components/AnimatedLogo";
+// import AnimatedLogo from "../components/AnimatedLogo";
+import Portfolio from "../screens/Main/PortfolioScreen";
 
 type StackParamList = {
   Main: undefined;
@@ -121,6 +122,11 @@ export default function StackNavigator() {
         name="Register"
         component={RegisterScreen}
         options={{ title: "Registrieren" }}
+      />
+      <Stack.Screen
+        name="Portfolio"
+        component={Portfolio}
+        options={{ title: "Portfolio" }}
       />
     </Stack.Navigator>
   );

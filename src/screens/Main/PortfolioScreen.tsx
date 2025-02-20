@@ -54,7 +54,7 @@ const filterOptions = [
 
 export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
-  const styles = createStyles(theme);
+  const styles = createStyles((theme as unknown) as Theme);
   const [selectedFilter, setSelectedFilter] = useState("Holding");
 
   return (

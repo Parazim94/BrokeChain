@@ -27,7 +27,8 @@ export default function LoginScreen() {
 
       setIsLoggedIn(true);
 
-      navigation.navigate("PortfolioScreen" as never);
+      // Verwenden Sie den korrekten Route-Namen "Portfolio" statt eines Dateipfads
+      navigation.navigate("Portfolio" as never);
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);

@@ -27,13 +27,15 @@ function createCardStyles() {
   const styles = createStyles();
 return StyleSheet.create({
   card: {
+    backgroundColor: theme.background,
     padding: 12,
     margin: 8,
     borderRadius: 8,
-    shadowColor: styles.accent.color, 
-    shadowOpacity: 0.2,
+    shadowColor: styles.accent.color,
+    shadowOpacity: .5,
     shadowRadius: 8,
-    elevation: 5,
-    maxWidth: "85%",
+    elevation: 3,
+    width: "95%",
+    minWidth:"95%",
   },
 })};
