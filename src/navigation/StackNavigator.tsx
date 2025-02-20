@@ -11,6 +11,7 @@ import { ThemeContext } from "../context/ThemeContext";
 import { AuthContext } from "../context/AuthContext";  // Neuer Import
 import LoginScreen from "../screens/Auth/LoginScreen";
 import RegisterScreen from "../screens/Auth/RegisterScreen";
+import AnimatedLogo from "../components/AnimatedLogo"; // Neuer Import
 
 type StackParamList = {
   Main: undefined;
@@ -48,16 +49,7 @@ export default function StackNavigator() {
           headerTitle: () => null,
           headerLeft: () => (
             <View style={{ marginLeft: 15 }}>
-              <Image
-                source={require("../../assets/images/Brokechain3.svg")}
-                style={{
-                  width: 90,
-                  height: 45,
-                  resizeMode: "contain",
-                  marginTop: 5,
-                }}
-              />
-              {/* <Text style={styles.defaultText}>Brokechain</Text> */}
+              <AnimatedLogo />
             </View>
           ),
           headerRight: () => (
