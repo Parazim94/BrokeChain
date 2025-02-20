@@ -14,10 +14,10 @@ import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/Card";
 
-const RSS_URL = "https://www.coindesk.com/arc/outboundfeeds/rss/";
-const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(
-  RSS_URL
-)}`;
+// const RSS_URL = "https://www.coindesk.com/arc/outboundfeeds/rss/";
+// const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(
+//   RSS_URL
+// )}`;
 
 interface NewsItem {
   guid: string;
@@ -39,7 +39,9 @@ export default function CryptoNews() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await fetch(API_URL);
+        const response = await fetch(
+          "https://broke-end.vercel.app/marketData/news"
+        );
         const data = await response.json();
         setNews(data.items);
       } catch (error) {
@@ -62,11 +64,18 @@ export default function CryptoNews() {
           contentContainerStyle={{ alignItems: "center" }}
           keyExtractor={(item) => item.guid}
           renderItem={({ item }) => (
-            <Card onPress={() => setExpandedNews(expandedNews === item.guid ? null : item.guid)}>
+            <Card
+              onPress={() =>
+                setExpandedNews(expandedNews === item.guid ? null : item.guid)
+              }
+            >
               {/* Obere Zeile: Bild und Header */}
               <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
                 {item.enclosure?.link ? (
-                  <Image source={{ uri: item.enclosure.link }} style={newsStyles.newsImage} />
+                  <Image
+                    source={{ uri: item.enclosure.link }}
+                    style={newsStyles.newsImage}
+                  />
                 ) : (
                   <View style={newsStyles.newsImage}>
                     <Text style={newsStyles.newsDate}>Kein Bild</Text>
