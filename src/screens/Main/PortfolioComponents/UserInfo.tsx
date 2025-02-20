@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 import Sparkline from "@/src/components/Sparkline";
+import { formatCurrency } from "@/src/utils/formatCurrency";
 
 interface UserInfoProps {
   userName: string;
@@ -14,7 +15,7 @@ export default function UserInfo({ userName, cash, history, theme, styles }: Use
   return (
     <View>
       <Text style={styles.header}>User: {userName}</Text>
-      <Text style={styles.header}>Cash: ${cash.toLocaleString()}</Text>
+      <Text style={styles.header}>Cash: {formatCurrency(cash)}</Text>
       <Text style={{ color: theme.text, marginBottom: 5 }}>History (14 Tage)</Text>
       <Sparkline
         prices={history}

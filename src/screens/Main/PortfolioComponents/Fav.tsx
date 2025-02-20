@@ -3,6 +3,7 @@ import { FlatList, Image, Text, View, StyleSheet } from "react-native";
 import Card from "@/src/components/Card";
 import Sparkline from "@/src/components/Sparkline";
 import { createStyles } from "@/src/styles/style";
+import { formatCurrency } from "@/src/utils/formatCurrency";
 
 interface FavProps {
   data: any[]; // favoriteMarketData
@@ -81,10 +82,7 @@ const styles = createStyles();
           {/* Zweite Zeile: Preis und 24h-Änderung */}
           <View style={localStyles.row}>
             <Text style={{ fontFamily: "monospace", color: theme.text }}>
-              {item.current_price.toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })} $
+              {formatCurrency(item.current_price)}
             </Text>
             <Text
               style={{
@@ -99,26 +97,20 @@ const styles = createStyles();
           <View style={localStyles.row}>
             <Text style={{ color: theme.text }}>
               <Text style={localStyles.labelText}>High:</Text>{" "}
-              {item.high_24h.toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })} $
+              {formatCurrency(item.high_24h)}
             </Text>
             <Text style={{ color: theme.text }}>
               <Text style={localStyles.labelText}>Low:</Text>{" "}
-              {item.low_24h.toLocaleString("de-DE", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })} $
+              {formatCurrency(item.low_24h)}
             </Text>
           </View>
           {/* Vierte Zeile: Volumen und Marketcap */}
           <View style={localStyles.row}>
             <Text style={{ color: theme.text }}>
-              <Text style={localStyles.labelText}>Vol:</Text> {item.total_volume.toLocaleString("de-DE")}
+              <Text style={localStyles.labelText}>Vol:</Text> {formatCurrency(item.total_volume)}
             </Text>
             <Text style={{ color: theme.text }}>
-              <Text style={localStyles.labelText}>Cap:</Text> {item.market_cap.toLocaleString("de-DE")}
+              <Text style={localStyles.labelText}>Cap:</Text> {formatCurrency(item.market_cap)}
             </Text>
           </View>
         </Card>

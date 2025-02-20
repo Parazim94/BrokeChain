@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View } from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import { createStyles } from "./portfolioStyles";
 import { mockUser } from "../../data/mockUser";
@@ -10,13 +10,15 @@ import Fav from "./PortfolioComponents/Fav";
 import New from "./PortfolioComponents/New";
 
 const filterOptions = ["Holding", "Favorites", "New"];
+const historyOptions = ["7d", "30d", "360d"];
 
 export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = createStyles(theme);
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [sortedAscending, setSortedAscending] = useState(true);
-  const { userName, positions, history, favorites } = mockUser;
+  const [selectedHistory, setSelectedHistory] = useState("7d");
+  const { userName, positions, history7d, history30d, history360d, favorites } = mockUser;
   const [marketData, setMarketData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -59,23 +61,58 @@ export default function PortfolioScreen() {
     return true;
   });
 
-  const sortedPositions = [...filteredPositions].sort((a, b) =>
-    sortedAscending ? a.amount - b.amount : b.amount - a.amount
-  );
+  const sortedPositions = [...filteredPositions].sort((a, b) => {
+    const valueA = a.marketInfo ? a.amount * a.marketInfo.current_price : 0;
+    const valueB = b.marketInfo ? b.amount * b.marketInfo.current_price : 0;
+    return sortedAscending ? valueA - valueB : valueB - valueA;
+  });
 
   const favoriteMarketData = marketData.filter((coin) =>
     favorites.some((fav) => fav.toLowerCase() === coin.name.toLowerCase())
   );
+
+  const getHistoryData = () => {
+    switch (selectedHistory) {
+      case "30d":
+        return history30d;
+      case "360d":
+        return history360d;
+      case "7d":
+      default:
+        return history7d;
+    }
+  };
 
   return (
     <View style={styles.container}>
       <UserInfo
         userName={userName}
         cash={computedCash}
-        history={history}
+        history={getHistoryData()}
         theme={theme}
         styles={styles}
       />
+      <View style={styles.filterContainer}>
+        {historyOptions.map((option) => (
+          <TouchableOpacity
+            key={option}
+            style={[
+              styles.filterButton,
+              selectedHistory === option && styles.selectedFilterButton,
+            ]}
+            onPress={() => setSelectedHistory(option)}
+          >
+            <Text
+              style={[
+                styles.filterText,
+                selectedHistory === option && styles.selectedFilterText,
+              ]}
+            >
+              {option}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
       <Sorting
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
@@ -86,11 +123,11 @@ export default function PortfolioScreen() {
         styles={styles}
       />
       {selectedFilter === "Favorites" ? (
-        <Fav data={favoriteMarketData} theme={theme}  />
+        <Fav data={favoriteMarketData} theme={theme} />
       ) : selectedFilter === "New" ? (
-        <New data={sortedPositions} theme={theme}  />
+        <New data={sortedPositions} theme={theme} />
       ) : (
-        <Holding data={sortedPositions} theme={theme}  />
+        <Holding data={sortedPositions} theme={theme} />
       )}
     </View>
   );

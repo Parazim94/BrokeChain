@@ -46,7 +46,7 @@ export default function StackNavigator() {
           headerLeft: () => (
             <View style={{ marginLeft: 15 }}>
               <Image
-                source={require("../../assets/images/Brokechain3.svg")}
+                source={require("../../assets/images/Brokechain3.png")}
                 style={{
                   width: 90,
                   height: 45,

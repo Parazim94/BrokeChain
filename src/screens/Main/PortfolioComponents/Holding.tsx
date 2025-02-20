@@ -3,6 +3,7 @@ import { FlatList, View, Image, Text, StyleSheet } from "react-native";
 import Sparkline from "@/src/components/Sparkline";
 import Card from "@/src/components/Card";
 import { createStyles } from "@/src/styles/style";
+import { formatCurrency } from "@/src/utils/formatCurrency";
 
 interface HoldingProps {
   data: any[];  // sortedPositions for Holding or New
@@ -37,7 +38,7 @@ export default function Holding({ data, theme }: HoldingProps) {
     card: {
       backgroundColor: theme.background,
       padding: 12,
-      margin: 8,
+      margin:8,
       borderRadius: 8,
       shadowColor: styles.accent.color,
       shadowOpacity: .5,
@@ -98,7 +99,7 @@ export default function Holding({ data, theme }: HoldingProps) {
                   {item.marketInfo.price_change_percentage_24h?.toFixed(2)}%
                 </Text>
                 <Text style={{ color: theme.text }}>
-                  {(item.amount * item.marketInfo.current_price).toLocaleString()} $
+                  {formatCurrency(item.amount * item.marketInfo.current_price)}
                 </Text>
               </>
             )}

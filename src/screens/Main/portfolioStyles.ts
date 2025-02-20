@@ -10,7 +10,7 @@ interface Theme {
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: theme.background, padding: 20 },
+    container: { flex: 1, backgroundColor: theme.background, padding: 12 },
     header: {
       fontSize: 24,
       fontWeight: "bold",
@@ -23,13 +23,12 @@ export const createStyles = (theme: Theme) =>
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: 15,
       marginTop: 10,
     },
     filterButton: {
-      paddingVertical: 8,
-      paddingHorizontal: 12,
-      borderRadius: 10,
+      paddingVertical: 4,
+      paddingHorizontal: 8,
+      borderRadius: 8,
       backgroundColor: theme.cardBackground,
       color: theme.text,
     },
@@ -57,6 +56,7 @@ export const createStyles = (theme: Theme) =>
     categoryText: { color: theme.text, fontSize: 14 },
     selectedCategoryText: { fontWeight: "bold", color: "#00a9d7" },
     amountSortButton: {
+      alignSelf: "flex-end",
       paddingVertical: 6,
       paddingHorizontal: 10,
       borderRadius: 8,
