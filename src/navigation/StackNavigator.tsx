@@ -8,11 +8,8 @@ import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../styles/style";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
-import { AuthContext } from "../context/AuthContext";  
 import LoginScreen from "../screens/Auth/LoginScreen";
 import RegisterScreen from "../screens/Auth/RegisterScreen";
-// import AnimatedLogo from "../components/AnimatedLogo";
-import Portfolio from "../screens/Main/PortfolioScreen";
 
 type StackParamList = {
   Main: undefined;
@@ -21,7 +18,6 @@ type StackParamList = {
   Auth: undefined;
   Login: undefined;
   Register: undefined;
-  Portfolio: undefined;
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -30,7 +26,6 @@ export default function StackNavigator() {
   const navigation = useNavigation();
   const styles = createStyles();
   const { colorTheme, setColorTheme } = useContext(ThemeContext);
-  const { isLoggedIn } = useContext(AuthContext);  // isLoggedIn aus AuthContext
 
   return (
     <Stack.Navigator
@@ -50,38 +45,24 @@ export default function StackNavigator() {
           headerTitle: () => null,
           headerLeft: () => (
             <View style={{ marginLeft: 15 }}>
-              <Image source={require("../../assets/images/Brokechain3.png")} style={{ width: 100, height: 40 }} />
+              <Image
+                source={require("../../assets/images/Brokechain3.svg")}
+                style={{
+                  width: 90,
+                  height: 45,
+                  resizeMode: "contain",
+                  marginTop: 5,
+                }}
+              />
+              {/* <Text style={styles.defaultText}>Brokechain</Text> */}
             </View>
           ),
           headerRight: () => (
             <View style={{ flexDirection: "row", marginRight: 15 }}>
+           
               <TouchableOpacity
-                style={{ marginRight: 20 }}
-                onPress={() =>
-                  setColorTheme(colorTheme === "light" ? "dark" : "light")
-                }
-              >
-                {colorTheme === "dark" ? (
-                  <Ionicons
-                    name="sunny"
-                    size={24}
-                    color={styles.defaultText.color}
-                  />
-                ) : (
-                  <Ionicons
-                    name="moon"
-                    size={24}
-                    color={styles.defaultText.color}
-                  />
-                )}
-              </TouchableOpacity>
-              <TouchableOpacity
-                // Profil-Icon: wenn isLoggedIn true, navigieren Sie zum Portfolio, sonst zum Auth-Screen
-                onPress={() =>
-                  navigation.navigate(
-                    isLoggedIn ? "Portfolio" as never : "Auth" as never
-                  )
-                }
+               
+                onPress={() => navigation.navigate("Auth" as never)}
               >
                 <Ionicons
                   name="person-circle"
@@ -122,11 +103,6 @@ export default function StackNavigator() {
         name="Register"
         component={RegisterScreen}
         options={{ title: "Registrieren" }}
-      />
-      <Stack.Screen
-        name="Portfolio"
-        component={Portfolio}
-        options={{ title: "Portfolio" }}
       />
     </Stack.Navigator>
   );

@@ -53,25 +53,29 @@ export default function MarketsScreen() {
     },
   });
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch("https://broke-end.vercel.app/marketData");
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setTickers(data);
-      } else {
-        console.error("Unerwartetes Datenformat:", data);
-        setTickers([]);
-      }
-    } catch (error) {
-      console.error("Fehler beim Abrufen der CoinGecko-Daten:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("https://broke-end.vercel.app/marketData");
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setTickers(data);
+        } else {
+          console.error("Unerwartetes Datenformat:", data);
+          setTickers([]);
+        }
+      } catch (error) {
+        console.error("Fehler beim Abrufen der CoinGecko-Daten:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Erstes Abrufen
     fetchData();
+    // Intervall: alle 5 Sekunde
+    const interval = setInterval(fetchData, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   // Aktualisierte Sortierlogik abhängig von sortedAscending
@@ -86,7 +90,6 @@ export default function MarketsScreen() {
         : b.total_volume - a.total_volume;
     }
   });
-  setInterval(() => fetchData(), 5000);
 
   // Filtere die Ticker basierend auf dem Suchtext
   const filteredTickers = sortedTickers.filter((ticker) =>
