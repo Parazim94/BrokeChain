@@ -16,7 +16,7 @@ export default function UserInfo({ userName, cash, history, theme, styles }: Use
     <View>
       <Text style={styles.header}>User: {userName}</Text>
       <Text style={styles.header}>Cash: {formatCurrency(cash)}</Text>
-      <Text style={{ color: theme.text, marginBottom: 5 }}>History (14 Tage)</Text>
+      <Text style={{ color: theme.text}}>History</Text>
       <Sparkline
         prices={history}
         width="100%"

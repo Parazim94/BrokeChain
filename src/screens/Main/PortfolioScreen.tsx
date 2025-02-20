@@ -63,7 +63,7 @@ export default function PortfolioScreen() {
 
   const sortedPositions = [...filteredPositions].sort((a, b) => {
     const valueA = a.marketInfo ? a.amount * a.marketInfo.current_price : 0;
-    const valueB = b.marketInfo ? b.amount * b.marketInfo.current_price : 0;
+    const valueB = b.marketInfo ? a.amount * b.marketInfo.current_price : 0;
     return sortedAscending ? valueA - valueB : valueB - valueA;
   });
 
@@ -92,27 +92,7 @@ export default function PortfolioScreen() {
         theme={theme}
         styles={styles}
       />
-      <View style={styles.filterContainer}>
-        {historyOptions.map((option) => (
-          <TouchableOpacity
-            key={option}
-            style={[
-              styles.filterButton,
-              selectedHistory === option && styles.selectedFilterButton,
-            ]}
-            onPress={() => setSelectedHistory(option)}
-          >
-            <Text
-              style={[
-                styles.filterText,
-                selectedHistory === option && styles.selectedFilterText,
-              ]}
-            >
-              {option}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+
       <Sorting
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
@@ -121,6 +101,9 @@ export default function PortfolioScreen() {
         filterOptions={filterOptions}
         theme={theme}
         styles={styles}
+        selectedHistory={selectedHistory}
+        setSelectedHistory={setSelectedHistory}
+        historyOptions={historyOptions}
       />
       {selectedFilter === "Favorites" ? (
         <Fav data={favoriteMarketData} theme={theme} />

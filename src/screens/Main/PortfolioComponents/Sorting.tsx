@@ -9,6 +9,9 @@ interface SortingProps {
   filterOptions: string[];
   theme: any;
   styles: any;
+  selectedHistory: string;
+  setSelectedHistory: (hist: string) => void;
+  historyOptions: string[];
 }
 
 export default function Sorting({
@@ -19,9 +22,34 @@ export default function Sorting({
   filterOptions,
   theme,
   styles,
+  selectedHistory,
+  setSelectedHistory,
+  historyOptions,
 }: SortingProps) {
   return (
-    <View>
+    <View>  <View style={styles.filterContainer}>
+        {historyOptions.map((option) => (
+          <TouchableOpacity
+            key={option}
+            style={[
+              styles.filterButton,
+              selectedHistory === option && styles.selectedFilterButton,
+              {marginBottom: 10},
+            ]}
+            onPress={() => setSelectedHistory(option)}
+          >
+            <Text
+              style={[
+                styles.filterText,
+                selectedHistory === option && styles.selectedFilterText,
+              ]}
+            >
+              {option}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <View style={styles.hr} /> <View />
       <View style={styles.filterContainer}>
         {filterOptions.map((option) => (
           <TouchableOpacity
@@ -43,6 +71,7 @@ export default function Sorting({
           </TouchableOpacity>
         ))}
       </View>
+    
       <TouchableOpacity
         style={styles.amountSortButton}
         onPress={() => setSortedAscending(!sortedAscending)}

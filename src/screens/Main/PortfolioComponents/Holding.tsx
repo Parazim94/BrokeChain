@@ -31,7 +31,7 @@ export default function Holding({ data, theme }: HoldingProps) {
       color: theme.text,
     },
     hr: {
-      height: 1,
+      height: 2,
       backgroundColor: "gray",
       marginVertical: 4,
     },

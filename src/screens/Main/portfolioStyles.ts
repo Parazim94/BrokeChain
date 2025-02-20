@@ -63,8 +63,11 @@ export const createStyles = (theme: Theme) =>
       backgroundColor: theme.cardBackground,
     },
     amountSortText: { color: theme.text, fontSize: 14, fontWeight: "bold" },
-
-   
+    hr: {
+      height: 1,
+      backgroundColor: "gray",
+      marginVertical: 4,
+    },
     card: {
       backgroundColor: theme.cardBackground,
       padding: 12,
