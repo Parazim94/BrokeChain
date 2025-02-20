@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../../styles/style";
@@ -9,14 +9,60 @@ export default function RegisterScreen() {
   const auth = authStyles();
   const navigation = useNavigation();
 
+  // Neue State-Variablen für Register
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleRegister = async () => {
+    try {
+      const response = await fetch("https://broke-end.vercel.app/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, age, password }),
+      });
+      if (!response.ok) throw new Error("Registrierung fehlgeschlagen");
+      alert("✅ Registriert!");
+      navigation.navigate("Login" as never);
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("Unexpected error occurred");
+      }
+    }
+  };
+
   return (
     <View style={[styles.container, auth.center]}>
       <Text style={auth.headerText}>Register</Text>
-      <TextInput placeholder="Name" style={styles.input} />
-      <TextInput placeholder="E-Mail" style={styles.input} />
-      <TextInput placeholder="age" style={styles.input} />
-      <TextInput placeholder="Passwort" secureTextEntry style={styles.input} />
-      <TouchableOpacity onPress={() => alert("✅ Registriert!")} style={auth.button}>
+      <TextInput
+        placeholder="Name"
+        style={styles.input}
+        value={name}
+        onChangeText={setName}
+      />
+      <TextInput
+        placeholder="E-Mail"
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        placeholder="age"
+        style={styles.input}
+        value={age}
+        onChangeText={setAge}
+      />
+      <TextInput
+        placeholder="Passwort"
+        secureTextEntry
+        style={styles.input}
+        value={password}
+        onChangeText={setPassword}
+      />
+      <TouchableOpacity onPress={handleRegister} style={auth.button}>
         <Text style={auth.buttonText}>Registrieren</Text>
       </TouchableOpacity>
       <View style={auth.linkContainer}>

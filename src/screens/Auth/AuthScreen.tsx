@@ -16,7 +16,10 @@ export default function AuthScreen() {
       <View style={[styles.container, auth.center]}>
         <TouchableOpacity
           style={auth.button}
-          onPress={() => alert("✅ Erfolgreich ausgeloggt!")}
+          onPress={() =>
+            // Logout-Logik (hier extern via URL oder Context-Update)
+            navigation.navigate("Portfolio" as never)
+          }
         >
           <Text style={auth.buttonText}>🚪 Logout</Text>
         </TouchableOpacity>
