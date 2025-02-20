@@ -8,11 +8,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Button,
 } from "react-native";
 import * as Linking from "expo-linking";
 import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
+import Card from "@/src/components/Card";
 
 const RSS_URL = "https://www.coindesk.com/arc/outboundfeeds/rss/";
 const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(
@@ -32,7 +32,6 @@ interface NewsItem {
 export default function CryptoNews() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  // Neuer State: GUID der aktuell erweiterten News-Card
   const [expandedNews, setExpandedNews] = useState<string | null>(null);
   const styles = createStyles();
   const newsStyles = createNewsStyles();
@@ -57,26 +56,17 @@ export default function CryptoNews() {
       {loading ? (
         <ActivityIndicator size="large" color={styles.defaultText.color} />
       ) : (
-        
         <FlatList
           data={news}
           style={{ width: "100%" }}
           contentContainerStyle={{ alignItems: "center" }}
           keyExtractor={(item) => item.guid}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={newsStyles.newsCard}
-              onPress={() =>
-                setExpandedNews(expandedNews === item.guid ? null : item.guid)
-              }
-            >
+            <Card onPress={() => setExpandedNews(expandedNews === item.guid ? null : item.guid)}>
               {/* Obere Zeile: Bild und Header */}
-              <View style={newsStyles.newsTopRow}>
+              <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
                 {item.enclosure?.link ? (
-                  <Image
-                    source={{ uri: item.enclosure.link }}
-                    style={newsStyles.newsImage}
-                  />
+                  <Image source={{ uri: item.enclosure.link }} style={newsStyles.newsImage} />
                 ) : (
                   <View style={newsStyles.newsImage}>
                     <Text style={newsStyles.newsDate}>Kein Bild</Text>
@@ -90,11 +80,7 @@ export default function CryptoNews() {
               {/* Content unterhalb */}
               <View style={newsStyles.newsContent}>
                 {expandedNews === item.guid ? (
-                  <ScrollView
-                    horizontal={false}
-                    scrollEnabled={true}
-                    style={{ maxHeight: 400 }}
-                  >
+                  <ScrollView style={{ maxHeight: 400 }} scrollEnabled={true}>
                     <Text style={newsStyles.newsDescription}>
                       {item.content.replace(/<[^>]+>/g, "")}
                     </Text>
@@ -105,7 +91,7 @@ export default function CryptoNews() {
                   </Text>
                 )}
               </View>
-              {/* Im erweiterten Zustand: Button, um den Artikel zu öffnen */}
+              {/* Button, um den Artikel zu öffnen */}
               {expandedNews === item.guid && (
                 <View style={{ marginTop: 8 }}>
                   <TouchableOpacity
@@ -115,7 +101,6 @@ export default function CryptoNews() {
                       padding: 5,
                       borderRadius: 5,
                       width: 150,
-                      display: "flex",
                       alignItems: "center",
                     }}
                   >
@@ -123,7 +108,7 @@ export default function CryptoNews() {
                   </TouchableOpacity>
                 </View>
               )}
-            </TouchableOpacity>
+            </Card>
           )}
         />
       )}
@@ -133,18 +118,7 @@ export default function CryptoNews() {
 
 function createNewsStyles() {
   const { colorTheme, theme } = useContext(ThemeContext);
-
   return StyleSheet.create({
-    newsCard: {
-      backgroundColor: theme.background,
-      padding: 12,
-      margin: 8,
-      borderRadius: 10,
-      shadowColor: theme.text, 
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 5,
-    },
     newsTopRow: {
       flexDirection: "row",
       alignItems: "center",
@@ -176,6 +150,18 @@ function createNewsStyles() {
     newsDescription: {
       fontSize: 14,
       color: theme.text,
+    },
+    newsCard: {
+      backgroundColor: theme.background,
+      padding: 12,
+      margin: 8,
+      borderRadius: 10,
+      shadowColor: theme.text,
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 5,
+      width: "95%",
+      maxWidth: 600,
     },
   });
 }

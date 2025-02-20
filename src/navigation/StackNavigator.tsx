@@ -8,10 +8,10 @@ import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../styles/style";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
-import { AuthContext } from "../context/AuthContext";  // Neuer Import
+import { AuthContext } from "../context/AuthContext";  
 import LoginScreen from "../screens/Auth/LoginScreen";
 import RegisterScreen from "../screens/Auth/RegisterScreen";
-import AnimatedLogo from "../components/AnimatedLogo"; // Neuer Import
+import AnimatedLogo from "../components/AnimatedLogo";
 
 type StackParamList = {
   Main: undefined;
@@ -49,7 +49,7 @@ export default function StackNavigator() {
           headerTitle: () => null,
           headerLeft: () => (
             <View style={{ marginLeft: 15 }}>
-              <AnimatedLogo />
+              <Image source={require("../../assets/images/Brokechain3.png")} style={{ width: 100, height: 40 }} />
             </View>
           ),
           headerRight: () => (

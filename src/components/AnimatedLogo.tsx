@@ -12,7 +12,7 @@ export default function AnimatedLogo() {
   useEffect(() => {
     Animated.timing(dashAnim, {
       toValue: 0,
-      duration: 4000,
+      duration: 2000,
       useNativeDriver: false,
     }).start();
   }, [dashAnim]);
@@ -26,7 +26,7 @@ export default function AnimatedLogo() {
     >
       {/* Hintergrund transparent */}
       <Rect width="100%" height="100%" fill="none" />
-      {/* Linkes Kettenglied - animierter Stroke */}
+   
       <AnimatedPath
         d="
           M 20,60
@@ -47,7 +47,7 @@ export default function AnimatedLogo() {
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
       />
-      {/* Rechtes Kettenglied - animierter Stroke */}
+
       <AnimatedPath
         d="
           M 100,60

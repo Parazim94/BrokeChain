@@ -35,8 +35,8 @@ export default function MarketsScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [sortCriterion, setSortCriterion] = useState<"cap" | "vol">("cap");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchActive, setIsSearchActive] = useState(false); 
-  // Lokale Styles
+  const [isSearchActive, setIsSearchActive] = useState(false);
+
   const sortLocalStyles = StyleSheet.create({
     sortRow: {
       flexDirection: "row",
@@ -91,7 +91,7 @@ export default function MarketsScreen() {
   );
 
   // Filtere die Ticker basierend auf dem Suchtext
-  const filteredTickers = sortedTickers.filter(ticker =>
+  const filteredTickers = sortedTickers.filter((ticker) =>
     ticker.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -106,21 +106,21 @@ export default function MarketsScreen() {
   return (
     <View style={styles.container}>
       {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
-    
+
       {/* Sortier-Zeile ersetzt die bisherigen Buttons durch einen Picker */}
       <View style={sortLocalStyles.sortRow}>
-        <Text style={styles.defaultText}>Sort:   </Text>
+        <Text style={styles.defaultText}>Sort: </Text>
         <Picker
           selectedValue={sortCriterion}
           style={sortLocalStyles.picker}
           onValueChange={(itemValue) => setSortCriterion(itemValue)}
-          dropdownIconColor={styles.accent.color}          
+          dropdownIconColor={styles.accent.color}
         >
           <Picker.Item label="Cap" value="cap" />
           <Picker.Item label="Vol" value="vol" />
         </Picker>
         <TouchableOpacity
-          onPress={() => setIsSearchActive(prev => !prev)}
+          onPress={() => setIsSearchActive((prev) => !prev)}
           style={[
             sortLocalStyles.sortButton,
             { borderColor: styles.accent.color },
@@ -129,13 +129,13 @@ export default function MarketsScreen() {
           <Ionicons name="search" size={18} color={styles.defaultText.color} />
         </TouchableOpacity>
       </View>
-  {isSearchActive && (
+      {isSearchActive && (
         <TextInput
           placeholder="Suche..."
           placeholderTextColor={styles.defaultText.color}
           value={searchQuery}
-          onChangeText={text => setSearchQuery(text)}
-          style={[styles.input, { marginHorizontal:"auto"}]}
+          onChangeText={(text) => setSearchQuery(text)}
+          style={[styles.input, { marginHorizontal: "auto" }]}
         />
       )}
       {/* Marktliste als Komponente: Jetzt mit gefilterter Liste */}

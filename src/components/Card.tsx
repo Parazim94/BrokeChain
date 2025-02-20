@@ -24,12 +24,13 @@ const styles = createCardStyles();
 
 function createCardStyles() {
   const { theme } = useContext(ThemeContext);
+  const styles = createStyles();
 return StyleSheet.create({
   card: {
     padding: 12,
     margin: 8,
     borderRadius: 8,
-    shadowColor: theme.text,
+    shadowColor: styles.accent.color, 
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 5,
