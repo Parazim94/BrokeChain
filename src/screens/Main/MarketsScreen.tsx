@@ -82,12 +82,12 @@ export default function MarketsScreen() {
   const sortedTickers = [...tickers].sort((a, b) => {
     if (sortCriterion === "cap") {
       return sortedAscending
-        ? a.market_cap - b.market_cap
-        : b.market_cap - a.market_cap;
+        ? b.market_cap - a.market_cap
+        : a.market_cap - b.market_cap;
     } else { // "vol"
       return sortedAscending
-        ? a.total_volume - b.total_volume
-        : b.total_volume - a.total_volume;
+      ? b.market_cap - a.market_cap
+      : a.market_cap - b.market_cap;
     }
   });
 
@@ -128,7 +128,7 @@ export default function MarketsScreen() {
           ]}
         >
           <Text style={styles.defaultText}>
-            Cap {sortCriterion === "cap" ? (sortedAscending ? "↑" : "↓") : ""}
+            Cap {sortCriterion === "cap" ? (sortedAscending ? "↓" : "↑") : ""}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
