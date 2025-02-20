@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, StyleSheet, View, Text, Image } from "react-native";
+import { FlatList, StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import Card from "@/src/components/Card";
 import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
@@ -15,7 +15,7 @@ export interface Ticker {
   total_volume: number;
   market_cap: number;
   image: string;
-  sparkline_in_7d: { price: number[] };
+  sparkline: { price: number[] };
 }
 
 interface MarketListProps {
@@ -84,7 +84,7 @@ export default function MarketList({
             <Text style={[{ color: defaultTextColor }, localStyles.labelText, { marginLeft: 8, flex: 1 }]}>
               {item.name}
             </Text>
-            <Sparkline prices={item.sparkline_in_7d.price} width={100} height={30} stroke={accentColor} />
+            <Sparkline prices={item.sparkline.price} width={100} height={30} stroke={accentColor} />
           </View>
           <View style={localStyles.hr} />
           {/* Zweite Zeile: Preis und prozentuale Veränderung */}

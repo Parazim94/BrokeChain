@@ -71,6 +71,7 @@ export default function MarketsScreen() {
     };
 
     fetchData();
+
   }, []);
 
   // Sorted Daten basierend auf dem ausgewählten Sortierkriterium
@@ -82,7 +83,7 @@ export default function MarketsScreen() {
 
   // Filtere die Ticker basierend auf dem Suchtext
   const filteredTickers = sortedTickers.filter(ticker =>
-    ticker.name.toLowerCase().includes(searchQuery.toLowerCase())
+    (ticker.name || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (loading) {

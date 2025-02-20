@@ -30,10 +30,11 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: 12,
       borderRadius: 10,
       backgroundColor: theme.cardBackground,
+      color: theme.text,
     },
     selectedFilterButton: { backgroundColor: theme.accent },
     filterText: { color: theme.text, fontSize: 14 },
-    selectedFilterText: { fontWeight: "bold", color: "#00a9d7" },
+    selectedFilterText: { fontWeight: "bold", color: theme.text },
 
     // Kategorie- & Sortierleiste
     categoryAndSortContainer: {
@@ -49,6 +50,7 @@ export const createStyles = (theme: Theme) =>
       borderRadius: 8,
       backgroundColor: theme.cardBackground,
       marginRight: 8,
+      color: theme.text,	
     },
     selectedCategoryButton: { backgroundColor: theme.accent },
     categoryText: { color: theme.text, fontSize: 14 },

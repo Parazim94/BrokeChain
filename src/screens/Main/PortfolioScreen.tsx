@@ -7,7 +7,7 @@ import { createStyles } from "./portfolioStyles";
 
 export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
-  const styles = createStyles((theme as unknown) as Theme);
+  const styles = createStyles(theme);
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [selectedCategory, setSelectedCategory] = useState("Coins");
   const [sortedAscending, setSortedAscending] = useState(true);
