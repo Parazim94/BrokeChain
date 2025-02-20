@@ -7,6 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
+import { MaterialIcons } from "@expo/vector-icons";
 
 interface Theme {
   background: string;
@@ -23,6 +24,7 @@ const portfolioData = [
     symbol: "BTC",
     amount: "0.5 BTC",
     value: "$25,000",
+    profit: "+5.4%",
   },
   {
     id: "2",
@@ -30,6 +32,7 @@ const portfolioData = [
     symbol: "ETH",
     amount: "2 ETH",
     value: "$3,400",
+    profit: "-2.1%",
   },
   {
     id: "3",
@@ -37,6 +40,7 @@ const portfolioData = [
     symbol: "SOL",
     amount: "10 SOL",
     value: "$1,000",
+    profit: "+8.7%",
   },
 ];
 
@@ -55,7 +59,7 @@ export default function PortfolioScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>User</Text>
+      <Text style={styles.header}>💰 Dein Portfolio</Text>
 
       {/* Navigation Bar */}
       <View style={styles.filterContainer}>
@@ -85,11 +89,24 @@ export default function PortfolioScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.card}>
+            <TouchableOpacity style={styles.menuButton}>
+              <MaterialIcons name="more-vert" size={24} color={theme.text} />
+            </TouchableOpacity>
+
             <Text style={styles.name}>
               {item.name} ({item.symbol})
             </Text>
             <Text style={styles.amount}>{item.amount}</Text>
             <Text style={styles.value}>{item.value}</Text>
+
+            <Text
+              style={[
+                styles.profit,
+                item.profit.includes("-") ? styles.loss : styles.gain,
+              ]}
+            >
+              {item.profit}
+            </Text>
           </View>
         )}
       />
@@ -112,7 +129,8 @@ function createStyles(theme: Theme) {
     },
     filterContainer: {
       flexDirection: "row",
-      justifyContent: "space-around",
+      justifyContent: "space-between",
+      alignItems: "center",
       marginBottom: 20,
     },
     filterButton: {
@@ -132,6 +150,16 @@ function createStyles(theme: Theme) {
       fontWeight: "bold",
       color: "#00a9d7",
     },
+    futureContent: {
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      borderRadius: 10,
+      backgroundColor: theme.cardBackground,
+    },
+    futureText: {
+      color: theme.secondaryText,
+      fontSize: 14,
+    },
     card: {
       backgroundColor: theme.background,
       padding: 12,
@@ -141,6 +169,11 @@ function createStyles(theme: Theme) {
       shadowOpacity: 0.2,
       shadowRadius: 8,
       elevation: 5,
+    },
+    menuButton: {
+      position: "absolute",
+      top: 10,
+      right: 10,
     },
     name: {
       fontSize: 18,
@@ -154,6 +187,17 @@ function createStyles(theme: Theme) {
       fontSize: 16,
       fontWeight: "bold",
       color: theme.text,
+    },
+    profit: {
+      fontSize: 16,
+      fontWeight: "bold",
+      marginTop: 5,
+    },
+    gain: {
+      color: "green",
+    },
+    loss: {
+      color: "red",
     },
   });
 }
