@@ -30,9 +30,9 @@ export function createStyles() {
       color: theme.text,
       backgroundColor: theme.background,
     },
-    // navButton styling removed – lokale Definition in den Komponenten, wo benötigt.
     accent: {
-      color: "#00a9d7",
+      // color: "#00a9d7",
+      color: theme.accent,
     },
   });
 }

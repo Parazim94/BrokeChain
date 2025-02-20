@@ -7,6 +7,7 @@ type Style = {
   text: string;
   background: string;
   icon: string;
+  accent: string;
 };
 
 interface ThemeContextType {
@@ -24,6 +25,7 @@ export const ThemeContext = createContext<ThemeContextType>({
     text: "",
     background: "",
     icon: "",
+    accent: "",
   },
 });
 
