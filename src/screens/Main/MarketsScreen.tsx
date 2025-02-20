@@ -35,7 +35,7 @@ export default function MarketsScreen() {
   const [sortCriterion, setSortCriterion] = useState<"cap" | "vol">("cap");
   const [sortedAscending, setSortedAscending] = useState(true); // neuer State für Sortierreihenfolge
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchActive, setIsSearchActive] = useState(false); 
+  const [isSearchActive, setIsSearchActive] = useState(false);
   // Lokale Styles
   const sortLocalStyles = StyleSheet.create({
     sortRow: {
@@ -53,26 +53,25 @@ export default function MarketsScreen() {
     },
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("https://broke-end.vercel.app/marketData");
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setTickers(data);
-        } else {
-          console.error("Unerwartetes Datenformat:", data);
-          setTickers([]);
-        }
-      } catch (error) {
-        console.error("Fehler beim Abrufen der CoinGecko-Daten:", error);
-      } finally {
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      const response = await fetch("https://broke-end.vercel.app/marketData");
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setTickers(data);
+      } else {
+        console.error("Unerwartetes Datenformat:", data);
+        setTickers([]);
       }
-    };
+    } catch (error) {
+      console.error("Fehler beim Abrufen der CoinGecko-Daten:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
-
   }, []);
 
   // Aktualisierte Sortierlogik abhängig von sortedAscending
@@ -87,9 +86,16 @@ export default function MarketsScreen() {
         : b.total_volume - a.total_volume;
     }
   });
+  setInterval(() => fetchData(), 5000);
+  // Sorted Daten basierend auf dem ausgewählten Sortierkriterium
+  const sortedTickers = [...tickers].sort((a, b) =>
+    sortCriterion === "cap"
+      ? b.market_cap - a.market_cap
+      : b.total_volume - a.total_volume
+  );
 
   // Filtere die Ticker basierend auf dem Suchtext
-  const filteredTickers = sortedTickers.filter(ticker =>
+  const filteredTickers = sortedTickers.filter((ticker) =>
     (ticker.name || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
