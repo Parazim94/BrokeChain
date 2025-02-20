@@ -33,6 +33,7 @@ export default function MarketsScreen() {
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [sortCriterion, setSortCriterion] = useState<"cap" | "vol">("cap");
+  const [sortedAscending, setSortedAscending] = useState(true); // neuer State für Sortierreihenfolge
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false); 
   // Lokale Styles
@@ -74,12 +75,18 @@ export default function MarketsScreen() {
 
   }, []);
 
-  // Sorted Daten basierend auf dem ausgewählten Sortierkriterium
-  const sortedTickers = [...tickers].sort((a, b) =>
-    sortCriterion === "cap"
-      ? b.market_cap - a.market_cap
-      : b.total_volume - a.total_volume
-  );
+  // Aktualisierte Sortierlogik abhängig von sortedAscending
+  const sortedTickers = [...tickers].sort((a, b) => {
+    if (sortCriterion === "cap") {
+      return sortedAscending
+        ? a.market_cap - b.market_cap
+        : b.market_cap - a.market_cap;
+    } else { // "vol"
+      return sortedAscending
+        ? a.total_volume - b.total_volume
+        : b.total_volume - a.total_volume;
+    }
+  });
 
   // Filtere die Ticker basierend auf dem Suchtext
   const filteredTickers = sortedTickers.filter(ticker =>
@@ -97,19 +104,18 @@ export default function MarketsScreen() {
   return (
     <View style={styles.container}>
       {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
-      {isSearchActive && (
-        <TextInput
-          placeholder="Suche..."
-          placeholderTextColor={styles.defaultText.color}
-          value={searchQuery}
-          onChangeText={text => setSearchQuery(text)}
-          style={styles.input}
-        />
-      )}
+     
       {/* Sortier-Zeile */}
       <View style={sortLocalStyles.sortRow}>
         <TouchableOpacity
-          onPress={() => setSortCriterion("cap")}
+          onPress={() => {
+            if (sortCriterion === "cap") {
+              setSortedAscending(!sortedAscending);
+            } else {
+              setSortCriterion("cap");
+              setSortedAscending(true);
+            }
+          }}
           style={[
             sortLocalStyles.sortButton,
             {
@@ -118,10 +124,19 @@ export default function MarketsScreen() {
             },
           ]}
         >
-          <Text style={styles.defaultText}>Cap</Text>
+          <Text style={styles.defaultText}>
+            Cap {sortCriterion === "cap" ? (sortedAscending ? "↑" : "↓") : ""}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setSortCriterion("vol")}
+          onPress={() => {
+            if (sortCriterion === "vol") {
+              setSortedAscending(!sortedAscending);
+            } else {
+              setSortCriterion("vol");
+              setSortedAscending(true);
+            }
+          }}
           style={[
             sortLocalStyles.sortButton,
             {
@@ -130,10 +145,12 @@ export default function MarketsScreen() {
             },
           ]}
         >
-          <Text style={styles.defaultText}>Vol</Text>
+          <Text style={styles.defaultText}>
+            Vol {sortCriterion === "vol" ? (sortedAscending ? "↑" : "↓") : ""}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setIsSearchActive(prev => !prev)} // Umschalten des Suchmodus
+          onPress={() => setIsSearchActive(prev => !prev)} 
           style={[
             sortLocalStyles.sortButton,
             { borderColor: styles.accent.color },
@@ -141,8 +158,18 @@ export default function MarketsScreen() {
         >
           <Ionicons name="search" size={18} color={styles.defaultText.color} />
         </TouchableOpacity>
+       
       </View>
-
+      
+ {isSearchActive && (
+        <TextInput
+          placeholder="Suche..."
+          placeholderTextColor={styles.defaultText.color}
+          value={searchQuery}
+          onChangeText={text => setSearchQuery(text)}
+          style={[styles.input, { alignSelf: "center" }]}
+        />
+      )}
       {/* Marktliste als Komponente: Jetzt mit gefilterter Liste */}
       <MarketList
         tickers={filteredTickers}
