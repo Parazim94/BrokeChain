@@ -74,7 +74,7 @@ export default function Holding({ data, theme }: HoldingProps) {
             )}
             <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", flex: 1 }}>
               <Text style={localStyles.name}>
-                {item.coinId} 
+                {item.coinId} <Text>({item.marketInfo?.symbol || ""})</Text>
               </Text>
               {item.marketInfo && (
                 <Sparkline
@@ -94,12 +94,11 @@ export default function Holding({ data, theme }: HoldingProps) {
             </Text>
             {item.marketInfo && (
               <>
-              
                 <Text style={{ color: item.marketInfo.price_change_percentage_24h < 0 ? "red" : "green", marginHorizontal: 8 }}>
-                  {item.marketInfo.price_change_percentage_24h?.toFixed(2)}%
+                  <Text>{item.marketInfo.price_change_percentage_24h?.toFixed(2)}%</Text>
                 </Text>
                 <Text style={{ color: theme.text }}>
-                  {formatCurrency(item.amount * item.marketInfo.current_price)}
+                  <Text>{formatCurrency(item.amount * item.marketInfo.current_price)}</Text>
                 </Text>
               </>
             )}

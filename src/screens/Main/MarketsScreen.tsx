@@ -24,7 +24,7 @@ type Ticker = {
   total_volume: number;
   market_cap: number;
   image: string;
-  sparkline_in_7d: { price: number[] };
+  sparkline: { price: number[] };
 };
 
 export default function MarketsScreen() {
@@ -32,7 +32,7 @@ export default function MarketsScreen() {
   const navigation = useNavigation();
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [sortCriterion, setSortCriterion] = useState<"cap" | "vol">("cap");
+  const [sortCriterion, setSortCriterion] = useState<"cap" | "vol" | "change24h">("cap");
   const [sortedAscending, setSortedAscending] = useState(true); // neuer State für Sortierreihenfolge
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -84,11 +84,16 @@ export default function MarketsScreen() {
       return sortedAscending
         ? b.market_cap - a.market_cap
         : a.market_cap - b.market_cap;
-    } else { // "vol"
+    } else if (sortCriterion === "vol") {
       return sortedAscending
-      ? b.market_cap - a.market_cap
-      : a.market_cap - b.market_cap;
+        ? b.total_volume - a.total_volume
+        : a.total_volume - b.total_volume;
+    } else if (sortCriterion === "change24h") {
+      return sortedAscending
+        ? b.price_change_percentage_24h - a.price_change_percentage_24h
+        : a.price_change_percentage_24h - b.price_change_percentage_24h;
     }
+    return 0;
   });
 
   // Filtere die Ticker basierend auf dem Suchtext
@@ -106,7 +111,7 @@ export default function MarketsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
+    
      
       {/* Sortier-Zeile */}
       <View style={sortLocalStyles.sortRow}>
@@ -149,21 +154,42 @@ export default function MarketsScreen() {
           ]}
         >
           <Text style={styles.defaultText}>
-            Vol {sortCriterion === "vol" ? (sortedAscending ? "↑" : "↓") : ""}
+            Vol {sortCriterion === "vol" ? (sortedAscending ? "↓":"↑") : ""}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            if (sortCriterion === "change24h") {
+              setSortedAscending(!sortedAscending);
+            } else {
+              setSortCriterion("change24h");
+              setSortedAscending(true);
+            }
+          }}
+          style={[
+            sortLocalStyles.sortButton,
+            {
+              borderColor:
+                sortCriterion === "change24h" ? styles.accent.color : "gray",
+            },
+          ]}
+        >
+          <Text style={styles.defaultText}>
+            24h {sortCriterion === "change24h" ? (sortedAscending ? "↓" : "↑") : ""}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setIsSearchActive(prev => !prev)} 
           style={[
             sortLocalStyles.sortButton,
-            { borderColor: styles.accent.color },
+            { borderColor: isSearchActive ? styles.accent.color : "gray" },
           ]}
         >
           <Ionicons name="search" size={18} color={styles.defaultText.color} />
         </TouchableOpacity>
        
       </View>
-      
+        {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
  {isSearchActive && (
         <TextInput
           placeholder="Suche..."

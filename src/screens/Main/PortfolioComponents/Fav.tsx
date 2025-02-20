@@ -82,7 +82,7 @@ const styles = createStyles();
           {/* Zweite Zeile: Preis und 24h-Änderung */}
           <View style={localStyles.row}>
             <Text style={{ fontFamily: "monospace", color: theme.text }}>
-              {formatCurrency(item.current_price)}
+              <Text>{formatCurrency(item.current_price)}</Text>
             </Text>
             <Text
               style={{
@@ -90,14 +90,14 @@ const styles = createStyles();
                   item.price_change_percentage_24h < 0 ? "red" : "green",
               }}
             >
-              {item.price_change_percentage_24h?.toFixed(2)}%
+              <Text>{item.price_change_percentage_24h?.toFixed(2)}%</Text>
             </Text>
           </View>
           {/* Dritte Zeile: High und Low */}
           <View style={localStyles.row}>
             <Text style={{ color: theme.text }}>
               <Text style={localStyles.labelText}>High:</Text>{" "}
-              {formatCurrency(item.high_24h)}
+              <Text>{formatCurrency(item.high_24h)}</Text>
             </Text>
             <Text style={{ color: theme.text }}>
               <Text style={localStyles.labelText}>Low:</Text>{" "}

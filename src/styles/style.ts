@@ -14,13 +14,15 @@ export function createStyles() {
     },
     input: {
       width: "100%",
+      maxWidth:300,
       padding: 10,
       marginVertical: 10,
       borderWidth: 1,
-      borderColor: theme.text,
+      borderColor: theme.accent,
       borderRadius: 5,
       color: theme.text,
       backgroundColor: theme.background,
+      
     },
     mainContainer: {
       backgroundColor: theme.background,

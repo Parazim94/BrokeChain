@@ -27,7 +27,8 @@ export default function Sorting({
   historyOptions,
 }: SortingProps) {
   return (
-    <View>  <View style={styles.filterContainer}>
+    <View>
+      <View style={styles.filterContainer}>
         {historyOptions.map((option) => (
           <TouchableOpacity
             key={option}
@@ -49,7 +50,7 @@ export default function Sorting({
           </TouchableOpacity>
         ))}
       </View>
-      <View style={styles.hr} /> <View />
+      <View style={styles.hr} />
       <View style={styles.filterContainer}>
         {filterOptions.map((option) => (
           <TouchableOpacity
@@ -71,7 +72,6 @@ export default function Sorting({
           </TouchableOpacity>
         ))}
       </View>
-    
       <TouchableOpacity
         style={styles.amountSortButton}
         onPress={() => setSortedAscending(!sortedAscending)}

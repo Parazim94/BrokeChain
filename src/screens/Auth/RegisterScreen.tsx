@@ -39,24 +39,28 @@ export default function RegisterScreen() {
       <Text style={auth.headerText}>Register</Text>
       <TextInput
         placeholder="Name"
+        placeholderTextColor={styles.defaultText.color}
         style={styles.input}
         value={name}
         onChangeText={setName}
       />
       <TextInput
         placeholder="E-Mail"
+        placeholderTextColor={styles.defaultText.color}
         style={styles.input}
         value={email}
         onChangeText={setEmail}
       />
       <TextInput
         placeholder="age"
+        placeholderTextColor={styles.defaultText.color}
         style={styles.input}
         value={age}
         onChangeText={setAge}
       />
       <TextInput
         placeholder="Passwort"
+        placeholderTextColor={styles.defaultText.color}
         secureTextEntry
         style={styles.input}
         value={password}
@@ -66,7 +70,7 @@ export default function RegisterScreen() {
         <Text style={auth.buttonText}>Registrieren</Text>
       </TouchableOpacity>
       <View style={auth.linkContainer}>
-        <Text style={auth.infoText}>Schon registriert? </Text>
+        <Text style={auth.infoText}>allready got an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate("Login" as never)}>
           <Text style={auth.linkText}>Login</Text>
         </TouchableOpacity>

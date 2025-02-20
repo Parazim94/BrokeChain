@@ -8,11 +8,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { createStyles } from "../styles/style";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Platform } from "react-native";
+import { useContext } from "react";
+import { ThemeContext } from "../context/ThemeContext";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
   const styles = createStyles();
+  const { theme } = useContext(ThemeContext);
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: styles.container.backgroundColor }}
@@ -38,8 +41,9 @@ export default function TabNavigator() {
             fontSize: 12,
           },
 
-          tabBarIcon: ({ color, size }) => {
+          tabBarIcon: ({ focused, size }) => {
             let iconName: string = "help-circle";
+            let iconSize = size;
 
             if (route.name === "Markets") {
               iconName = "trending-up";
@@ -47,6 +51,7 @@ export default function TabNavigator() {
               iconName = "share-social";
             } else if (route.name === "Trade") {
               iconName = "swap-horizontal";
+              iconSize = size * 1.2;
             } else if (route.name === "Discover") {
               iconName = "compass";
             } else if (route.name === "Portfolio") {
@@ -56,8 +61,8 @@ export default function TabNavigator() {
             return (
               <Ionicons
                 name={iconName as keyof typeof Ionicons.glyphMap}
-                size={size}
-                color={styles.defaultText.color}
+                size={iconSize}
+                color={focused ? styles.accent.color : theme.text}
               />
             );
           },
