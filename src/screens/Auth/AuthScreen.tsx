@@ -1,45 +1,34 @@
-import React, { useContext } from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../../styles/style";
-import { AuthContext } from "../../context/AuthContext";
-import { authStyles } from "./authStyles";
 
 export default function AuthScreen() {
   const navigation = useNavigation();
   const styles = createStyles();
-  const auth = authStyles();
-  const { isLoggedIn } = useContext(AuthContext);
-
-  if (isLoggedIn) {
-    return (
-      <View style={[styles.container, auth.center]}>
-        <TouchableOpacity
-          style={auth.button}
-          onPress={() =>
-            // Logout-Logik (hier extern via URL oder Context-Update)
-            navigation.navigate("Portfolio" as never)
-          }
-        >
-          <Text style={auth.buttonText}>🚪 Logout</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
 
   return (
-    <View style={[styles.container, auth.center]}>
+    <View style={styles.container}>
+
       <TouchableOpacity
-        style={auth.button}
+        style={styles.navButton}
         onPress={() => navigation.navigate("Login" as never)}
       >
-        <Text style={auth.buttonText}>Login</Text>
+        <Text style={styles.defaultText}>🟢 Login</Text>
       </TouchableOpacity>
+
       <TouchableOpacity
-        style={auth.button}
+        style={styles.navButton}
         onPress={() => navigation.navigate("Register" as never)}
       >
-        <Text style={auth.buttonText}>Registrieren</Text>
+        <Text style={styles.defaultText}>📝 Registrieren</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.navButton}
+        onPress={() => alert("✅ Erfolgreich ausgeloggt!")}
+      >
+        <Text style={styles.defaultText}>🚪 Logout</Text>
       </TouchableOpacity>
     </View>
   );

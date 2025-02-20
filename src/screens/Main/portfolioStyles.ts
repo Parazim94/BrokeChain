@@ -24,6 +24,7 @@ export const createStyles = (theme: Theme) =>
       justifyContent: "space-between",
       alignItems: "center",
       marginBottom: 15,
+      marginTop: 10,
     },
     filterButton: {
       paddingVertical: 8,
@@ -63,7 +64,7 @@ export const createStyles = (theme: Theme) =>
     },
     amountSortText: { color: theme.text, fontSize: 14, fontWeight: "bold" },
 
-    // Portfolio-Item
+   
     card: {
       backgroundColor: theme.cardBackground,
       padding: 12,

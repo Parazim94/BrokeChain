@@ -1,121 +1,97 @@
-import React, { useContext, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import React, { useContext, useState, useEffect } from "react";
+import { View } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
-import { MaterialIcons } from "@expo/vector-icons";
-import { portfolioData, filterOptions, coinCategories } from "./portfolioData";
 import { createStyles } from "./portfolioStyles";
+import { mockUser } from "../../data/mockUser";
+import UserInfo from "./PortfolioComponents/UserInfo";
+import Sorting from "./PortfolioComponents/Sorting";
+import Holding from "./PortfolioComponents/Holding";
+import Fav from "./PortfolioComponents/Fav";
+import New from "./PortfolioComponents/New";
+
+const filterOptions = ["Holding", "Favorites", "New"];
 
 export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = createStyles(theme);
   const [selectedFilter, setSelectedFilter] = useState("Holding");
-  const [selectedCategory, setSelectedCategory] = useState("Coins");
   const [sortedAscending, setSortedAscending] = useState(true);
+  const { userName, positions, history, favorites } = mockUser;
+  const [marketData, setMarketData] = useState<any[]>([]);
 
-  // Coins nach Kategorie filtern
-  const filteredData = portfolioData.filter(
-    (coin) => selectedCategory === "All" || coin.category === selectedCategory
+  useEffect(() => {
+    async function fetchMarketData() {
+      try {
+        const response = await fetch("https://broke-end.vercel.app/marketData");
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setMarketData(data);
+        } else {
+          console.error("Unerwartetes Datenformat:", data);
+          setMarketData([]);
+        }
+      } catch (error) {
+        console.error("Fehler beim Abrufen der Marktdaten:", error);
+      }
+    }
+    fetchMarketData();
+  }, []);
+
+  const mergedPositions = positions.map((pos) => {
+    const coinData = marketData.find(
+      (coin) => coin.name.toLowerCase() === pos.coinId.toLowerCase()
+    );
+    return { ...pos, marketInfo: coinData };
+  });
+
+  const computedCash = mergedPositions.reduce((acc, pos) => {
+    if (pos.marketInfo) return acc + pos.amount * pos.marketInfo.current_price;
+    return acc;
+  }, 0);
+
+  const filteredPositions = mergedPositions.filter((position) => {
+    const coinIdLower = position.coinId.toLowerCase();
+    if (selectedFilter === "Holding") return true;
+    if (selectedFilter === "Favorites")
+      return favorites.some((fav) => fav.toLowerCase() === coinIdLower);
+    if (selectedFilter === "New")
+      return !favorites.some((fav) => fav.toLowerCase() === coinIdLower);
+    return true;
+  });
+
+  const sortedPositions = [...filteredPositions].sort((a, b) =>
+    sortedAscending ? a.amount - b.amount : b.amount - a.amount
   );
 
-  // Coins nach Wert sortieren
-  const sortedData = [...filteredData].sort((a, b) =>
-    sortedAscending ? a.value - b.value : b.value - a.value
+  const favoriteMarketData = marketData.filter((coin) =>
+    favorites.some((fav) => fav.toLowerCase() === coin.name.toLowerCase())
   );
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <Text style={styles.header}>User</Text>
-
-      {/* Navigation Bar (Holding, Hot, etc.) */}
-      <View style={styles.filterContainer}>
-        {filterOptions.map((option) => (
-          <TouchableOpacity
-            key={option}
-            style={[
-              styles.filterButton,
-              selectedFilter === option && styles.selectedFilterButton,
-            ]}
-            onPress={() => setSelectedFilter(option)}
-          >
-            <Text
-              style={[
-                styles.filterText,
-                selectedFilter === option && styles.selectedFilterText,
-              ]}
-            >
-              {option}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Coin-Kategorien & Amount-Sortierung */}
-      <View style={styles.categoryAndSortContainer}>
-        {/* Links: Kategorien */}
-        <View style={styles.categoryContainer}>
-          {coinCategories.map((category) => (
-            <TouchableOpacity
-              key={category}
-              style={[
-                styles.categoryButton,
-                selectedCategory === category && styles.selectedCategoryButton,
-              ]}
-              onPress={() => setSelectedCategory(category)}
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  selectedCategory === category && styles.selectedCategoryText,
-                ]}
-              >
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Rechts: Sortieroption nach Amount */}
-        <TouchableOpacity
-          style={styles.amountSortButton}
-          onPress={() => setSortedAscending(!sortedAscending)}
-        >
-          <Text style={styles.amountSortText}>
-            Amount {sortedAscending ? "↑" : "↓"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Portfolio-Liste */}
-      <FlatList
-        data={sortedData}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            {/* Drei-Punkte-Menü */}
-            <TouchableOpacity style={styles.menuButton}>
-              <MaterialIcons name="more-vert" size={24} color={theme.text} />
-            </TouchableOpacity>
-
-            {/* Coin-Details */}
-            <Text style={styles.name}>
-              {item.name} ({item.symbol})
-            </Text>
-            <Text style={styles.amount}>{item.amount}</Text>
-            <Text style={styles.value}>${item.value.toLocaleString()}</Text>
-
-            {/* Gewinn oder Verlust */}
-            <Text
-              style={[
-                styles.profit,
-                item.profit.includes("-") ? styles.loss : styles.gain,
-              ]}
-            >
-              {item.profit}
-            </Text>
-          </View>
-        )}
+      <UserInfo
+        userName={userName}
+        cash={computedCash}
+        history={history}
+        theme={theme}
+        styles={styles}
       />
+      <Sorting
+        selectedFilter={selectedFilter}
+        setSelectedFilter={setSelectedFilter}
+        sortedAscending={sortedAscending}
+        setSortedAscending={setSortedAscending}
+        filterOptions={filterOptions}
+        theme={theme}
+        styles={styles}
+      />
+      {selectedFilter === "Favorites" ? (
+        <Fav data={favoriteMarketData} theme={theme}  />
+      ) : selectedFilter === "New" ? (
+        <New data={sortedPositions} theme={theme}  />
+      ) : (
+        <Holding data={sortedPositions} theme={theme}  />
+      )}
     </View>
   );
 }
