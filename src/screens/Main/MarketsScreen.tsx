@@ -34,7 +34,7 @@ export default function MarketsScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [sortCriterion, setSortCriterion] = useState<"cap" | "vol">("cap");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchActive, setIsSearchActive] = useState(false); 
+  const [isSearchActive, setIsSearchActive] = useState(false);
   // Lokale Styles
   const sortLocalStyles = StyleSheet.create({
     sortRow: {
@@ -52,28 +52,27 @@ export default function MarketsScreen() {
     },
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("https://broke-end.vercel.app/marketData");
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setTickers(data);
-        } else {
-          console.error("Unerwartetes Datenformat:", data);
-          setTickers([]);
-        }
-      } catch (error) {
-        console.error("Fehler beim Abrufen der CoinGecko-Daten:", error);
-      } finally {
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      const response = await fetch("https://broke-end.vercel.app/marketData");
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setTickers(data);
+      } else {
+        console.error("Unerwartetes Datenformat:", data);
+        setTickers([]);
       }
-    };
+    } catch (error) {
+      console.error("Fehler beim Abrufen der CoinGecko-Daten:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
-
   }, []);
-
+  setInterval(() => fetchData(), 5000);
   // Sorted Daten basierend auf dem ausgewählten Sortierkriterium
   const sortedTickers = [...tickers].sort((a, b) =>
     sortCriterion === "cap"
@@ -82,7 +81,7 @@ export default function MarketsScreen() {
   );
 
   // Filtere die Ticker basierend auf dem Suchtext
-  const filteredTickers = sortedTickers.filter(ticker =>
+  const filteredTickers = sortedTickers.filter((ticker) =>
     (ticker.name || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -102,7 +101,7 @@ export default function MarketsScreen() {
           placeholder="Suche..."
           placeholderTextColor={styles.defaultText.color}
           value={searchQuery}
-          onChangeText={text => setSearchQuery(text)}
+          onChangeText={(text) => setSearchQuery(text)}
           style={styles.input}
         />
       )}
@@ -133,7 +132,7 @@ export default function MarketsScreen() {
           <Text style={styles.defaultText}>Vol</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setIsSearchActive(prev => !prev)} // Umschalten des Suchmodus
+          onPress={() => setIsSearchActive((prev) => !prev)} // Umschalten des Suchmodus
           style={[
             sortLocalStyles.sortButton,
             { borderColor: styles.accent.color },
