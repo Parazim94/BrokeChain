@@ -35,7 +35,7 @@ export const createStyles = (theme: Theme) =>
     },
     selectedFilterButton: { backgroundColor: theme.accent },
     filterText: { color: theme.text, fontSize: 14 },
-    selectedFilterText: { fontWeight: "bold", color: theme.text },
+    selectedFilterText: { fontWeight: "bold", color: "white" },
 
     // Kategorie- & Sortierleiste
     categoryAndSortContainer: {

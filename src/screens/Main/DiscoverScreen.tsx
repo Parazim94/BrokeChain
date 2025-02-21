@@ -56,7 +56,7 @@ export default function CryptoNews() {
           keyExtractor={(item) => item.guid}
           renderItem={({ item }) => (
             <Card
-              style={{ minWidth: "98%", marginBottom: 16 }}
+              style={{ minWidth: "98%", marginBottom: 16, maxWidth:1024 }}
               onPress={() =>
                 setExpandedNews(expandedNews === item.guid ? null : item.guid)
               }
@@ -99,14 +99,14 @@ export default function CryptoNews() {
                   <TouchableOpacity
                     onPress={() => Linking.openURL(item.link)}
                     style={{
-                      backgroundColor: styles.defaultText.color,
+                      backgroundColor: styles.accent.color,
                       padding: 5,
                       borderRadius: 5,
                       width: 150,
                       alignItems: "center",
                     }}
                   >
-                    <Text style={styles.accent}>Artikel öffnen</Text>
+                    <Text style={{color:"white"}}>Artikel öffnen</Text>
                   </TouchableOpacity>
                 </View>
               )}

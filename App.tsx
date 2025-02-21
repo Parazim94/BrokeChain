@@ -11,7 +11,7 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <NavigationContainer>
+        <NavigationContainer >
           <StackNavigator />
         </NavigationContainer>
       </AuthProvider>

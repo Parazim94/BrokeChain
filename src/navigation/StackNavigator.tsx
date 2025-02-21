@@ -23,7 +23,6 @@ const Stack = createStackNavigator<StackParamList>();
 
 export default function StackNavigator() {
   const styles = createStyles();
-  const { colorTheme, setColorTheme } = useContext(ThemeContext);
 
   return (
     <Stack.Navigator
@@ -31,6 +30,7 @@ export default function StackNavigator() {
         headerStyle: {
           backgroundColor: styles.container.backgroundColor,
           boxShadow: "none",
+          
         },
         headerTintColor: styles.accent.color,
       }}
@@ -43,13 +43,14 @@ export default function StackNavigator() {
           headerTitle: () => null,
           headerLeft: () => (
             <View style={{ marginLeft: 15 }}>
-              <StatusBar barStyle="light-content" backgroundColor="#121212" />
+              <StatusBar barStyle="light-content" backgroundColor={styles.defaultText.backgroundColor} />
               <Image
                 source={require("../../assets/images/Brokechain3.png")}
                 style={{
-                  width: 90,
+                  width: 110,
                   height: 45,
                   marginTop: 5,
+                  tintColor: styles.accent.color,
                 }}
                 resizeMode="contain"
               />

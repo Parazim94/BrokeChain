@@ -127,7 +127,7 @@ export default function MarketsScreen() {
             sortLocalStyles.sortButton,
             {
               borderColor:
-                sortCriterion === "cap" ? styles.accent.color : "gray",
+                sortCriterion === "cap" ? styles.accent.color : styles.defaultText.backgroundColor,
             },
           ]}
         >
@@ -148,7 +148,7 @@ export default function MarketsScreen() {
             sortLocalStyles.sortButton,
             {
               borderColor:
-                sortCriterion === "vol" ? styles.accent.color : "gray",
+                sortCriterion === "vol" ? styles.accent.color : styles.defaultText.backgroundColor,
             },
           ]}
         >
@@ -169,7 +169,7 @@ export default function MarketsScreen() {
             sortLocalStyles.sortButton,
             {
               borderColor:
-                sortCriterion === "change24h" ? styles.accent.color : "gray",
+                sortCriterion === "change24h" ? styles.accent.color : styles.defaultText.backgroundColor,
             },
           ]}
         >
@@ -181,7 +181,7 @@ export default function MarketsScreen() {
           onPress={() => setIsSearchActive(prev => !prev)} 
           style={[
             sortLocalStyles.sortButton,
-            { borderColor: isSearchActive ? styles.accent.color : "gray" },
+            { borderColor: isSearchActive ? styles.accent.color : styles.defaultText.backgroundColor },
           ]}
         >
           <Ionicons name="search" size={18} color={styles.defaultText.color} />

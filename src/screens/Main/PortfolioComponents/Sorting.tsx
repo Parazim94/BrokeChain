@@ -27,7 +27,7 @@ export default function Sorting({
 }: SortingProps) {
   return (
     <View style={{ 
-      maxWidth: 1024,margin:"auto",width:"100%" }}>
+      maxWidth: 1024,margin:"auto",width:"100%", padding: 10, backgroundColor: styles.background}}>
       <View style={styles.filterContainer} >
         {historyOptions.map((option) => (
           <TouchableOpacity

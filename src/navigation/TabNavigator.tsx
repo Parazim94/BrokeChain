@@ -18,7 +18,7 @@ export default function TabNavigator() {
   const { theme } = useContext(ThemeContext);
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: styles.container.backgroundColor }}
+      style={{ flex: 1, backgroundColor: styles.container.backgroundColor}}
       edges={["bottom"]}
     >
       <Tab.Navigator

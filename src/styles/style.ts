@@ -7,6 +7,10 @@ export function createStyles() {
   const { colorTheme, theme } = useContext(ThemeContext);
 
   return StyleSheet.create({
+    body: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
     container: {
       flex: 1,
       width: "100%",      
@@ -48,7 +52,9 @@ export function createStyles() {
       width: 200,
     },
     accent: {
-      color: "#00a9d7",
+      color: theme.accent,
+      fontSize: 16,
     },
+   
   });
 }

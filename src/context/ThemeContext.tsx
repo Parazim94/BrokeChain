@@ -1,7 +1,6 @@
-// Dark/Light mode context
-import { createContext, useState } from "react";
-import { Appearance } from "react-native";
+import React, { createContext, useState } from "react";
 import Colors from "../constants/colors";
+import { AccentColors } from "../constants/accentColors";
 
 type Style = {
   text: string;
@@ -16,10 +15,12 @@ interface ThemeContextType {
     React.SetStateAction<"light" | "dark" | null | undefined>
   >;
   theme: Style;
+  accent: string;
+  setAccent: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const ThemeContext = createContext<ThemeContextType>({
-  colorTheme: null,
+  colorTheme: "light",
   setColorTheme: () => {},
   theme: {
     text: "",
@@ -27,16 +28,23 @@ export const ThemeContext = createContext<ThemeContextType>({
     icon: "",
     accent: "",
   },
+  accent: AccentColors[0],
+  setAccent: () => {},
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [colorTheme, setColorTheme] = useState(Appearance.getColorScheme);
-  const theme = colorTheme === "dark" ? Colors.dark : Colors.light;
+  const [colorTheme, setColorTheme] = useState<"light" | "dark" | null | undefined>("light");
+  const [accent, setAccent] = useState(AccentColors[0]);
+
+  const theme = {
+    ...Colors[colorTheme],
+    accent,
+  };
 
   return (
-    <ThemeContext.Provider value={{ colorTheme, setColorTheme, theme }}>
+    <ThemeContext.Provider value={{ colorTheme, setColorTheme, theme, accent, setAccent }}>
       {children}
     </ThemeContext.Provider>
   );
