@@ -1,14 +1,14 @@
 import { useContext } from "react";
 import { StyleSheet } from "react-native";
 import { ThemeContext } from "../context/ThemeContext";
+import Sparkline from "../components/Sparkline";
 
 export function createStyles() {
   const { colorTheme, theme } = useContext(ThemeContext);
 
   return StyleSheet.create({
     container: {
-      flex: 1,
-      width: "100%",
+      width: "100%",      
       backgroundColor: theme.background,
       padding: 10,
     },
@@ -21,8 +21,12 @@ export function createStyles() {
       borderColor: theme.accent,
       borderRadius: 5,
       color: theme.text,
-      backgroundColor: theme.background,
-      
+      backgroundColor: theme.background,      
+    },
+    Sparkline: {
+      width: "100%",
+      height: 80,
+      backgroundColor: "black",
     },
     mainContainer: {
       backgroundColor: theme.background,

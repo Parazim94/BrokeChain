@@ -20,15 +20,15 @@ export default function Sorting({
   sortedAscending,
   setSortedAscending,
   filterOptions,
-  theme,
   styles,
   selectedHistory,
   setSelectedHistory,
   historyOptions,
 }: SortingProps) {
   return (
-    <View>
-      <View style={styles.filterContainer}>
+    <View style={{ 
+      maxWidth: 1024,margin:"auto",width:"100%" }}>
+      <View style={styles.filterContainer} >
         {historyOptions.map((option) => (
           <TouchableOpacity
             key={option}

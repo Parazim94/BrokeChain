@@ -34,9 +34,7 @@ export default function MarketList({
   containerBackground,
 }: MarketListProps) {
   const localStyles = StyleSheet.create({
-    flatList: {
-      padding: 1,
-    },
+
     cardStyle: {
       backgroundColor: containerBackground,
       maxWidth: 600,
@@ -65,12 +63,12 @@ export default function MarketList({
       height: 1,
       backgroundColor: "gray",
       marginVertical: 4,
-    },
+    },    
   });
 
   return (
+    <View style={{ flex: 1 }}>
     <FlatList
-      contentContainerStyle={localStyles.flatList}
       data={tickers}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => (
@@ -80,7 +78,11 @@ export default function MarketList({
         >
           {/* Erste Zeile: Icon, Name und Sparkline */}
           <View style={[localStyles.row, { alignItems: "center" }]}>
-            <Image source={{ uri: item.image }} style={localStyles.coinIcon} />
+            <Image 
+              source={{ uri: item.image }} 
+              style={localStyles.coinIcon} 
+              resizeMode="cover" 
+            />
             <Text style={[{ color: defaultTextColor }, localStyles.labelText, { marginLeft: 8, flex: 1 }]}>
               {item.name}
             </Text>
@@ -125,5 +127,6 @@ export default function MarketList({
         </Card>
       )}
     />
+    </View>
   );
 }

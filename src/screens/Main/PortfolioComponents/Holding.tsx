@@ -1,104 +1,66 @@
 import React from "react";
-import { FlatList, View, Image, Text, StyleSheet } from "react-native";
+import { FlatList, View, Image, Text } from "react-native";
 import Sparkline from "@/src/components/Sparkline";
 import Card from "@/src/components/Card";
-import { createStyles } from "@/src/styles/style";
+import { createStyles } from "@/src/screens/Main/portfolioStyles";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 
 interface HoldingProps {
-  data: any[];  // sortedPositions for Holding or New
+  data: any[];
   theme: any;
 }
 
 export default function Holding({ data, theme }: HoldingProps) {
-  const styles = createStyles();
-  const localStyles = StyleSheet.create({
-    row: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginVertical: 4,
-    },
-    coinIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      marginRight: 8,
-    },
-    labelText: {
-      fontWeight: "bold",
-      marginRight: 4,
-      color: theme.text,
-    },
-    hr: {
-      height: 2,
-      backgroundColor: "gray",
-      marginVertical: 4,
-    },
-    card: {
-      backgroundColor: theme.background,
-      padding: 12,
-      margin:8,
-      borderRadius: 8,
-      shadowColor: styles.accent.color,
-      shadowOpacity: .5,
-      shadowRadius: 8,
-      elevation: 3,
-      width: "95%",
-      minWidth:"95%",
-    },
-    name: {
-      color: theme.text,
-      fontSize: 16,
-      fontWeight: "bold",
-    },
-    amount: {
-      color: theme.text,
-      fontSize: 16,
-    },
-  });
+  const styles = createStyles(theme);
 
   return (
+    
     <FlatList
       data={data}
+      style={styles.list}
       keyExtractor={(_, index) => index.toString()}
       renderItem={({ item }) => (
-        <Card onPress={() => {}} style={localStyles.card}>
+        <Card onPress={() => {}} style={styles.card}>
           {/* Zeile 1: Bild, Name und Sparkline */}
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 4 }}>
+          <View style={styles.row}>
             {item.marketInfo && (
               <Image
                 source={{ uri: item.marketInfo.image }}
-                style={{ width: 40, height: 40, borderRadius: 20, marginRight: 8 }}
+                style={styles.coinIconLarge}
               />
             )}
-            <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", flex: 1 }}>
-              <Text style={localStyles.name}>
-                {item.coinId} <Text>({item.marketInfo?.symbol || ""})</Text>
+        
+              <Text style={styles.marketName}>
+                {item.coinId} {item.marketInfo?.symbol ? `(${item.marketInfo.symbol})` : ""}
               </Text>
               {item.marketInfo && (
                 <Sparkline
                   prices={item.marketInfo.sparkline.price}
                   width={100}
-                  height={40}
+                  height={20}
                   stroke={theme.accent}
                   strokeWidth={2}
                 />
               )}
-            </View>
           </View>
           {/* Zeile 2: Amount, 24h-Änderung und Value */}
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <Text style={localStyles.amount}>
+          <View style={styles.row}>
+            <Text style={styles.amount}>
               {item.amount} {item.marketInfo?.symbol || ""}
             </Text>
             {item.marketInfo && (
               <>
-                <Text style={{ color: item.marketInfo.price_change_percentage_24h < 0 ? "red" : "green", marginHorizontal: 8 }}>
-                  <Text>{item.marketInfo.price_change_percentage_24h?.toFixed(2)}%</Text>
+                <Text
+                  style={
+                    item.marketInfo.price_change_percentage_24h < 0
+                      ? { color: "red", marginHorizontal: 8 }
+                      : { color: "green", marginHorizontal: 8 }
+                  }
+                >
+                  {item.marketInfo.price_change_percentage_24h.toFixed(2)}%
                 </Text>
                 <Text style={{ color: theme.text }}>
-                  <Text>{formatCurrency(item.amount * item.marketInfo.current_price)}</Text>
+                  {formatCurrency(item.amount * item.marketInfo.current_price)}
                 </Text>
               </>
             )}

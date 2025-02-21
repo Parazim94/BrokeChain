@@ -9,5 +9,5 @@ export function formatCurrency(value: number): string {
     return "$" + (value / 1e9).toFixed(2) + " B";
   }
  
-  return "$" + value.toLocaleString("de-DE");
+  return   value.toLocaleString("de-DE")+"$";
 }

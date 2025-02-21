@@ -14,7 +14,6 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>⚙ Einstellungen</Text>
       <TouchableOpacity
         onPress={toggleTheme}
         style={{

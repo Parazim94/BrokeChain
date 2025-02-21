@@ -29,13 +29,11 @@ return StyleSheet.create({
   card: {
     backgroundColor: theme.background,
     padding: 12,
-    margin: 8,
+    margin: 4,    
     borderRadius: 8,
     shadowColor: styles.accent.color,
     shadowOpacity: .5,
-    shadowRadius: 8,
+    shadowRadius: 2,
     elevation: 3,
-    width: "95%",
-    minWidth:"95%",
   },
 })};

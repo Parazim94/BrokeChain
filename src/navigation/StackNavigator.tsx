@@ -32,7 +32,7 @@ export default function StackNavigator() {
       screenOptions={{
         headerStyle: {
           backgroundColor: styles.container.backgroundColor,
-          shadowColor: "transparent",
+          boxShadow: "none",
         },
         headerTintColor: styles.accent.color,
       }}
@@ -50,9 +50,9 @@ export default function StackNavigator() {
                 style={{
                   width: 90,
                   height: 45,
-                  resizeMode: "contain",
                   marginTop: 5,
                 }}
+                resizeMode="contain"
               />
               {/* <Text style={styles.defaultText}>Brokechain</Text> */}
             </View>

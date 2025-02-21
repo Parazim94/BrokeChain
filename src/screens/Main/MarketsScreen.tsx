@@ -104,15 +104,13 @@ export default function MarketsScreen() {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#00a9d7" />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-    
-     
+    <View style={styles.container}>         
       {/* Sortier-Zeile */}
       <View style={sortLocalStyles.sortRow}>
         <TouchableOpacity

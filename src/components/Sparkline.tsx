@@ -3,6 +3,7 @@ import Svg, { Polyline } from "react-native-svg";
 import { createStyles } from "@/src/styles/style";
 import { Dimensions } from "react-native";
 
+
 type SparklineProps = {
   prices: number[];
   width?: number | string;
@@ -15,8 +16,9 @@ export default function Sparkline({
   prices,
   width = 100,
   height = 30,
-  stroke = "green",
+  stroke = "black",
   strokeWidth = 2,
+
 }: SparklineProps) {
   if (!prices || prices.length === 0) return null;
   const style= createStyles();
@@ -35,12 +37,13 @@ export default function Sparkline({
     })
     .join(" ");
   return (
-    <Svg width={width} height={height}>
+    <Svg width={width} height={height} >
       <Polyline
         points={points}
         fill="none"
         stroke={stroke}
         strokeWidth={strokeWidth}
+
       />
     </Svg>
   );

@@ -12,7 +12,9 @@ export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: theme.background, padding: 12 },
     header: {
-      fontSize: 24,
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: 20,
       fontWeight: "bold",
       color: theme.text,
       marginBottom: 20,
@@ -21,7 +23,6 @@ export const createStyles = (theme: Theme) =>
     // Navigation Bar (Holding, Hot, etc.)
     filterContainer: {
       flexDirection: "row",
-      justifyContent: "space-between",
       alignItems: "center",
       marginTop: 10,
     },
@@ -69,10 +70,11 @@ export const createStyles = (theme: Theme) =>
       marginVertical: 4,
     },
     card: {
-      backgroundColor: theme.cardBackground,
+      backgroundColor: theme.background,
       padding: 12,
-      margin: 8,
-      borderRadius: 10,
+      marginVertical: 8,
+      borderRadius: 8,
+      boxShadow: `0px 2px 4px ${theme.accent}`,
     },
     menuButton: { position: "absolute", top: 10, right: 10 },
     name: { fontSize: 18, color: theme.text },
@@ -81,4 +83,46 @@ export const createStyles = (theme: Theme) =>
     profit: { fontSize: 16, fontWeight: "bold", marginTop: 5 },
     gain: { color: "green" },
     loss: { color: "red" },
+
+    // Gemeinsame Portfolio-Komponenten Styles
+    componentContainer: {
+      maxWidth: 1024,
+      alignSelf: "center",
+      width: "100%",
+    },
+    list: {
+      maxWidth: 1024,
+      alignSelf: "center",
+      width: "100%",
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginVertical: 4,
+      width: "100%",
+      justifyContent:"space-between"
+
+    },
+    coinIcon: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      marginRight: 8,
+    },
+    coinIconLarge: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      marginRight: 8,
+    },
+    labelText: {
+      fontWeight: "bold",
+      marginRight: 4,
+      color: theme.text,
+    },
+    marketName: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: theme.text,
+    },
   });

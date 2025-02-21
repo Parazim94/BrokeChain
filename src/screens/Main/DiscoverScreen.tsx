@@ -75,6 +75,7 @@ export default function CryptoNews() {
                   <Image
                     source={{ uri: item.enclosure.link }}
                     style={newsStyles.newsImage}
+                    resizeMode="cover"
                   />
                 ) : (
                   <View style={newsStyles.newsImage}>
