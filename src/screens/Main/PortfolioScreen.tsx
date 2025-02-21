@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { SafeAreaView, View, TouchableOpacity, Text } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import { createStyles } from "./portfolioStyles";
 import { mockUser } from "../../data/mockUser";
@@ -84,7 +84,7 @@ export default function PortfolioScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <UserInfo
         userName={userName}
         cash={computedCash}
@@ -112,6 +112,6 @@ export default function PortfolioScreen() {
       ) : (
         <Holding data={sortedPositions} theme={theme} />
       )}
-    </View>
+    </SafeAreaView>
   );
 }

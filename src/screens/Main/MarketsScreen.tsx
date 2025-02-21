@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput, // Neuer Import für TextInput
+  SafeAreaView, // Neuer Import für SafeAreaView
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -103,14 +104,14 @@ export default function MarketsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <ActivityIndicator size="large" color="#00a9d7" />
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>         
+    <SafeAreaView style={styles.container}>         
       {/* Sortier-Zeile */}
       <View style={sortLocalStyles.sortRow}>
         <TouchableOpacity
@@ -205,6 +206,6 @@ export default function MarketsScreen() {
         defaultTextColor={styles.defaultText.color}
         containerBackground={styles.container.backgroundColor}
       />
-    </View>
+    </SafeAreaView>
   );
 }

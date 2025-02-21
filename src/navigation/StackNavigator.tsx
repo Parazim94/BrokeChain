@@ -2,9 +2,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import TabNavigator from "./TabNavigator";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
 import AuthScreen from "../screens/Auth/AuthScreen";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, StatusBar } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../styles/style";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
@@ -23,7 +22,6 @@ type StackParamList = {
 const Stack = createStackNavigator<StackParamList>();
 
 export default function StackNavigator() {
-  const navigation = useNavigation();
   const styles = createStyles();
   const { colorTheme, setColorTheme } = useContext(ThemeContext);
 
@@ -40,11 +38,12 @@ export default function StackNavigator() {
       <Stack.Screen
         name="Main"
         component={TabNavigator}
-        options={{
+        options={({ navigation }) => ({
           headerTintColor: styles.accent.color,
           headerTitle: () => null,
           headerLeft: () => (
             <View style={{ marginLeft: 15 }}>
+              <StatusBar barStyle="light-content" backgroundColor="#121212" />
               <Image
                 source={require("../../assets/images/Brokechain3.png")}
                 style={{
@@ -54,14 +53,11 @@ export default function StackNavigator() {
                 }}
                 resizeMode="contain"
               />
-              {/* <Text style={styles.defaultText}>Brokechain</Text> */}
             </View>
           ),
           headerRight: () => (
             <View style={{ flexDirection: "row", marginRight: 15 }}>
-           
               <TouchableOpacity
-               
                 onPress={() => navigation.navigate("Auth" as never)}
               >
                 <Ionicons
@@ -70,7 +66,8 @@ export default function StackNavigator() {
                   color={styles.accent.color}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={{ marginLeft: 15 }}
+              <TouchableOpacity
+                style={{ marginLeft: 15 }}
                 onPress={() => navigation.navigate("Settings" as never)}
               >
                 <Ionicons
@@ -81,7 +78,7 @@ export default function StackNavigator() {
               </TouchableOpacity>
             </View>
           ),
-        }}
+        })}
       />
 
       <Stack.Screen

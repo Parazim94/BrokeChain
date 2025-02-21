@@ -1,4 +1,5 @@
 import React from "react";
+import Animated, { FadeInUp } from "react-native-reanimated";
 import { FlatList, Image, Text, View } from "react-native";
 import Card from "@/src/components/Card";
 import Sparkline from "@/src/components/Sparkline";
@@ -13,21 +14,21 @@ export default function New({ data, theme }: NewProps) {
   const styles = createStyles(theme);
 
   return (
-    <FlatList
+    <Animated.FlatList
       data={data}
       style={styles.list}
       keyExtractor={(_, index) => index.toString()}
-      renderItem={({ item }) => (
-        <Card onPress={() => {}} style={styles.card}>
-          {/* Zeile 1: Bild, Name und Sparkline */}
-          <View style={styles.row}>
-            {item.marketInfo && (
-              <Image
-                source={{ uri: item.marketInfo.image }}
-                style={styles.coinIconLarge}
-              />
-            )}
-          
+      renderItem={({ item, index }) => (
+        <Animated.View entering={FadeInUp.delay(index * 50)}>
+          <Card onPress={() => {}} style={styles.card}>
+            {/* Zeile 1: Bild, Name und Sparkline */}
+            <View style={styles.row}>
+              {item.marketInfo && (
+                <Image
+                  source={{ uri: item.marketInfo.image }}
+                  style={styles.coinIconLarge}
+                />
+              )}
               <Text style={styles.marketName}>
                 {item.coinId} {item.marketInfo?.symbol ? `(${item.marketInfo.symbol})` : ""}
               </Text>
@@ -40,35 +41,35 @@ export default function New({ data, theme }: NewProps) {
                   strokeWidth={2}
                 />
               )}
-           
-          </View>
-          {/* Zeile 2: Amount, 24h-Änderung und Value */}
-          <View style={styles.row}>
-            <Text style={styles.amount}>
-              {item.amount} {item.marketInfo?.symbol || ""}
-            </Text>
-            {item.marketInfo && (
-              <>
-                <Text
-                  style={{
-                    color:
-                      item.marketInfo.price_change_percentage_24h < 0
-                        ? "red"
-                        : "green",
-                    marginHorizontal: 8,
-                  }}
-                >
-                  {item.marketInfo.price_change_percentage_24h.toFixed(2)}%
-                </Text>
-                <Text style={{ color: theme.text }}>
-                  {(
-                    item.amount * item.marketInfo.current_price
-                  ).toLocaleString()} $
-                </Text>
-              </>
-            )}
-          </View>
-        </Card>
+            </View>
+            {/* Zeile 2: Amount, 24h-Änderung und Value */}
+            <View style={styles.row}>
+              <Text style={styles.amount}>
+                {item.amount} {item.marketInfo?.symbol || ""}
+              </Text>
+              {item.marketInfo && (
+                <>
+                  <Text
+                    style={{
+                      color:
+                        item.marketInfo.price_change_percentage_24h < 0
+                          ? "red"
+                          : "green",
+                      marginHorizontal: 8,
+                    }}
+                  >
+                    {item.marketInfo.price_change_percentage_24h.toFixed(2)}%
+                  </Text>
+                  <Text style={{ color: theme.text }}>
+                    {(
+                      item.amount * item.marketInfo.current_price
+                    ).toLocaleString()} $
+                  </Text>
+                </>
+              )}
+            </View>
+          </Card>
+        </Animated.View>
       )}
     />
   );

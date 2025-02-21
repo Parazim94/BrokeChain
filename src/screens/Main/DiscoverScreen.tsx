@@ -1,14 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { SafeAreaView, View, Text, FlatList, ActivityIndicator, Image, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import * as Linking from "expo-linking";
 import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
@@ -54,7 +45,7 @@ export default function CryptoNews() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {loading ? (
         <ActivityIndicator size="large" color={styles.defaultText.color} />
       ) : (
@@ -65,6 +56,7 @@ export default function CryptoNews() {
           keyExtractor={(item) => item.guid}
           renderItem={({ item }) => (
             <Card
+              style={{ minWidth: "98%", marginBottom: 16 }}
               onPress={() =>
                 setExpandedNews(expandedNews === item.guid ? null : item.guid)
               }
@@ -122,7 +114,7 @@ export default function CryptoNews() {
           )}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 

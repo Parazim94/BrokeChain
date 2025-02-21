@@ -74,7 +74,6 @@ export const createStyles = (theme: Theme) =>
       padding: 12,
       marginVertical: 8,
       borderRadius: 8,
-      boxShadow: `0px 2px 4px ${theme.accent}`,
     },
     menuButton: { position: "absolute", top: 10, right: 10 },
     name: { fontSize: 18, color: theme.text },
