@@ -61,6 +61,7 @@ export const createStyles = (theme: Theme) =>
       paddingVertical: 6,
       paddingHorizontal: 10,
       borderRadius: 8,
+      marginLeft:"auto",
       backgroundColor: theme.cardBackground,
     },
     amountSortText: { color: theme.text, fontSize: 14, fontWeight: "bold" },

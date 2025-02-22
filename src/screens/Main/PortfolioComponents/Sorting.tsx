@@ -70,16 +70,17 @@ export default function Sorting({
               {option}
             </Text>
           </TouchableOpacity>
-        ))}
-      </View>
-      <TouchableOpacity
+          
+        ))} <TouchableOpacity
         style={styles.amountSortButton}
         onPress={() => setSortedAscending(!sortedAscending)}
       >
-        <Text style={styles.amountSortText}>
-          Amount {sortedAscending ? "↑" : "↓"}
+        <Text style={styles.filterText}>
+         Sort {sortedAscending ? "↑" : "↓"}
         </Text>
       </TouchableOpacity>
+      </View>
+     
     </View>
   );
 }

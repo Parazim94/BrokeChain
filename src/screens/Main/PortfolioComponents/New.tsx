@@ -1,9 +1,9 @@
 import React from "react";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import { FlatList, Image, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import Card from "@/src/components/Card";
 import Sparkline from "@/src/components/Sparkline";
-import { createStyles } from "@/src/screens/Main/portfolioStyles";
+import { createStyles } from "@/src/screens/Main/PortfolioComponents/portfolioStyles";
 
 interface NewProps {
   data: any[];

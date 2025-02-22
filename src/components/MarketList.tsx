@@ -1,5 +1,5 @@
 import React from "react";
-import Animated, { FadeIn } from "react-native-reanimated";
+import Animated, { FadeInUp } from "react-native-reanimated";
 import { FlatList, StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import Card from "@/src/components/Card";
 import Sparkline from "@/src/components/Sparkline";
@@ -35,7 +35,6 @@ export default function MarketList({
   containerBackground,
 }: MarketListProps) {
   const localStyles = StyleSheet.create({
-
     cardStyle: {
       backgroundColor: containerBackground,
       maxWidth: 600,
@@ -49,6 +48,9 @@ export default function MarketList({
       alignItems: "center",
       marginVertical: 4,
     },
+    rowCenter: {
+      alignItems: "center",
+    },
     coinIcon: {
       width: 32,
       height: 32,
@@ -60,11 +62,18 @@ export default function MarketList({
       marginRight: 4,
       color: defaultTextColor,
     },
+    flexText: {
+      marginLeft: 8,
+      flex: 1,
+    },
     hr: {
       height: 1,
       backgroundColor: "gray",
       marginVertical: 4,
-    },    
+    },
+    monoText: {
+      fontFamily: "monospace",
+    },
   });
 
   return (
@@ -72,60 +81,78 @@ export default function MarketList({
       <Animated.FlatList
         data={tickers}
         keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => (
-          <Animated.View entering={FadeIn.delay(index * 50)}>
-            <Card onPress={() => onPressItem(item)} style={localStyles.cardStyle}>
-              {/* Erste Zeile: Icon, Name und Sparkline */}
-              <View style={[localStyles.row, { alignItems: "center" }]}>
-                <Image 
-                  source={{ uri: item.image }} 
-                  style={localStyles.coinIcon} 
-                  resizeMode="cover" 
-                />
-                <Text style={[{ color: defaultTextColor }, localStyles.labelText, { marginLeft: 8, flex: 1 }]}>
-                  {item.name}
-                </Text>
-                <Sparkline prices={item.sparkline.price} width={100} height={30} stroke={accentColor} />
-              </View>
-              <View style={localStyles.hr} />
-              {/* Zweite Zeile: Preis und prozentuale Veränderung */}
-              <View style={localStyles.row}>
-                <Text style={{ color: defaultTextColor, fontFamily: "monospace" }}>
-                  {item.current_price.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $
-                </Text>
-                <Text style={{ color: item.price_change_percentage_24h < 0 ? "red" : "green" }}>
-                  {item.price_change_percentage_24h?.toFixed(2)}%
-                </Text>
-              </View>
-              {/* Dritte Zeile: High und Low */}
-              <View style={localStyles.row}>
-                <Text style={{ color: defaultTextColor }}>
-                  <Text style={localStyles.labelText}>High:</Text>
-                  <Text style={{ color: defaultTextColor }}>
-                    {" "}{item.high_24h.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $
+        renderItem={({ item }) => {
+          const stableDelay = item.id
+            .split("")
+            .reduce((acc, char) => acc + char.charCodeAt(0), 0) % 500;
+          return (
+            <Animated.View entering={FadeInUp.delay(stableDelay)}>
+              <Card onPress={() => onPressItem(item)} style={localStyles.cardStyle}>
+                {/* Erste Zeile: Icon, Name und Sparkline */}
+                <View style={[localStyles.row, localStyles.rowCenter]}>
+                  <Image 
+                    source={{ uri: item.image }} 
+                    style={localStyles.coinIcon} 
+                    resizeMode="cover" 
+                  />
+                  <Text style={[localStyles.labelText, localStyles.flexText]}>
+                    {item.name}
                   </Text>
-                </Text>
-                <Text style={{ color: defaultTextColor }}>
-                  <Text style={localStyles.labelText}>Low:</Text>
-                  <Text style={{ color: defaultTextColor }}>
-                    {" "}{item.low_24h.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} $
+                  <Sparkline prices={item.sparkline.price} width={100} height={30} stroke={accentColor} />
+                </View>
+                <View style={localStyles.hr} />
+                {/* Zweite Zeile: Preis und prozentuale Veränderung */}
+                <View style={localStyles.row}>
+                  <Text style={[localStyles.labelText, localStyles.monoText]}>
+                    {item.current_price.toLocaleString("de-DE", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })} $
                   </Text>
-                </Text>
-              </View>
-              {/* Vierte Zeile: Volumen und Marketcap */}
-              <View style={localStyles.row}>
-                <Text style={{ color: defaultTextColor }}>
-                  <Text style={localStyles.labelText}>Vol:</Text>
-                  <Text style={{ color: defaultTextColor }}> {formatCurrency(item.total_volume)}</Text>
-                </Text>
-                <Text style={{ color: defaultTextColor }}>
-                  <Text style={localStyles.labelText}>Cap:</Text>
-                  <Text style={{ color: defaultTextColor }}> {formatCurrency(item.market_cap)}</Text>
-                </Text>
-              </View>
-            </Card>
-          </Animated.View>
-        )}
+                  <Text style={[{ color: item.price_change_percentage_24h < 0 ? "red" : "green" }, localStyles.monoText]}>
+                    {item.price_change_percentage_24h.toFixed(2)}%
+                  </Text>
+                </View>
+                {/* Dritte Zeile: High und Low */}
+                <View style={localStyles.row}>
+                  <Text style={{ color: defaultTextColor }}>
+                    <Text style={localStyles.labelText}>High:</Text>
+                    <Text style={[localStyles.monoText, { color: defaultTextColor }]}>
+                      {" "}{item.high_24h.toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })} $
+                    </Text>
+                  </Text>
+                  <Text style={{ color: defaultTextColor }}>
+                    <Text style={localStyles.labelText}>Low:</Text>
+                    <Text style={[localStyles.monoText, { color: defaultTextColor }]}>
+                      {" "}{item.low_24h.toLocaleString("de-DE", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })} $
+                    </Text>
+                  </Text>
+                </View>
+                {/* Vierte Zeile: Volumen und Marketcap */}
+                <View style={localStyles.row}>
+                  <Text style={{ color: defaultTextColor }}>
+                    <Text style={localStyles.labelText}>Vol:</Text>
+                    <Text style={[localStyles.monoText, { color: defaultTextColor }]}>
+                      {" "}{formatCurrency(item.total_volume)}
+                    </Text>
+                  </Text>
+                  <Text style={{ color: defaultTextColor }}>
+                    <Text style={localStyles.labelText}>Cap:</Text>
+                    <Text style={[localStyles.monoText, { color: defaultTextColor }]}>
+                      {" "}{formatCurrency(item.market_cap)}
+                    </Text>
+                  </Text>
+                </View>
+              </Card>
+            </Animated.View>
+          );
+        }}
       />
     </View>
   );

@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { SafeAreaView, View, TouchableOpacity, Text } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
-import { createStyles } from "./portfolioStyles";
+import { createStyles } from "./PortfolioComponents/portfolioStyles";
 import { mockUser } from "../../data/mockUser";
 import UserInfo from "./PortfolioComponents/UserInfo";
 import Sorting from "./PortfolioComponents/Sorting";

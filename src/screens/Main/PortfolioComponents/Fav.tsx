@@ -1,9 +1,9 @@
 import React from "react";
 import { FlatList, Image, Text, View } from "react-native";
 import Card from "@/src/components/Card";
-import Animated, { FadeIn } from "react-native-reanimated";
+import Animated, { FadeInUp } from "react-native-reanimated";
 import Sparkline from "@/src/components/Sparkline";
-import { createStyles } from "@/src/screens/Main/portfolioStyles";
+import { createStyles } from "@/src/screens/Main/PortfolioComponents/portfolioStyles";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 
 interface FavProps {
@@ -20,7 +20,7 @@ export default function Fav({ data, theme }: FavProps) {
       style={styles.list}
       keyExtractor={(item) => item.id}
       renderItem={({ item, index }) => (
-        <Animated.View entering={FadeIn.delay(index * 50)}>
+        <Animated.View entering={FadeInUp.delay(index * 50)}>
           <Card onPress={() => {}} style={styles.card}>
             {/* Erste Zeile: Icon, Name und Sparkline */}
             <View style={styles.row}>

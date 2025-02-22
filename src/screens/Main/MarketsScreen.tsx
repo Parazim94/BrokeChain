@@ -201,7 +201,7 @@ export default function MarketsScreen() {
       {/* Marktliste als Komponente: Jetzt mit gefilterter Liste */}
       <MarketList
         tickers={filteredTickers}
-        onPressItem={(item) => navigation.navigate("Trade" as never, { item })}
+        onPressItem={(item) => navigation.navigate("Trade", { item })}
         accentColor={styles.accent.color}
         defaultTextColor={styles.defaultText.color}
         containerBackground={styles.container.backgroundColor}

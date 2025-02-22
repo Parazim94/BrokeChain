@@ -1,9 +1,9 @@
 import React from "react";
 import { FlatList, View, Image, Text } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
+import Animated, { FadeInUp } from "react-native-reanimated";
 import Sparkline from "@/src/components/Sparkline";
 import Card from "@/src/components/Card";
-import { createStyles } from "@/src/screens/Main/portfolioStyles";
+import { createStyles } from "@/src/screens/Main/PortfolioComponents/portfolioStyles";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 
 interface HoldingProps {
@@ -16,11 +16,11 @@ export default function Holding({ data, theme }: HoldingProps) {
 
   return (
     <Animated.FlatList
-      data={data}
-      style={styles.list}
-      keyExtractor={(_, index) => index.toString()}
-      renderItem={({ item, index }) => (
-        <Animated.View entering={FadeIn.delay(index * 50)}>
+          data={data}
+          style={styles.list}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item, index }) => (
+            <Animated.View entering={FadeInUp.delay(index * 50)}>
           <Card onPress={() => {}} style={styles.card}>
             {/* Zeile 1: Bild, Name und Sparkline */}
             <View style={styles.row}>

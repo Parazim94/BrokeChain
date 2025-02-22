@@ -39,7 +39,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   const [accent, setAccent] = useState(AccentColors[0]);
 
   const theme = {
-    ...Colors[colorTheme],
+    ...Colors[colorTheme || "light"],
     accent,
   };
 
