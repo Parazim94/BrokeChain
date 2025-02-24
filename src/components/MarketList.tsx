@@ -1,6 +1,6 @@
 import React from "react";
-import Animated, { FadeInUp } from "react-native-reanimated";
-import { FlatList, StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import Animated from "react-native-reanimated";
+import { StyleSheet, View, Text, Image } from "react-native";
 import Card from "@/src/components/Card";
 import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
@@ -81,12 +81,9 @@ export default function MarketList({
       <Animated.FlatList
         data={tickers}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          const stableDelay = item.id
-            .split("")
-            .reduce((acc, char) => acc + char.charCodeAt(0), 0) % 500;
+        renderItem={({ item }) => {         
           return (
-            <Animated.View entering={FadeInUp.delay(stableDelay)}>
+            <Animated.View >
               <Card onPress={() => onPressItem(item)} style={localStyles.cardStyle}>
                 {/* Erste Zeile: Icon, Name und Sparkline */}
                 <View style={[localStyles.row, localStyles.rowCenter]}>
