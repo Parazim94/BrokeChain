@@ -1,6 +1,7 @@
 import React from "react";
-import { useNavigation } from "@react-navigation/native";
-import { useTrade } from "@/src/context/TradeContext"; // neu
+import { useNavigation, NavigationProp } from "@react-navigation/native"; // geändert
+import { RootStackParamList } from "@/src/navigation/types"; // neu
+import { useTrade } from "@/src/context/TradeContext";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { Image, Text, View } from "react-native";
 import Card from "@/src/components/Card";
@@ -14,8 +15,8 @@ interface NewProps {
 
 export default function New({ data, theme }: NewProps) {
   const styles = createStyles(theme);
-  const navigation = useNavigation();
-  const { setSelectedCoin } = useTrade(); // neu
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // geändert
+  const { setSelectedCoin } = useTrade();
 
   return (
     <Animated.FlatList
@@ -26,9 +27,9 @@ export default function New({ data, theme }: NewProps) {
         <Animated.View entering={FadeInUp.delay(index * 50)}>
           <Card
             onPress={() => {
-              setSelectedCoin(item.marketInfo || item); // neu
+              setSelectedCoin(item.marketInfo || item);
               navigation.navigate("Trade");
-            }} // geändert
+            }}
             style={styles.card}
           >
             {/* Zeile 1: Bild, Name und Sparkline */}

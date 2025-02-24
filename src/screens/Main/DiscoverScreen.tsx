@@ -4,11 +4,8 @@ import * as Linking from "expo-linking";
 import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/Card";
-
-// const RSS_URL = "https://www.coindesk.com/arc/outboundfeeds/rss/";
-// const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(
-//   RSS_URL
-// )}`;
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "@/src/navigation/types";
 
 interface NewsItem {
   guid: string;
@@ -26,6 +23,7 @@ export default function CryptoNews() {
   const [expandedNews, setExpandedNews] = useState<string | null>(null);
   const styles = createStyles();
   const newsStyles = createNewsStyles();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   useEffect(() => {
     const fetchNews = async () => {

@@ -3,8 +3,6 @@ import { StyleSheet } from "react-native";
 interface Theme {
   background: string;
   text: string;
-  cardBackground: string;
-  secondaryText: string;
   accent: string;
 }
 
@@ -30,7 +28,6 @@ export const createStyles = (theme: Theme) =>
       paddingVertical: 4,
       paddingHorizontal: 8,
       borderRadius: 8,
-      backgroundColor: theme.cardBackground,
       color: theme.text,
     },
     selectedFilterButton: { backgroundColor: theme.accent },
@@ -49,7 +46,6 @@ export const createStyles = (theme: Theme) =>
       paddingVertical: 6,
       paddingHorizontal: 10,
       borderRadius: 8,
-      backgroundColor: theme.cardBackground,
       marginRight: 8,
       color: theme.text,	
     },
@@ -62,7 +58,6 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: 10,
       borderRadius: 8,
       marginLeft:"auto",
-      backgroundColor: theme.cardBackground,
     },
     amountSortText: { color: theme.text, fontSize: 14, fontWeight: "bold" },
     hr: {

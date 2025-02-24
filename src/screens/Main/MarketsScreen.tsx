@@ -9,10 +9,11 @@ import {
   SafeAreaView, // Neuer Import für SafeAreaView
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, NavigationProp } from "@react-navigation/native"; // geändert
 import MarketList from "@/src/components/MarketList";
 import { Ionicons } from "@expo/vector-icons";
 import { useTrade } from "@/src/context/TradeContext";
+import { RootStackParamList } from "@/src/navigation/types"; // neu
 
 // Neuer Typ für CoinGecko-Daten inkl. Sparkline-Feld
 type Ticker = {
@@ -31,7 +32,7 @@ type Ticker = {
 
 export default function MarketsScreen() {
   const styles = createStyles();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // geändert
   const { setSelectedCoin } = useTrade();
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

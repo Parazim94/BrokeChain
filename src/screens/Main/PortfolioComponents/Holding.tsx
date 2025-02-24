@@ -1,6 +1,7 @@
 import React from "react";
-import { useNavigation } from "@react-navigation/native"; // neu
-import { useTrade } from "@/src/context/TradeContext"; // neu
+import { useNavigation, NavigationProp } from "@react-navigation/native"; // geändert
+import { RootStackParamList } from "@/src/navigation/types"; // neu
+import { useTrade } from "@/src/context/TradeContext";
 import { FlatList, View, Image, Text } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import Sparkline from "@/src/components/Sparkline";
@@ -15,21 +16,23 @@ interface HoldingProps {
 
 export default function Holding({ data, theme }: HoldingProps) {
   const styles = createStyles(theme);
-  const navigation = useNavigation(); // neu
-  const { setSelectedCoin } = useTrade(); // neu
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // geändert
+  const { setSelectedCoin } = useTrade();
 
   return (
     <Animated.FlatList
-          data={data}
-          style={styles.list}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item, index }) => (
-            <Animated.View entering={FadeInUp.delay(index * 50)}>
-          <Card onPress={() => {
-              setSelectedCoin(item.marketInfo || item); // neu
+      data={data}
+      style={styles.list}
+      keyExtractor={(_, index) => index.toString()}
+      renderItem={({ item, index }) => (
+        <Animated.View entering={FadeInUp.delay(index * 50)}>
+          <Card
+            onPress={() => {
+              setSelectedCoin(item.marketInfo || item);
               navigation.navigate("Trade");
-            }} // geändert
-            style={styles.card}>
+            }}
+            style={styles.card}
+          >
             {/* Zeile 1: Bild, Name und Sparkline */}
             <View style={styles.row}>
               {item.marketInfo && (

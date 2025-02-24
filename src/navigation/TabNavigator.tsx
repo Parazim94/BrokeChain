@@ -10,15 +10,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Platform } from "react-native";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
+import { RootStackParamList } from "@/src/navigation/types"; // neu
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<RootStackParamList>(); // geändert
 
 export default function TabNavigator() {
   const styles = createStyles();
   const { theme } = useContext(ThemeContext);
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: styles.container.backgroundColor}}
+      style={{ flex: 1, backgroundColor: styles.container.backgroundColor }}
       edges={["bottom"]}
     >
       <Tab.Navigator
@@ -36,15 +37,12 @@ export default function TabNavigator() {
               web: 5,
             }),
           },
-
           tabBarLabelStyle: {
             fontSize: 12,
           },
-
           tabBarIcon: ({ focused, size }) => {
             let iconName: string = "help-circle";
             let iconSize = size;
-
             if (route.name === "Markets") {
               iconName = "trending-up";
             } else if (route.name === "Share") {
@@ -57,7 +55,6 @@ export default function TabNavigator() {
             } else if (route.name === "Portfolio") {
               iconName = "wallet";
             }
-
             return (
               <Ionicons
                 name={iconName as keyof typeof Ionicons.glyphMap}

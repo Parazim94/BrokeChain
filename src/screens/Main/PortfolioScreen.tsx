@@ -8,6 +8,8 @@ import Sorting from "./PortfolioComponents/Sorting";
 import Holding from "./PortfolioComponents/Holding";
 import Fav from "./PortfolioComponents/Fav";
 import New from "./PortfolioComponents/New";
+import { useNavigation, NavigationProp } from "@react-navigation/native"; // neu
+import { RootStackParamList } from "@/src/navigation/types"; // neu
 
 const filterOptions = ["Holding", "Favorites", "New"];
 const historyOptions = ["7d", "30d", "360d"];
@@ -15,6 +17,7 @@ const historyOptions = ["7d", "30d", "360d"];
 export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = createStyles(theme);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // neu
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [sortedAscending, setSortedAscending] = useState(true);
   const [selectedHistory, setSelectedHistory] = useState("360d");
