@@ -12,6 +12,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import MarketList from "@/src/components/MarketList";
 import { Ionicons } from "@expo/vector-icons";
+import { useTrade } from "@/src/context/TradeContext";
 
 // Neuer Typ für CoinGecko-Daten inkl. Sparkline-Feld
 type Ticker = {
@@ -31,6 +32,7 @@ type Ticker = {
 export default function MarketsScreen() {
   const styles = createStyles();
   const navigation = useNavigation();
+  const { setSelectedCoin } = useTrade();
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [sortCriterion, setSortCriterion] = useState<"cap" | "vol" | "change24h">("cap");
@@ -201,7 +203,10 @@ export default function MarketsScreen() {
       {/* Marktliste als Komponente: Jetzt mit gefilterter Liste */}
       <MarketList
         tickers={filteredTickers}
-        onPressItem={(item) => navigation.navigate("Trade", { item })}
+        onPressItem={(item) => {
+          setSelectedCoin(item);
+          navigation.navigate("Trade");
+        }}
         accentColor={styles.accent.color}
         defaultTextColor={styles.defaultText.color}
         containerBackground={styles.container.backgroundColor}

@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import { useTrade } from "@/src/context/TradeContext"; // neu
 import { FlatList, Image, Text, View } from "react-native";
 import Card from "@/src/components/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
@@ -13,6 +15,8 @@ interface FavProps {
 
 export default function Fav({ data, theme }: FavProps) {
   const styles = createStyles(theme);
+  const navigation = useNavigation();
+  const { setSelectedCoin } = useTrade(); // neu
 
   return (
     <Animated.FlatList
@@ -21,7 +25,13 @@ export default function Fav({ data, theme }: FavProps) {
       keyExtractor={(item) => item.id}
       renderItem={({ item, index }) => (
         <Animated.View entering={FadeInUp.delay(index * 50)}>
-          <Card onPress={() => {}} style={styles.card}>
+          <Card
+            onPress={() => {
+              setSelectedCoin(item); // neu
+              navigation.navigate("Trade");
+            }} // geändert
+            style={styles.card}
+          >
             {/* Erste Zeile: Icon, Name und Sparkline */}
             <View style={styles.row}>
               <Image source={{ uri: item.image }} style={styles.coinIcon} />

@@ -1,29 +1,30 @@
 import React, { useState, useEffect, useContext } from "react";
 import { View, Text, TouchableOpacity, SafeAreaView, TextInput } from "react-native";
 import { createStyles } from "@/src/styles/style";
-import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { ThemeContext } from "@/src/context/ThemeContext";
-
-type TradeScreenRouteParams = {
-  Trade: { item: any };
-};
+import { useTrade } from "@/src/context/TradeContext";
 
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext); 
   const styles = createStyles();
-  
-  const route = useRoute<RouteProp<TradeScreenRouteParams, "Trade">>();
   const navigation = useNavigation();
-  const coinFromRoute = route.params?.item;
-  const [currentCoin, setCurrentCoin] = useState<any>(coinFromRoute || null);
+  const { selectedCoin, setSelectedCoin } = useTrade();
+  const [coin, setCoin] = useState<any>(selectedCoin);
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
   const [quantity, setQuantity] = useState("");
 
-  // Falls kein Coin übergeben wurde, hole BTC als Fallback
   useEffect(() => {
-    if (!currentCoin) {
+    if (selectedCoin) {
+      setCoin(selectedCoin);
+    }
+  }, [selectedCoin]);
+
+  useEffect(() => {
+    if (!coin) {
+      // Falls kein Coin übergeben wurde, BTC laden
       fetch("https://broke-end.vercel.app/marketData")
         .then((res) => res.json())
         .then((data) => {
@@ -31,22 +32,21 @@ export default function TradeScreen() {
             (item: any) => item.symbol.toLowerCase() === "btc"
           );
           if (btcCoin) {
-            setCurrentCoin(btcCoin);
+            setCoin(btcCoin);
           }
         })
         .catch((err) => console.error(err));
     }
-  }, [currentCoin]);
+  }, [coin]);
 
-  // Marktpreis laden, wenn currentCoin vorhanden ist
   useEffect(() => {
-    if (currentCoin && currentCoin.symbol) {
+    if (coin && coin.symbol) {
       fetch("https://broke-end.vercel.app/marketData")
         .then((res) => res.json())
         .then((data) => {
           const ticker = data.find(
             (item: any) =>
-              item.symbol.toLowerCase() === currentCoin.symbol.toLowerCase()
+              item.symbol.toLowerCase() === coin.symbol.toLowerCase()
           );
           if (ticker?.current_price) {
             setMarketPrice(parseFloat(ticker.current_price));
@@ -54,21 +54,20 @@ export default function TradeScreen() {
         })
         .catch((err) => console.error(err));
     }
-  }, [currentCoin]);
+  }, [coin]);
 
   const handleTrade = (type: "buy" | "sell") => {
     console.log(
       `${type === "buy" ? "Kaufen" : "Verkaufen"}:`,
-      { coinId: currentCoin.id, amount: quantity }
+      { coinId: coin.id, amount: quantity }
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Kein zusätzlicher Leertext zwischen den Elementen */}
       <View style={{ padding: 16 }}>
         <Text style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}>
-          {currentCoin?.name} ({currentCoin?.symbol.toUpperCase()})
+          {coin?.name} ({coin?.symbol.toUpperCase()})
         </Text>
         {marketPrice !== null && (
           <Text style={[styles.defaultText, { fontSize: 14, color: "gray" }]}>
@@ -76,7 +75,7 @@ export default function TradeScreen() {
           </Text>
         )}
         <Sparkline 
-          prices={currentCoin?.sparkline.price}
+          prices={coin?.sparkline.price}
           stroke={theme.accent}
           width="100%"
           height={100}

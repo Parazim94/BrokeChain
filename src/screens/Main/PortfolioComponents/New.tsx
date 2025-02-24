@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import { useTrade } from "@/src/context/TradeContext"; // neu
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { Image, Text, View } from "react-native";
 import Card from "@/src/components/Card";
@@ -12,6 +14,8 @@ interface NewProps {
 
 export default function New({ data, theme }: NewProps) {
   const styles = createStyles(theme);
+  const navigation = useNavigation();
+  const { setSelectedCoin } = useTrade(); // neu
 
   return (
     <Animated.FlatList
@@ -19,8 +23,14 @@ export default function New({ data, theme }: NewProps) {
       style={styles.list}
       keyExtractor={(_, index) => index.toString()}
       renderItem={({ item, index }) => (
-        <Animated.View entering={FadeInUp.delay(index * 50) }>
-          <Card onPress={() => {}} style={styles.card}>
+        <Animated.View entering={FadeInUp.delay(index * 50)}>
+          <Card
+            onPress={() => {
+              setSelectedCoin(item.marketInfo || item); // neu
+              navigation.navigate("Trade");
+            }} // geändert
+            style={styles.card}
+          >
             {/* Zeile 1: Bild, Name und Sparkline */}
             <View style={styles.row}>
               {item.marketInfo && (
