@@ -6,12 +6,13 @@ import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { ThemeContext } from "@/src/context/ThemeContext";
 import { useTrade } from "@/src/context/TradeContext";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext); 
   const styles = createStyles();
-  const navigation = useNavigation();
-  const { selectedCoin, setSelectedCoin } = useTrade();
+  const { selectedCoin } = useTrade();
+  const { user, setUser } = useContext(AuthContext);
   const [coin, setCoin] = useState<any>(selectedCoin);
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
   const [quantity, setQuantity] = useState("");
@@ -56,11 +57,38 @@ export default function TradeScreen() {
     }
   }, [coin]);
 
-  const handleTrade = (type: "buy" | "sell") => {
-    console.log(
-      `${type === "buy" ? "Kaufen" : "Verkaufen"}:`,
-      { coinId: coin.id, amount: quantity }
-    );
+  const handleTrade = async (type: "buy" | "sell") => {
+    if (!selectedCoin || !user?.token) {
+      alert("Münze oder User-Token fehlt");
+      return;
+    }
+    const quantityInput = parseFloat(quantity);
+    if (isNaN(quantityInput)) {
+      alert("Ungültige Menge");
+      return;
+    }
+    const amount = type === "sell" ? -Math.abs(quantityInput) : quantityInput;
+    const payload = {
+      coin: selectedCoin.symbol,
+      amount,
+      userToken: user.token,
+    };
+   
+    
+    try {
+      const response = await fetch("https://broke-end.vercel.app/trade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error(`${type} Trade fehlgeschlagen`);
+      const updatedUser = await response.json();
+      
+      setUser(updatedUser);
+      alert(`${type} Trade erfolgreich!`);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Unerwarteter Fehler");
+    }
   };
 
   return (

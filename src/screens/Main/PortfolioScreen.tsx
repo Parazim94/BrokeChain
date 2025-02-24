@@ -78,7 +78,7 @@ export default function PortfolioScreen() {
     b: { amount: number; marketInfo?: { current_price: number } }
   ) => {
     const valueA = a.marketInfo ? a.amount * a.marketInfo.current_price : 0;
-    const valueB = b.marketInfo ? b.amount * b.marketInfo.current_price : 0;  // Fixed: war a.amount statt b.amount
+    const valueB = b.marketInfo ? b.amount * b.marketInfo.current_price : 0;  
     return sortedAscending ? valueA - valueB : valueB - valueA;
   });
 

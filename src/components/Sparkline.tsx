@@ -15,6 +15,7 @@ type SparklineProps = {
   height?: number;
   stroke?: string;
   strokeWidth?: number;
+  staticFlag?: boolean; // optionaler statischer Flag, standardmäßig true
 };
 
 export default function Sparkline({
@@ -23,6 +24,7 @@ export default function Sparkline({
   height = 30,
   stroke = "black",
   strokeWidth = 2,
+  staticFlag = true, // standardmäßig true
 }: SparklineProps) {
   if (!prices || prices.length === 0) return null;
   
