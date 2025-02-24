@@ -51,12 +51,12 @@ export default function CryptoNews() {
       ) : (
         <FlatList
           data={news}
-          style={{ width: "100%" }}
+          style={{ padding:5 }}
           contentContainerStyle={{ alignItems: "center" }}
           keyExtractor={(item) => item.guid}
           renderItem={({ item }) => (
             <Card
-              style={{ minWidth: "98%", marginBottom: 16, maxWidth:1024 }}
+              style={{ minWidth: "98%", marginBottom: 16, }}
               onPress={() =>
                 setExpandedNews(expandedNews === item.guid ? null : item.guid)
               }

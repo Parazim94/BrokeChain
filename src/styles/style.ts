@@ -55,6 +55,20 @@ export function createStyles() {
       color: theme.accent,
       fontSize: 16,
     },
+    button: {
+      backgroundColor: theme.accent,
+      padding: 10,
+      borderRadius: 5,
+      width: 200,
+      alignItems: "center",
+    },
+    buySellButton: {
+      padding: 10,
+      borderRadius: 5,
+      width: 50,
+      height: 40,
+      alignItems: "center",
+    }
    
   });
 }

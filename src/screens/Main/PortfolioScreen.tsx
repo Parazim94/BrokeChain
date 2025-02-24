@@ -17,7 +17,7 @@ export default function PortfolioScreen() {
   const styles = createStyles(theme);
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [sortedAscending, setSortedAscending] = useState(true);
-  const [selectedHistory, setSelectedHistory] = useState("7d");
+  const [selectedHistory, setSelectedHistory] = useState("360d");
   const { userName, positions, history7d, history30d, history360d, favorites } = mockUser;
   const [marketData, setMarketData] = useState<any[]>([]);
 
