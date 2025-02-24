@@ -7,9 +7,9 @@ import Sorting from "./PortfolioComponents/Sorting";
 import Holding from "./PortfolioComponents/Holding";
 import Fav from "./PortfolioComponents/Fav";
 import New from "./PortfolioComponents/New";
-import { useNavigation, NavigationProp } from "@react-navigation/native"; 
-import { RootStackParamList } from "@/src/navigation/types"; 
-import { AuthContext } from "../../context/AuthContext"; 
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "@/src/navigation/types";
+import { AuthContext } from "../../context/AuthContext";
 
 const filterOptions = ["Holding", "Favorites", "New"];
 const historyOptions = ["7d", "30d", "360d"];
@@ -17,15 +17,19 @@ const historyOptions = ["7d", "30d", "360d"];
 export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = createStyles(theme);
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>(); 
-  const { isLoggedIn, user } = useContext(AuthContext); 
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { isLoggedIn, user } = useContext(AuthContext);
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [sortedAscending, setSortedAscending] = useState(true);
   const [selectedHistory, setSelectedHistory] = useState("360d");
   const [marketData, setMarketData] = useState<any[]>([]);
 
-
-  const userData = user || { userName: "Gast", positions: [] as { coinId: string; amount: number; [key: string]: any }[], history: [] as number[], favorites: [] as string[] };
+  const userData = user || {
+    userName: "Gast",
+    positions: [] as { coinId: string; amount: number; [key: string]: any }[],
+    history: [] as number[],
+    favorites: [] as string[],
+  };
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -50,40 +54,67 @@ export default function PortfolioScreen() {
     }
     fetchMarketData();
   }, []);
+  const userPositionsArray = Object.entries(userData.positions).map(
+    ([key, value]) => {
+      return { coinId: key, amount: value as number };
+    }
+  );
+  const mergedPositions = userPositionsArray.map(
+    (pos: { coinId: string; amount: number; [key: string]: any }) => {
+      const coinData = marketData.find(
+        (coin: { name: string; [key: string]: any }) =>
+          coin.name.toLowerCase() === pos.coinId.toLowerCase()
+      );
+      return { ...pos, marketInfo: coinData };
+    }
+  );
 
-  const mergedPositions = userData.positions.map((pos: { coinId: string; amount: number; [key: string]: any }) => {
-    const coinData = marketData.find((coin: { name: string; [key: string]: any }) =>
-      coin.name.toLowerCase() === pos.coinId.toLowerCase()
+  const computedCash =
+    userData.cash +
+    mergedPositions.reduce(
+      (
+        acc: number,
+        pos: { amount: number; marketInfo?: { current_price: number } }
+      ) => {
+        if (pos.marketInfo)
+          return acc + pos.amount * pos.marketInfo.current_price;
+        return acc;
+      },
+      0
     );
-    return { ...pos, marketInfo: coinData };
-  });
 
-  const computedCash = userData.cash + mergedPositions.reduce((acc: number, pos: { amount: number; marketInfo?: { current_price: number } }) => {
-    if (pos.marketInfo) return acc + pos.amount * pos.marketInfo.current_price;
-    return acc;
-  }, 0);
+  const filteredPositions = mergedPositions.filter(
+    (position: { coinId: string; [key: string]: any }) => {
+      const coinIdLower = position.coinId.toLowerCase();
+      if (selectedFilter === "Holding") return true;
+      if (selectedFilter === "Favorites")
+        return userData.favorites.some(
+          (fav: string) => fav.toLowerCase() === coinIdLower
+        );
+      if (selectedFilter === "New")
+        return !userData.favorites.some(
+          (fav: string) => fav.toLowerCase() === coinIdLower
+        );
+      return true;
+    }
+  );
 
-  const filteredPositions = mergedPositions.filter((position: { coinId: string; [key: string]: any }) => {
-    const coinIdLower = position.coinId.toLowerCase();
-    if (selectedFilter === "Holding") return true;
-    if (selectedFilter === "Favorites")
-      return userData.favorites.some((fav: string) => fav.toLowerCase() === coinIdLower);
-    if (selectedFilter === "New")
-      return !userData.favorites.some((fav: string) => fav.toLowerCase() === coinIdLower);
-    return true;
-  });
+  const sortedPositions = [...filteredPositions].sort(
+    (
+      a: { amount: number; marketInfo?: { current_price: number } },
+      b: { amount: number; marketInfo?: { current_price: number } }
+    ) => {
+      const valueA = a.marketInfo ? a.amount * a.marketInfo.current_price : 0;
+      const valueB = b.marketInfo ? b.amount * b.marketInfo.current_price : 0;
+      return sortedAscending ? valueA - valueB : valueB - valueA;
+    }
+  );
 
-  const sortedPositions = [...filteredPositions].sort((
-    a: { amount: number; marketInfo?: { current_price: number } },
-    b: { amount: number; marketInfo?: { current_price: number } }
-  ) => {
-    const valueA = a.marketInfo ? a.amount * a.marketInfo.current_price : 0;
-    const valueB = b.marketInfo ? b.amount * b.marketInfo.current_price : 0;  
-    return sortedAscending ? valueA - valueB : valueB - valueA;
-  });
-
-  const favoriteMarketData = marketData.filter((coin: { name: string; [key: string]: any }) =>
-    userData.favorites.some((fav: string) => fav.toLowerCase() === coin.name.toLowerCase())
+  const favoriteMarketData = marketData.filter(
+    (coin: { name: string; [key: string]: any }) =>
+      userData.favorites.some(
+        (fav: string) => fav.toLowerCase() === coin.name.toLowerCase()
+      )
   );
 
   const getHistoryData = () => {
