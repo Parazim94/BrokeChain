@@ -40,7 +40,7 @@ export default function ShareScreen() {
     const fetchPosts = async () => {
       try {
         const response = await fetch(
-          "https://mastodonapp.uk/api/v1/timelines/tag/crypto?limit=10"
+          "https://mastodonapp.uk/api/v1/timelines/tag/crypto?limit=15"
         );
         const data = await response.json();
         setPosts(data);
@@ -80,12 +80,12 @@ export default function ShareScreen() {
       ) : (
         <FlatList
           data={posts}
-          style={{ width: "100%" }}
-          contentContainerStyle={{ alignItems: "center" }}
+          style={{ width: "100%", }}
+          contentContainerStyle={{ alignItems: "center", justifyContent: "center" }}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Card
-              style={{ minWidth: "98%", marginBottom: 16, maxWidth: 1024 }}
+              style={{ marginBottom: 16, maxWidth:350 }}
               onPress={() =>
                 setExpandedPost(expandedPost === item.id ? null : item.id)
               }
