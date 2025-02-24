@@ -19,7 +19,7 @@ export default function New({ data, theme }: NewProps) {
       style={styles.list}
       keyExtractor={(_, index) => index.toString()}
       renderItem={({ item, index }) => (
-        <Animated.View entering={FadeInUp.delay(index * 50)}>
+        <Animated.View entering={FadeInUp.delay(index * 50) }>
           <Card onPress={() => {}} style={styles.card}>
             {/* Zeile 1: Bild, Name und Sparkline */}
             <View style={styles.row}>

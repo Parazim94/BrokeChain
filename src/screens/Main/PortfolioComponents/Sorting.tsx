@@ -26,16 +26,23 @@ export default function Sorting({
   historyOptions,
 }: SortingProps) {
   return (
-    <View style={{ 
-      maxWidth: 1024,margin:"auto",width:"100%", padding: 10, backgroundColor: styles.background}}>
-      <View style={styles.filterContainer} >
+    <View
+      style={{
+        maxWidth: 1024,
+        margin: "auto",
+        width: "100%",
+        padding: 10,
+        backgroundColor: styles.background,
+      }}
+    >
+      <View style={styles.filterContainer}>
         {historyOptions.map((option) => (
           <TouchableOpacity
             key={option}
             style={[
               styles.filterButton,
               selectedHistory === option && styles.selectedFilterButton,
-              {marginBottom: 10},
+              { marginBottom: 10 },
             ]}
             onPress={() => setSelectedHistory(option)}
           >
@@ -70,17 +77,16 @@ export default function Sorting({
               {option}
             </Text>
           </TouchableOpacity>
-          
-        ))} <TouchableOpacity
-        style={styles.amountSortButton}
-        onPress={() => setSortedAscending(!sortedAscending)}
-      >
-        <Text style={styles.filterText}>
-         Sort {sortedAscending ? "↑" : "↓"}
-        </Text>
-      </TouchableOpacity>
+        ))}
+        <TouchableOpacity
+          style={styles.amountSortButton}
+          onPress={() => setSortedAscending(!sortedAscending)}
+        >
+          <Text style={styles.filterText}>
+            Sort {sortedAscending ? "↑" : "↓"}
+          </Text>
+        </TouchableOpacity>
       </View>
-     
     </View>
   );
 }

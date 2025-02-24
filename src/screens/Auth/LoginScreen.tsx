@@ -15,6 +15,7 @@ export default function LoginScreen() {
 
   return (
     <View style={[styles.container, auth.center]}>
+      <Text style={auth.headerText}>Login</Text>
       <TextInput placeholder="E-Mail" placeholderTextColor={styles.defaultText.color} style={styles.input} />
       <TextInput placeholder="Passwort" placeholderTextColor={styles.defaultText.color} secureTextEntry style={styles.input} />
       <TouchableOpacity onPress={handleLogin} style={auth.button}>
