@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "@/src/navigation/types";
+import { StackParamList } from "@/src/navigation/types";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "./authStyles";
@@ -9,8 +9,8 @@ import { authStyles } from "./authStyles";
 export default function LoginScreen() {
   const styles = createStyles();
   const auth = authStyles();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { setIsLoggedIn } = useContext(AuthContext);
+  const navigation = useNavigation<NavigationProp<StackParamList>>();
+  const { setIsLoggedIn, setUser } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -22,8 +22,10 @@ export default function LoginScreen() {
         body: JSON.stringify({ email, password }),
       });
       if (!response.ok) throw new Error("Login fehlgeschlagen");
+      const userData = await response.json();
+      setUser(userData);
       setIsLoggedIn(true);
-      navigation.navigate("Portfolio");
+      navigation.navigate("Main", { screen: "Portfolio" });
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unexpected error occurred");
     }

@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from "react";
 import { SafeAreaView, View, TouchableOpacity, Text } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import { createStyles } from "./PortfolioComponents/portfolioStyles";
-import { mockUser } from "../../data/mockUser";
 import UserInfo from "./PortfolioComponents/UserInfo";
 import Sorting from "./PortfolioComponents/Sorting";
 import Holding from "./PortfolioComponents/Holding";
@@ -19,12 +18,14 @@ export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = createStyles(theme);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>(); 
-  const { isLoggedIn } = useContext(AuthContext); 
+  const { isLoggedIn, user } = useContext(AuthContext); 
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [sortedAscending, setSortedAscending] = useState(true);
   const [selectedHistory, setSelectedHistory] = useState("360d");
-  const { userName, positions, history7d, history30d, history360d, favorites } = mockUser;
   const [marketData, setMarketData] = useState<any[]>([]);
+
+
+  const userData = user || { userName: "Gast", positions: [] as { coinId: string; amount: number; [key: string]: any }[], history: [] as number[], favorites: [] as string[] };
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -50,54 +51,59 @@ export default function PortfolioScreen() {
     fetchMarketData();
   }, []);
 
-  const mergedPositions = positions.map((pos) => {
-    const coinData = marketData.find(
-      (coin) => coin.name.toLowerCase() === pos.coinId.toLowerCase()
+  const mergedPositions = userData.positions.map((pos: { coinId: string; amount: number; [key: string]: any }) => {
+    const coinData = marketData.find((coin: { name: string; [key: string]: any }) =>
+      coin.name.toLowerCase() === pos.coinId.toLowerCase()
     );
     return { ...pos, marketInfo: coinData };
   });
 
-  const computedCash = mergedPositions.reduce((acc, pos) => {
+  const computedCash = userData.cash + mergedPositions.reduce((acc: number, pos: { amount: number; marketInfo?: { current_price: number } }) => {
     if (pos.marketInfo) return acc + pos.amount * pos.marketInfo.current_price;
     return acc;
   }, 0);
 
-  const filteredPositions = mergedPositions.filter((position) => {
+  const filteredPositions = mergedPositions.filter((position: { coinId: string; [key: string]: any }) => {
     const coinIdLower = position.coinId.toLowerCase();
     if (selectedFilter === "Holding") return true;
     if (selectedFilter === "Favorites")
-      return favorites.some((fav) => fav.toLowerCase() === coinIdLower);
+      return userData.favorites.some((fav: string) => fav.toLowerCase() === coinIdLower);
     if (selectedFilter === "New")
-      return !favorites.some((fav) => fav.toLowerCase() === coinIdLower);
+      return !userData.favorites.some((fav: string) => fav.toLowerCase() === coinIdLower);
     return true;
   });
 
-  const sortedPositions = [...filteredPositions].sort((a, b) => {
+  const sortedPositions = [...filteredPositions].sort((
+    a: { amount: number; marketInfo?: { current_price: number } },
+    b: { amount: number; marketInfo?: { current_price: number } }
+  ) => {
     const valueA = a.marketInfo ? a.amount * a.marketInfo.current_price : 0;
     const valueB = b.marketInfo ? b.amount * b.marketInfo.current_price : 0;  // Fixed: war a.amount statt b.amount
     return sortedAscending ? valueA - valueB : valueB - valueA;
   });
 
-  const favoriteMarketData = marketData.filter((coin) =>
-    favorites.some((fav) => fav.toLowerCase() === coin.name.toLowerCase())
+  const favoriteMarketData = marketData.filter((coin: { name: string; [key: string]: any }) =>
+    userData.favorites.some((fav: string) => fav.toLowerCase() === coin.name.toLowerCase())
   );
 
   const getHistoryData = () => {
+    // Bei Server-User gibt es nur ein history-Array; je nach Auswahl wird ein Teil zurückgegeben.
+    if (!userData.history || userData.history.length === 0) return [];
     switch (selectedHistory) {
       case "30d":
-        return history30d;
+        return userData.history.slice(-30);
       case "360d":
-        return history360d;
+        return userData.history.slice(-360);
       case "7d":
       default:
-        return history7d;
+        return userData.history.slice(-7);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <UserInfo
-        userName={userName}
+        userName={userData.userName}
         cash={computedCash}
         history={getHistoryData()}
         theme={theme}
@@ -116,7 +122,9 @@ export default function PortfolioScreen() {
         setSelectedHistory={setSelectedHistory}
         historyOptions={historyOptions}
       />
-      {selectedFilter === "Favorites" ? (
+      {userData.positions.length === 0 ? (
+        <Text style={styles.header}>kaufe erstmal was :)</Text>
+      ) : selectedFilter === "Favorites" ? (
         <Fav data={favoriteMarketData} theme={theme} />
       ) : selectedFilter === "New" ? (
         <New data={sortedPositions} theme={theme} />
