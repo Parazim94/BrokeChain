@@ -12,7 +12,7 @@ import {
   Share,
 } from "react-native";
 import * as Linking from "expo-linking";
-import { Ionicons } from "@expo/vector-icons"; // Icons für Like & Share
+import { Ionicons } from "@expo/vector-icons";
 import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/Card";
@@ -53,7 +53,6 @@ export default function ShareScreen() {
     fetchPosts();
   }, []);
 
-  // Funktion zum Liken eines Beitrags
   const handleLike = (postId: string) => {
     setLikedPosts((prevLikes) => ({
       ...prevLikes,
@@ -61,7 +60,6 @@ export default function ShareScreen() {
     }));
   };
 
-  // Funktion zum Teilen eines Beitrags
   const handleShare = async (postUrl: string) => {
     try {
       await Share.share({
@@ -85,25 +83,18 @@ export default function ShareScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Card
-              style={{ minWidth: "98%", marginBottom: 16, maxWidth: 1024 }}
+              style={shareStyles.postContainer}
               onPress={() =>
                 setExpandedPost(expandedPost === item.id ? null : item.id)
               }
             >
-              {/* Header: User-Avatar und Username */}
-              <View style={[shareStyles.postTopRow, { alignItems: "center" }]}>
-                {item.account.avatar ? (
-                  <Image
-                    source={{ uri: item.account.avatar }}
-                    style={shareStyles.userAvatar}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View style={shareStyles.userAvatar}>
-                    <Text style={shareStyles.postDate}>Kein Bild</Text>
-                  </View>
-                )}
-                <View style={shareStyles.postHeader}>
+              {/* Header: User-Avatar, Username & Zeitstempel */}
+              <View style={shareStyles.postHeaderRow}>
+                <Image
+                  source={{ uri: item.account.avatar }}
+                  style={shareStyles.userAvatar}
+                />
+                <View style={shareStyles.userInfo}>
                   <Text style={shareStyles.username}>
                     @{item.account.username}
                   </Text>
@@ -115,44 +106,17 @@ export default function ShareScreen() {
 
               {/* Inhalt des Posts */}
               <View style={shareStyles.postContent}>
-                {expandedPost === item.id ? (
-                  <ScrollView style={{ maxHeight: 400 }} scrollEnabled={true}>
-                    <Text style={shareStyles.postText}>
-                      {item.content.replace(/<[^>]+>/g, "")}
-                    </Text>
-                  </ScrollView>
-                ) : (
-                  <Text style={shareStyles.postText} numberOfLines={5}>
-                    {item.content.replace(/<[^>]+>/g, "")}
-                  </Text>
-                )}
+                <Text
+                  style={shareStyles.postText}
+                  numberOfLines={expandedPost === item.id ? undefined : 5}
+                >
+                  {item.content.replace(/<[^>]+>/g, "")}
+                </Text>
               </View>
 
-              {/* Interaktionsleiste mit Like, Share */}
-              <View style={shareStyles.actionRow}>
-                {/* Like-Button */}
-                <TouchableOpacity
-                  onPress={() => handleLike(item.id)}
-                  style={shareStyles.iconButton}
-                >
-                  <Ionicons name="heart" size={22} color="red" />
-                  <Text style={shareStyles.iconText}>
-                    {likedPosts[item.id] || 0}
-                  </Text>
-                </TouchableOpacity>
-
-                {/* Share-Button */}
-                <TouchableOpacity
-                  onPress={() => handleShare(item.url)}
-                  style={shareStyles.iconButton}
-                >
-                  <Ionicons name="share-social" size={22} color="blue" />
-                </TouchableOpacity>
-              </View>
-
-              {/* Button zum Öffnen des Original-Posts */}
+              {/* "Post öffnen"-Button linksbündig, wenn Post aufgeklappt ist */}
               {expandedPost === item.id && (
-                <View style={{ marginTop: 8 }}>
+                <View style={shareStyles.openPostContainer}>
                   <TouchableOpacity
                     onPress={() => Linking.openURL(item.url)}
                     style={shareStyles.openPostButton}
@@ -163,6 +127,36 @@ export default function ShareScreen() {
                   </TouchableOpacity>
                 </View>
               )}
+
+              {/* Interaktionsleiste */}
+              <View style={shareStyles.actionRow}>
+                <TouchableOpacity style={shareStyles.iconButton}>
+                  <Ionicons name="chatbubble-outline" size={20} color="gray" />
+                  <Text style={shareStyles.iconText}>214</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={shareStyles.iconButton}>
+                  <Ionicons name="repeat" size={20} color="gray" />
+                  <Text style={shareStyles.iconText}>178</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => handleLike(item.id)}
+                  style={shareStyles.iconButton}
+                >
+                  <Ionicons name="heart-outline" size={20} color="red" />
+                  <Text style={shareStyles.iconText}>
+                    {likedPosts[item.id] || 0}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => handleShare(item.url)}
+                  style={shareStyles.iconButton}
+                >
+                  <Ionicons name="share-outline" size={20} color="gray" />
+                </TouchableOpacity>
+              </View>
             </Card>
           )}
         />
@@ -174,26 +168,31 @@ export default function ShareScreen() {
 function createShareStyles() {
   const { theme } = useContext(ThemeContext);
   return StyleSheet.create({
-    postTopRow: {
+    postContainer: {
+      width: "95%",
+      marginBottom: 16,
+      padding: 12,
+      backgroundColor: theme.background,
+      borderRadius: 10,
+    },
+    postHeaderRow: {
       flexDirection: "row",
       alignItems: "center",
       marginBottom: 8,
     },
     userAvatar: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
+      width: 40,
+      height: 40,
+      borderRadius: 20,
       marginRight: 10,
     },
-    postHeader: {
-      flex: 1,
-      justifyContent: "center",
+    userInfo: {
+      flexDirection: "column",
     },
     username: {
       fontSize: 16,
       fontWeight: "bold",
       color: theme.text,
-      marginBottom: 4,
     },
     postDate: {
       fontSize: 12,
@@ -208,28 +207,31 @@ function createShareStyles() {
     },
     actionRow: {
       flexDirection: "row",
-      justifyContent: "space-around",
-      marginTop: 8,
+      justifyContent: "space-between",
+      marginTop: 10,
       paddingVertical: 8,
       borderTopWidth: 1,
-      borderTopColor: "#ddd",
+      borderTopColor: "#222",
     },
     iconButton: {
       flexDirection: "row",
       alignItems: "center",
-      padding: 8,
     },
     iconText: {
       marginLeft: 6,
       fontSize: 14,
-      color: theme.text,
+      color: "gray",
+    },
+    openPostContainer: {
+      flexDirection: "row",
+      justifyContent: "flex-start",
+      marginTop: 10,
     },
     openPostButton: {
-      width: "100%",
       backgroundColor: theme.accent,
-      padding: 10,
+      paddingVertical: 6,
+      paddingHorizontal: 16,
       borderRadius: 5,
-      alignItems: "center",
     },
     openPostButtonText: {
       color: "white",
