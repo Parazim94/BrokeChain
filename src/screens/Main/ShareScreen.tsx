@@ -9,8 +9,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Share,
 } from "react-native";
 import * as Linking from "expo-linking";
+import { Ionicons } from "@expo/vector-icons"; // Icons für Like & Share
 import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/Card";
@@ -30,6 +32,7 @@ export default function ShareScreen() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedPost, setExpandedPost] = useState<string | null>(null);
+  const [likedPosts, setLikedPosts] = useState<Record<string, number>>({});
   const styles = createStyles();
   const shareStyles = createShareStyles();
 
@@ -49,6 +52,26 @@ export default function ShareScreen() {
     };
     fetchPosts();
   }, []);
+
+  // Funktion zum Liken eines Beitrags
+  const handleLike = (postId: string) => {
+    setLikedPosts((prevLikes) => ({
+      ...prevLikes,
+      [postId]: (prevLikes[postId] || 0) + 1,
+    }));
+  };
+
+  // Funktion zum Teilen eines Beitrags
+  const handleShare = async (postUrl: string) => {
+    try {
+      await Share.share({
+        message: `Schau dir diesen Krypto-Post an: ${postUrl}`,
+        url: postUrl,
+      });
+    } catch (error) {
+      console.error("Fehler beim Teilen:", error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -105,20 +128,38 @@ export default function ShareScreen() {
                 )}
               </View>
 
+              {/* Interaktionsleiste mit Like, Share */}
+              <View style={shareStyles.actionRow}>
+                {/* Like-Button */}
+                <TouchableOpacity
+                  onPress={() => handleLike(item.id)}
+                  style={shareStyles.iconButton}
+                >
+                  <Ionicons name="heart" size={22} color="red" />
+                  <Text style={shareStyles.iconText}>
+                    {likedPosts[item.id] || 0}
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Share-Button */}
+                <TouchableOpacity
+                  onPress={() => handleShare(item.url)}
+                  style={shareStyles.iconButton}
+                >
+                  <Ionicons name="share-social" size={22} color="blue" />
+                </TouchableOpacity>
+              </View>
+
               {/* Button zum Öffnen des Original-Posts */}
               {expandedPost === item.id && (
                 <View style={{ marginTop: 8 }}>
                   <TouchableOpacity
                     onPress={() => Linking.openURL(item.url)}
-                    style={{
-                      backgroundColor: styles.accent.color,
-                      padding: 5,
-                      borderRadius: 5,
-                      width: 150,
-                      alignItems: "center",
-                    }}
+                    style={shareStyles.openPostButton}
                   >
-                    <Text style={{ color: "white" }}>Post öffnen</Text>
+                    <Text style={shareStyles.openPostButtonText}>
+                      Post öffnen
+                    </Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -164,6 +205,36 @@ function createShareStyles() {
     postText: {
       fontSize: 14,
       color: theme.text,
+    },
+    actionRow: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+      marginTop: 8,
+      paddingVertical: 8,
+      borderTopWidth: 1,
+      borderTopColor: "#ddd",
+    },
+    iconButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 8,
+    },
+    iconText: {
+      marginLeft: 6,
+      fontSize: 14,
+      color: theme.text,
+    },
+    openPostButton: {
+      width: "100%",
+      backgroundColor: theme.accent,
+      padding: 10,
+      borderRadius: 5,
+      alignItems: "center",
+    },
+    openPostButtonText: {
+      color: "white",
+      fontSize: 14,
+      fontWeight: "bold",
     },
   });
 }
