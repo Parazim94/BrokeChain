@@ -5,20 +5,20 @@ import {
   ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
-  TextInput, // Neuer Import für TextInput
-  SafeAreaView, // Neuer Import für SafeAreaView
+  TextInput,
+  SafeAreaView, 
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native"; // geändert
 import MarketList from "@/src/components/MarketList";
 import { Ionicons } from "@expo/vector-icons";
 import { useTrade } from "@/src/context/TradeContext";
-import { RootStackParamList } from "@/src/navigation/types"; // neu
+import { RootStackParamList } from "@/src/navigation/types"; 
 
-// Neuer Typ für CoinGecko-Daten inkl. Sparkline-Feld
+
 type Ticker = {
   id: string;
-  name: string; // neu hinzugefügt
+  name: string; 
   symbol: string;
   current_price: number;
   price_change_percentage_24h: number;
@@ -37,7 +37,7 @@ export default function MarketsScreen() {
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [sortCriterion, setSortCriterion] = useState<"cap" | "vol" | "change24h">("cap");
-  const [sortedAscending, setSortedAscending] = useState(true); // neuer State für Sortierreihenfolge
+  const [sortedAscending, setSortedAscending] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
   // Lokale Styles

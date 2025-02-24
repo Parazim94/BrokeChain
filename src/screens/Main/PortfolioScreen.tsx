@@ -8,8 +8,9 @@ import Sorting from "./PortfolioComponents/Sorting";
 import Holding from "./PortfolioComponents/Holding";
 import Fav from "./PortfolioComponents/Fav";
 import New from "./PortfolioComponents/New";
-import { useNavigation, NavigationProp } from "@react-navigation/native"; // neu
-import { RootStackParamList } from "@/src/navigation/types"; // neu
+import { useNavigation, NavigationProp } from "@react-navigation/native"; 
+import { RootStackParamList } from "@/src/navigation/types"; 
+import { AuthContext } from "../../context/AuthContext"; 
 
 const filterOptions = ["Holding", "Favorites", "New"];
 const historyOptions = ["7d", "30d", "360d"];
@@ -17,12 +18,19 @@ const historyOptions = ["7d", "30d", "360d"];
 export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = createStyles(theme);
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // neu
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>(); 
+  const { isLoggedIn } = useContext(AuthContext); 
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [sortedAscending, setSortedAscending] = useState(true);
   const [selectedHistory, setSelectedHistory] = useState("360d");
   const { userName, positions, history7d, history30d, history360d, favorites } = mockUser;
   const [marketData, setMarketData] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigation.navigate("Login");
+    }
+  }, [isLoggedIn, navigation]);
 
   useEffect(() => {
     async function fetchMarketData() {

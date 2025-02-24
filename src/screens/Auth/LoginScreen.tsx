@@ -1,23 +1,52 @@
-import React from "react";
-import { View, Text, TextInput, TouchableOpacity, } from "react-native";
+import React, { useState, useContext } from "react";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { RootStackParamList } from "@/src/navigation/types";
+import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "./authStyles";
-import { useNavigation } from '@react-navigation/native';
+
 export default function LoginScreen() {
   const styles = createStyles();
   const auth = authStyles();
-  const navigation = useNavigation();
-  
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { setIsLoggedIn } = useContext(AuthContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  function handleLogin() {
-    alert("✅ Erfolgreich eingeloggt!");
-  }
+  const handleLogin = async () => {
+    try {
+      const response = await fetch("https://broke-end.vercel.app/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!response.ok) throw new Error("Login fehlgeschlagen");
+      setIsLoggedIn(true);
+      navigation.navigate("Portfolio");
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Unexpected error occurred");
+    }
+  };
 
   return (
     <View style={[styles.container, auth.center]}>
       <Text style={auth.headerText}>Login</Text>
-      <TextInput placeholder="E-Mail" placeholderTextColor={styles.defaultText.color} style={styles.input} />
-      <TextInput placeholder="Passwort" placeholderTextColor={styles.defaultText.color} secureTextEntry style={styles.input} />
+      <TextInput
+        placeholder="E-Mail"
+        placeholderTextColor={styles.defaultText.color}
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Passwort"
+        placeholderTextColor={styles.defaultText.color}
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+        style={styles.input}
+      />
       <TouchableOpacity onPress={handleLogin} style={auth.button}>
         <Text style={auth.buttonText}>Login</Text>
       </TouchableOpacity>

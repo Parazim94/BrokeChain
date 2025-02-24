@@ -4,7 +4,7 @@ import StackNavigator from "./src/navigation/StackNavigator";
 import { enableScreens } from "react-native-screens";
 import { ThemeProvider } from "./src/context/ThemeContext";
 import { AuthProvider } from "./src/context/AuthContext";
-import { TradeProvider } from "./src/context/TradeContext"; // Neuer Import
+import { TradeProvider } from "./src/context/TradeContext"; 
 
 enableScreens();
 

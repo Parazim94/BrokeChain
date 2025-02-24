@@ -4,4 +4,7 @@ export type RootStackParamList = {
   Trade: undefined;
   Discover: undefined;
   Portfolio: undefined;
+  Login: undefined; 
 };
+
+export {};

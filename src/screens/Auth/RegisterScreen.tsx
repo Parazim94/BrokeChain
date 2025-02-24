@@ -9,7 +9,7 @@ export default function RegisterScreen() {
   const auth = authStyles();
   const navigation = useNavigation();
 
-  // Neue State-Variablen für Register
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");

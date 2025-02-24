@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native"; // geändert
-import { RootStackParamList } from "@/src/navigation/types"; // neu
+import { RootStackParamList } from "@/src/navigation/types"; 
 import { useTrade } from "@/src/context/TradeContext";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { Image, Text, View } from "react-native";
