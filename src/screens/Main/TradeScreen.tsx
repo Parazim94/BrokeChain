@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, TouchableOpacity, SafeAreaView, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  TextInput,
+} from "react-native";
 import { createStyles } from "@/src/styles/style";
 import { useNavigation } from "@react-navigation/native";
 import Sparkline from "@/src/components/Sparkline";
@@ -9,7 +15,7 @@ import { useTrade } from "@/src/context/TradeContext";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function TradeScreen() {
-  const { theme } = useContext(ThemeContext); 
+  const { theme } = useContext(ThemeContext);
   const styles = createStyles();
   const { selectedCoin } = useTrade();
   const { user, setUser } = useContext(AuthContext);
@@ -69,21 +75,23 @@ export default function TradeScreen() {
     }
     const amount = type === "sell" ? -Math.abs(quantityInput) : quantityInput;
     const payload = {
-      coin: selectedCoin.symbol,
-      amount,
-      userToken: user.token,
+      symbol: selectedCoin.symbol,
+      value: amount,
+      token: user.token,
     };
-   
-    
+    console.log(payload);
     try {
       const response = await fetch("https://broke-end.vercel.app/trade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) throw new Error(`${type} Trade fehlgeschlagen`);
+      if (!response.ok) {
+        console.log(response);
+        throw new Error(`${type} Trade fehlgeschlagen`);
+      }
       const updatedUser = await response.json();
-      
+
       setUser(updatedUser);
       alert(`${type} Trade erfolgreich!`);
     } catch (error) {
@@ -102,13 +110,20 @@ export default function TradeScreen() {
             Market: {formatCurrency(marketPrice)}
           </Text>
         )}
-        <Sparkline 
+        <Sparkline
           prices={coin?.sparkline.price}
           stroke={theme.accent}
           width="100%"
           height={100}
         />
-        <View style={{ flexDirection: "row", justifyContent: "space-around", alignItems:"center", marginTop: 16 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+            alignItems: "center",
+            marginTop: 16,
+          }}
+        >
           <TextInput
             style={[styles.input, { width: "40%" }]}
             placeholder="Menge eingeben..."
@@ -117,11 +132,19 @@ export default function TradeScreen() {
             onChangeText={setQuantity}
             keyboardType="numeric"
           />
-          <TouchableOpacity style={[styles.buySellButton, { backgroundColor: "green" }]} onPress={() => handleTrade("buy")}>
-            <Text style={{ backgroundColor: "green", color:"white" }}>Buy</Text>
+          <TouchableOpacity
+            style={[styles.buySellButton, { backgroundColor: "green" }]}
+            onPress={() => handleTrade("buy")}
+          >
+            <Text style={{ backgroundColor: "green", color: "white" }}>
+              Buy
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.buySellButton, { backgroundColor: "red" }]} onPress={() => handleTrade("sell")}>
-            <Text style={{ backgroundColor: "red", color:"white" }}>Sell</Text>
+          <TouchableOpacity
+            style={[styles.buySellButton, { backgroundColor: "red" }]}
+            onPress={() => handleTrade("sell")}
+          >
+            <Text style={{ backgroundColor: "red", color: "white" }}>Sell</Text>
           </TouchableOpacity>
         </View>
       </View>
