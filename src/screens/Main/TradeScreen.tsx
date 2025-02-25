@@ -20,8 +20,15 @@ export default function TradeScreen() {
   const route = useRoute();
   const { coin: routeCoin } = (route.params || {}) as { coin?: any };
   const [coin, setCoin] = useState<any>(routeCoin);
+  console.log(coin);
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
   const [quantity, setQuantity] = useState("");
+
+  useEffect(() => {
+    if (routeCoin && routeCoin !== coin) {
+      setCoin(routeCoin);
+    }
+  }, [routeCoin]);
 
   useEffect(() => {
     if (!coin) {
@@ -55,6 +62,7 @@ export default function TradeScreen() {
         })
         .catch((err) => console.error(err));
     }
+    console.log("market-trade");
   }, [coin]);
 
   const handleTrade = async (type: "buy" | "sell") => {
