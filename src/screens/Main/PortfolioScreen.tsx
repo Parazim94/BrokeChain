@@ -61,9 +61,12 @@ export default function PortfolioScreen() {
   );
   const mergedPositions = userPositionsArray.map(
     (pos: { coinId: string; amount: number; [key: string]: any }) => {
+      // Entferne 'usdt' und verwandle in Kleinbuchstaben
+      const coinIdLower = pos.coinId.toLowerCase().replace(/usdt$/i, "");
       const coinData = marketData.find(
-        (coin: { name: string; [key: string]: any }) =>
-          coin.name.toLowerCase() === pos.coinId.toLowerCase()
+        (coin: { name: string; symbol: string; [key: string]: any }) =>
+          coin.name.toLowerCase() === coinIdLower ||
+          coin.symbol.toLowerCase() === coinIdLower
       );
       return { ...pos, marketInfo: coinData };
     }
