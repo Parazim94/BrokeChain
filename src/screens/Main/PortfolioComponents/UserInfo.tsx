@@ -6,12 +6,22 @@ import { formatCurrency } from "@/src/utils/formatCurrency";
 interface UserInfoProps {
   userName: string;
   cash: number;
+  positionsValue: number;
+  combinedValue: number;
   history: number[];
   theme: any;
   styles: any;
 }
 
-export default function UserInfo({ userName, cash, history, theme, styles }: UserInfoProps) {
+export default function UserInfo({
+  userName,
+  cash,
+  positionsValue,
+  combinedValue,
+  history,
+  theme,
+  styles,
+}: UserInfoProps) {
   return (
     <View
       style={{
@@ -23,11 +33,22 @@ export default function UserInfo({ userName, cash, history, theme, styles }: Use
       }}
     >
       <View style={styles.row}>
-        <Text style={styles.header}>{userName} </Text>
-        <Text style={styles.header}>{formatCurrency(cash)}</Text>
+        <Text style={styles.header}>{userName}</Text>
       </View>
       <View style={styles.hr} />
-      <Text style={{ color: theme.text }}>History</Text>
+      <View style={styles.container}>
+        <Text style={{ color: theme.text, fontSize: 16 }}>
+          Cash: {formatCurrency(cash)}
+        </Text>
+        <Text style={{ color: theme.text, fontSize: 16, marginHorizontal: 8 }}>
+          Positions: {formatCurrency(positionsValue)}
+        </Text>
+        <Text style={{ color: theme.accent, fontSize: 16 }}>
+          Total: {formatCurrency(combinedValue)}
+        </Text>
+      </View>
+      <View style={styles.hr} />
+      <Text style={{ color: theme.text, marginVertical: 4 }}>History</Text>
       <Sparkline
         prices={history}
         width="100%"

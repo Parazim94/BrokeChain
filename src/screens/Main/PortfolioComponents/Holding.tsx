@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native"; // geändert
-import { RootStackParamList } from "@/src/navigation/types";
+import { RootStackParamList } from "@/src/navigation/types"; 
 import { FlatList, View, Image, Text } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import Sparkline from "@/src/components/Sparkline";
@@ -16,7 +16,7 @@ interface HoldingProps {
 export default function Holding({ data, theme }: HoldingProps) {
   const styles = createStyles(theme);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // geändert
-  console.log(data);
+
   return (
     <Animated.FlatList
       data={data}
@@ -39,8 +39,7 @@ export default function Holding({ data, theme }: HoldingProps) {
                 />
               )}
               <Text style={styles.marketName}>
-                
-                {item.marketInfo?.symbol ? `${item.marketInfo.name}` : ""}
+                {item.coinId} {item.marketInfo?.symbol ? `(${item.marketInfo.symbol})` : ""}
               </Text>
               {item.marketInfo && (
                 <Sparkline
@@ -69,9 +68,7 @@ export default function Holding({ data, theme }: HoldingProps) {
                     {item.marketInfo.price_change_percentage_24h.toFixed(2)}%
                   </Text>
                   <Text style={{ color: theme.text }}>
-                    {formatCurrency(
-                      item.amount * item.marketInfo.current_price
-                    )}
+                    {formatCurrency(item.amount * item.marketInfo.current_price)}
                   </Text>
                 </>
               )}

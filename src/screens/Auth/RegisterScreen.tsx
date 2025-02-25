@@ -10,7 +10,7 @@ export default function RegisterScreen() {
   const navigation = useNavigation();
 
 
-  const [name, setName] = useState("");
+  const [userName, setuserName] = useState("");
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +20,7 @@ export default function RegisterScreen() {
       const response = await fetch("https://broke-end.vercel.app/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, age, password }),
+        body: JSON.stringify({ userName, email, age, password }),
       });
       if (!response.ok) throw new Error("Registrierung fehlgeschlagen");
       alert("✅ Registriert!");
@@ -41,8 +41,8 @@ export default function RegisterScreen() {
         placeholder="Name"
         placeholderTextColor={styles.defaultText.color}
         style={styles.input}
-        value={name}
-        onChangeText={setName}
+        value={userName}
+        onChangeText={setuserName}
       />
       <TextInput
         placeholder="E-Mail"

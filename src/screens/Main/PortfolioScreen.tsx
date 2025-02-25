@@ -72,19 +72,16 @@ export default function PortfolioScreen() {
     }
   );
 
-  const computedCash =
-    userData.cash +
-    mergedPositions.reduce(
-      (
-        acc: number,
-        pos: { amount: number; marketInfo?: { current_price: number } }
-      ) => {
-        if (pos.marketInfo)
-          return acc + pos.amount * pos.marketInfo.current_price;
-        return acc;
-      },
-      0
-    );
+  // Neues: Positionswert und kombinierter Gesamtwert
+  const positionsValue = mergedPositions.reduce(
+    (acc: number, pos: { amount: number; marketInfo?: { current_price: number } }) => {
+      if (pos.marketInfo)
+        return acc + pos.amount * pos.marketInfo.current_price;
+      return acc;
+    },
+    0
+  );
+  const combinedValue = (userData.cash || 0) + positionsValue;
 
   const filteredPositions = mergedPositions.filter(
     (position: { coinId: string; [key: string]: any }) => {
@@ -138,7 +135,9 @@ export default function PortfolioScreen() {
     <SafeAreaView style={styles.container}>
       <UserInfo
         userName={userData.userName}
-        cash={computedCash}
+        cash={userData.cash}
+        positionsValue={positionsValue}
+        combinedValue={combinedValue}
         history={getHistoryData()}
         theme={theme}
         styles={styles}
