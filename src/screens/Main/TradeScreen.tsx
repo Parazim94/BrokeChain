@@ -103,6 +103,27 @@ export default function TradeScreen() {
 
   const { user, setUser } = useContext(AuthContext);
 
+  // Setze das Input-Feld auf das Maximum der gehandelten Position
+  const handleMax = () => {
+    if (user && coin && user.positions) {
+      const coinNormalized = coin.symbol ? coin.symbol.toLowerCase().replace(/usdt$/, "") : "";
+      let maxAmount = 0;
+      let found = false;
+      Object.keys(user.positions).forEach((key) => {
+        const normalizedKey = key.toLowerCase().replace(/usdt$/, "");
+        if (normalizedKey === coinNormalized) {
+          maxAmount = user.positions[key];
+          found = true;
+        }
+      });
+      // Falls keine Position vorhanden ist, berechne max über Cash / MarketPrice
+      if (!found && marketPrice && user.cash) {
+        maxAmount = (user.cash -10) / marketPrice;
+      }
+      setQuantity(String(maxAmount));
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 16 }}>
@@ -129,13 +150,24 @@ export default function TradeScreen() {
           }}
         >
           <TextInput
-            style={[styles.input, { width: "40%" }]}
+            style={[styles.input, { width: "35%" }]} 
             placeholder="Menge eingeben..."
             placeholderTextColor={styles.defaultText.color}
             value={quantity}
             onChangeText={setQuantity}
             keyboardType="numeric"
           />
+          <TouchableOpacity
+            onPress={handleMax}
+            style={{
+              padding: 10,
+              backgroundColor: theme.accent,
+              borderRadius: 5,
+              marginRight: 8,
+            }}
+          >
+            <Text style={{ color: "white" }}>Max</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={[styles.buySellButton, { backgroundColor: "green" }]}
             onPress={() => handleTrade("buy")}

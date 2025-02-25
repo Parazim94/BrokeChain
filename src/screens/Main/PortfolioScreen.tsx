@@ -26,6 +26,7 @@ export default function PortfolioScreen() {
 
   const userData = user || {
     userName: "Gast",
+    cash: 10000, // Standardwert gesetzt
     positions: [] as { coinId: string; amount: number; [key: string]: any }[],
     history: [] as number[],
     favorites: [] as string[],

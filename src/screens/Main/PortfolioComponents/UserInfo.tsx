@@ -36,16 +36,31 @@ export default function UserInfo({
         <Text style={styles.header}>{userName}</Text>
       </View>
       <View style={styles.hr} />
-      <View style={styles.container}>
-        <Text style={{ color: theme.text, fontSize: 16 }}>
-          Cash: {formatCurrency(cash)}
-        </Text>
-        <Text style={{ color: theme.text, fontSize: 16, marginHorizontal: 8 }}>
-          Positions: {formatCurrency(positionsValue)}
-        </Text>
-        <Text style={{ color: theme.accent, fontSize: 16 }}>
-          Total: {formatCurrency(combinedValue)}
-        </Text>
+      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+        <View style={{ width: "50%", padding: 4 }}>
+          <Text style={{ color: theme.text, fontSize: 16 }}>Cash</Text>
+        </View>
+        <View style={{ width: "50%", padding: 4 }}>
+          <Text style={{ color: theme.text, fontSize: 16, textAlign: "right" }}>
+            {formatCurrency(cash)}
+          </Text>
+        </View>
+        <View style={{ width: "50%", padding: 4 }}>
+          <Text style={{ color: theme.text, fontSize: 16 }}>Positions</Text>
+        </View>
+        <View style={{ width: "50%", padding: 4 }}>
+          <Text style={{ color: theme.text, fontSize: 16, textAlign: "right" }}>
+            {formatCurrency(positionsValue)}
+          </Text>
+        </View>
+        <View style={{ width: "50%", padding: 4 }}>
+          <Text style={{ color: theme.accent, fontSize: 16 }}>Total</Text>
+        </View>
+        <View style={{ width: "50%", padding: 4 }}>
+          <Text style={{ color: theme.accent, fontSize: 16, textAlign: "right" }}>
+            {formatCurrency(combinedValue)}
+          </Text>
+        </View>
       </View>
       <View style={styles.hr} />
       <Text style={{ color: theme.text, marginVertical: 4 }}>History</Text>
