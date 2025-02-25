@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native"; // geändert
 import { RootStackParamList } from "@/src/navigation/types"; 
-import { useTrade } from "@/src/context/TradeContext";
 import { FlatList, View, Image, Text } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import Sparkline from "@/src/components/Sparkline";
@@ -17,7 +16,6 @@ interface HoldingProps {
 export default function Holding({ data, theme }: HoldingProps) {
   const styles = createStyles(theme);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // geändert
-  const { setSelectedCoin } = useTrade();
 
   return (
     <Animated.FlatList
@@ -28,8 +26,7 @@ export default function Holding({ data, theme }: HoldingProps) {
         <Animated.View entering={FadeInUp.delay(index * 50)}>
           <Card
             onPress={() => {
-              setSelectedCoin(item.marketInfo || item);
-              navigation.navigate("Trade");
+              navigation.navigate("Trade", { coin: item.marketInfo || item });
             }}
             style={styles.card}
           >

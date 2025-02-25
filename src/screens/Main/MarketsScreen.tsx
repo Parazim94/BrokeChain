@@ -12,7 +12,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native"; // geändert
 import MarketList from "@/src/components/MarketList";
 import { Ionicons } from "@expo/vector-icons";
-import { useTrade } from "@/src/context/TradeContext";
 import { RootStackParamList } from "@/src/navigation/types"; 
 
 
@@ -32,8 +31,7 @@ type Ticker = {
 
 export default function MarketsScreen() {
   const styles = createStyles();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // geändert
-  const { setSelectedCoin } = useTrade();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [sortCriterion, setSortCriterion] = useState<"cap" | "vol" | "change24h">("cap");
@@ -205,8 +203,7 @@ export default function MarketsScreen() {
       <MarketList
         tickers={filteredTickers}
         onPressItem={(item) => {
-          setSelectedCoin(item);
-          navigation.navigate("Trade");
+          navigation.navigate("Trade", { coin: item });
         }}
         accentColor={styles.accent.color}
         defaultTextColor={styles.defaultText.color}

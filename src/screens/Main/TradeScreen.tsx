@@ -7,27 +7,21 @@ import {
   TextInput,
 } from "react-native";
 import { createStyles } from "@/src/styles/style";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { ThemeContext } from "@/src/context/ThemeContext";
-import { useTrade } from "@/src/context/TradeContext";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = createStyles();
-  const { selectedCoin } = useTrade();
-  const { user, setUser } = useContext(AuthContext);
-  const [coin, setCoin] = useState<any>(selectedCoin);
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { coin: routeCoin } = (route.params || {}) as { coin?: any };
+  const [coin, setCoin] = useState<any>(routeCoin);
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
   const [quantity, setQuantity] = useState("");
-
-  useEffect(() => {
-    if (selectedCoin) {
-      setCoin(selectedCoin);
-    }
-  }, [selectedCoin]);
 
   useEffect(() => {
     if (!coin) {
@@ -64,7 +58,7 @@ export default function TradeScreen() {
   }, [coin]);
 
   const handleTrade = async (type: "buy" | "sell") => {
-    if (!selectedCoin || !user?.token) {
+    if (!coin || !user?.token) {
       alert("Münze oder User-Token fehlt");
       return;
     }
@@ -75,7 +69,7 @@ export default function TradeScreen() {
     }
     const amount = type === "sell" ? -Math.abs(quantityInput) : quantityInput;
     const payload = {
-      symbol: selectedCoin.symbol,
+      symbol: coin.symbol,
       value: amount,
       token: user.token,
     };
@@ -99,11 +93,13 @@ export default function TradeScreen() {
     }
   };
 
+  const { user, setUser } = useContext(AuthContext);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ padding: 16 }}>
         <Text style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}>
-          {coin?.name} ({coin?.symbol.toUpperCase()})
+          {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
         </Text>
         {marketPrice !== null && (
           <Text style={[styles.defaultText, { fontSize: 14, color: "gray" }]}>

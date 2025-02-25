@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native"; // geändert
 import { RootStackParamList } from "@/src/navigation/types"; 
-import { useTrade } from "@/src/context/TradeContext";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { Image, Text, View } from "react-native";
 import Card from "@/src/components/Card";
@@ -15,8 +14,7 @@ interface NewProps {
 
 export default function New({ data, theme }: NewProps) {
   const styles = createStyles(theme);
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // geändert
-  const { setSelectedCoin } = useTrade();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
     <Animated.FlatList
@@ -27,8 +25,8 @@ export default function New({ data, theme }: NewProps) {
         <Animated.View entering={FadeInUp.delay(index * 50)}>
           <Card
             onPress={() => {
-              setSelectedCoin(item.marketInfo || item);
-              navigation.navigate("Trade");
+              // TradeContext entfernt – Navigation erfolgt direkt
+              navigation.navigate("Trade", { coin: item.marketInfo || item });
             }}
             style={styles.card}
           >

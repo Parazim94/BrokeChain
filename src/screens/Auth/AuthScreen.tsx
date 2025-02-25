@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "./authStyles";
 
+
 export default function AuthScreen() {
   const navigation = useNavigation();
   const styles = createStyles();
@@ -28,7 +29,7 @@ export default function AuthScreen() {
 
       <TouchableOpacity
         style={auth.button}
-        onPress={() => alert("✅ Erfolgreich ausgeloggt!")}
+        onPress={() => alert("Logout")}
       >
         <Text style={auth.buttonText}> Logout</Text>
       </TouchableOpacity>
