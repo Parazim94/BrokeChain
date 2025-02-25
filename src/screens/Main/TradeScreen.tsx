@@ -5,24 +5,51 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  Dimensions,
 } from "react-native";
-import { createStyles } from "@/src/styles/style";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import Sparkline from "@/src/components/Sparkline";
-import { formatCurrency } from "@/src/utils/formatCurrency";
+import { LineChart } from "react-native-gifted-charts";
 import { ThemeContext } from "@/src/context/ThemeContext";
 import { AuthContext } from "../../context/AuthContext";
+import { createStyles } from "@/src/styles/style";
+import { formatCurrency } from "@/src/utils/formatCurrency";
+import { fetchHistoricalData } from "./fetchHistoricalData";
+
+// Definiert, welche Binance-Intervalle zu welchen Zeiträumen gehören.
+const timeIntervals = {
+  "1D": "1h",
+  "1W": "4h",
+  "1M": "1d",
+  "3M": "3d",
+  "6M": "1w",
+  "1Y": "1w",
+  "3Y": "1M",
+};
 
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = createStyles();
   const navigation = useNavigation();
   const route = useRoute();
+
+  // Auth-Context für Benutzer & Positionen
+  const { user, setUser } = useContext(AuthContext);
+
+  // Coin kommt aus den Route-Parametern (z. B. { coin: { symbol: "btc", name: "Bitcoin" } })
   const { coin: routeCoin } = (route.params || {}) as { coin?: any };
+
+  // Lokale States
   const [coin, setCoin] = useState<any>(routeCoin);
-  console.log(coin);
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
   const [quantity, setQuantity] = useState("");
+
+  // Zeitbereichsauswahl (Standard: "1D")
+  const [selectedRange, setSelectedRange] =
+    useState<keyof typeof timeIntervals>("1D");
+  // Chartdaten, die ausschließlich von Binance kommen
+  const [chartData, setChartData] = useState<
+    { label: string; value: number }[]
+  >([]);
 
   useEffect(() => {
     if (routeCoin && routeCoin !== coin) {
@@ -32,7 +59,6 @@ export default function TradeScreen() {
 
   useEffect(() => {
     if (!coin) {
-      // Falls kein Coin übergeben wurde, BTC laden
       fetch("https://broke-end.vercel.app/marketData")
         .then((res) => res.json())
         .then((data) => {
@@ -62,8 +88,21 @@ export default function TradeScreen() {
         })
         .catch((err) => console.error(err));
     }
-    console.log("market-trade");
   }, [coin]);
+
+  useEffect(() => {
+    if (coin && coin.symbol) {
+      const symbol = coin.symbol.toUpperCase() + "USDT";
+      const binanceInterval = timeIntervals[selectedRange];
+
+      fetchHistoricalData(symbol, binanceInterval)
+        .then((data) => {
+          console.log("📈 Geladene historische Daten:", data.slice(0, 5));
+          setChartData(data);
+        })
+        .catch((err) => console.error(err));
+    }
+  }, [coin, selectedRange]);
 
   const handleTrade = async (type: "buy" | "sell") => {
     if (!coin || !user?.token) {
@@ -76,24 +115,16 @@ export default function TradeScreen() {
       return;
     }
     const amount = type === "sell" ? -Math.abs(quantityInput) : quantityInput;
-    const payload = {
-      symbol: coin.symbol,
-      value: amount,
-      token: user.token,
-    };
-    console.log(payload);
+    const payload = { symbol: coin.symbol, value: amount, token: user.token };
+
     try {
       const response = await fetch("https://broke-end.vercel.app/trade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) {
-        console.log(response);
-        throw new Error(`${type} Trade fehlgeschlagen`);
-      }
+      if (!response.ok) throw new Error(`${type} Trade fehlgeschlagen`);
       const updatedUser = await response.json();
-
       setUser(updatedUser);
       alert(`${type} Trade erfolgreich!`);
     } catch (error) {
@@ -101,7 +132,26 @@ export default function TradeScreen() {
     }
   };
 
-  const { user, setUser } = useContext(AuthContext);
+  const handleMax = () => {
+    if (user && coin && user.positions) {
+      const coinNormalized = coin.symbol
+        ? coin.symbol.toLowerCase().replace(/usdt$/, "")
+        : "";
+      let maxAmount = 0;
+      let found = false;
+      Object.keys(user.positions).forEach((key) => {
+        const normalizedKey = key.toLowerCase().replace(/usdt$/, "");
+        if (normalizedKey === coinNormalized) {
+          maxAmount = user.positions[key];
+          found = true;
+        }
+      });
+      if (!found && marketPrice && user.cash) {
+        maxAmount = (user.cash - 10) / marketPrice;
+      }
+      setQuantity(String(maxAmount));
+    }
+  };
 
   // Setze das Input-Feld auf das Maximum der gehandelten Position
   const handleMax = () => {
@@ -135,12 +185,62 @@ export default function TradeScreen() {
             Market: {formatCurrency(marketPrice)}
           </Text>
         )}
-        <Sparkline
-          prices={coin?.sparkline.price}
-          stroke={theme.accent}
-          width="100%"
-          height={100}
+
+        <View
+          style={{ flexDirection: "row", marginVertical: 12, flexWrap: "wrap" }}
+        >
+          {Object.keys(timeIntervals).map((range) => (
+            <TouchableOpacity
+              key={range}
+              style={{
+                padding: 6,
+                marginRight: 8,
+                marginBottom: 8,
+                borderRadius: 6,
+                backgroundColor:
+                  selectedRange === range ? theme.accent : "#ccc",
+              }}
+              onPress={() =>
+                setSelectedRange(range as keyof typeof timeIntervals)
+              }
+            >
+              <Text
+                style={{ color: selectedRange === range ? "#000" : "#fff" }}
+              >
+                {range}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <LineChart
+          data={chartData}
+          curved
+          thickness={3}
+          hideRules
+          height={220}
+          width={Dimensions.get("window").width - 40}
+          isAnimated
+          animationDuration={1000}
+          color={theme.accent}
+          hideDataPoints={false}
+          dataPointsColor={theme.accent}
+          startFillColor={theme.accent}
+          endFillColor="#ffffff00"
+          startOpacity={0.3}
+          endOpacity={0}
+          yAxisTextStyle={{ color: "gray", fontSize: 12 }}
+          xAxisTextStyle={{ color: "gray", fontSize: 12 }}
+          showVerticalLines
+          verticalLinesColor={"#eee"}
+          showDataPoints
+          dataPointsRadius={4}
+          dataPointsWidth={2}
+          showTooltipOnPress
+          tooltipTextColor="white"
+          tooltipColor={theme.accent}
         />
+
         <View
           style={{
             flexDirection: "row",
@@ -150,7 +250,7 @@ export default function TradeScreen() {
           }}
         >
           <TextInput
-            style={[styles.input, { width: "35%" }]} 
+            style={[styles.input, { width: "35%" }]}
             placeholder="Menge eingeben..."
             placeholderTextColor={styles.defaultText.color}
             value={quantity}
@@ -163,7 +263,6 @@ export default function TradeScreen() {
               padding: 10,
               backgroundColor: theme.accent,
               borderRadius: 5,
-              marginRight: 8,
             }}
           >
             <Text style={{ color: "white" }}>Max</Text>
@@ -172,15 +271,13 @@ export default function TradeScreen() {
             style={[styles.buySellButton, { backgroundColor: "green" }]}
             onPress={() => handleTrade("buy")}
           >
-            <Text style={{ backgroundColor: "green", color: "white" }}>
-              Buy
-            </Text>
+            <Text style={{ color: "white" }}>Buy</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.buySellButton, { backgroundColor: "red" }]}
             onPress={() => handleTrade("sell")}
           >
-            <Text style={{ backgroundColor: "red", color: "white" }}>Sell</Text>
+            <Text style={{ color: "white" }}>Sell</Text>
           </TouchableOpacity>
         </View>
       </View>
