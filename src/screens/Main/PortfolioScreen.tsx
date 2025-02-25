@@ -157,7 +157,7 @@ export default function PortfolioScreen() {
         historyOptions={historyOptions}
       />
       {userData.positions.length === 0 ? (
-        <Text style={styles.header}>kaufe erstmal was :)</Text>
+        <Text style={[styles.header, {marginLeft:12}]}>Login or Register first!</Text>
       ) : selectedFilter === "Favorites" ? (
         <Fav data={favoriteMarketData} theme={theme} />
       ) : selectedFilter === "New" ? (

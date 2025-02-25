@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
-import { AuthContext } from "../../context/AuthContext"; // hinzugefügt
+import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
 import { Ionicons } from "@expo/vector-icons";
 import { AccentColors } from "../../constants/accentColors";
@@ -9,20 +9,23 @@ import DropdownAccentPicker from "./SettingsComponents/DropdownAccentPicker";
 
 export default function SettingsScreen() {
   const { colorTheme, setColorTheme, accent, setAccent, theme } = useContext(ThemeContext);
-  const { user, setUser } = useContext(AuthContext); // hinzugefügt
+  const { user, setUser } = useContext(AuthContext); 
   const styles = createStyles();
 
   const toggleTheme = () => {
     setColorTheme(colorTheme === "light" ? "dark" : "light");
   };
 
-  // Neue Funktion: Speichert die aktuellen Einstellungen (prefTheme: [colorTheme, accent])
+  // Speichert die aktuellen Einstellungen (prefTheme: [colorTheme, accent])
   const handleSave = async () => {
     if (!user) return;
-    const payload = {
       
+    const updatedUserData = {
+      ...user,
       prefTheme: [colorTheme, accent]
     };
+    
+    const payload = updatedUserData;
     try {
       const response = await fetch("https://broke-end.vercel.app/settings", {
         method: "POST",
