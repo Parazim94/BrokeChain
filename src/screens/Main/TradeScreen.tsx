@@ -8,12 +8,12 @@ import {
   Dimensions,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { LineChart } from "react-native-gifted-charts";
 import { ThemeContext } from "@/src/context/ThemeContext";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "@/src/styles/style";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { fetchHistoricalData } from "./fetchHistoricalData";
+import Sparkline from "@/src/components/Sparkline";
 
 // Definiert, welche Binance-Intervalle zu welchen Zeiträumen gehören.
 const timeIntervals = {
@@ -23,7 +23,6 @@ const timeIntervals = {
   "3M": "3d",
   "6M": "1w",
   "1Y": "1w",
-  "3Y": "1M",
 };
 
 export default function TradeScreen() {
@@ -192,31 +191,11 @@ export default function TradeScreen() {
           ))}
         </View>
 
-        <LineChart
-          data={chartData}
-          curved
-          thickness={3}
-          hideRules
-          height={220}
-          width={Dimensions.get("window").width - 40}
-          isAnimated
-          animationDuration={1000}
-          color={theme.accent}
-          hideDataPoints={false}
-          dataPointsColor={theme.accent}
-          startFillColor={theme.accent}
-          endFillColor="#ffffff00"
-          startOpacity={0.3}
-          endOpacity={0}
-          yAxisTextStyle={{ color: "gray", fontSize: 12 }}
-          showVerticalLines
-          verticalLinesColor={"#eee"}
-          showDataPoints
-          dataPointsRadius={4}
-          dataPointsWidth={2}
-          showTooltipOnPress
-          tooltipTextColor="white"
-          tooltipColor={theme.accent}
+        <Sparkline
+          prices={chartData.map(data => data.value)}
+          stroke={theme.accent}
+          width="100%"
+          height={100}
         />
 
         <View
