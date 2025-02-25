@@ -21,8 +21,8 @@ const timeIntervals = {
   "1W": "4h",
   "1M": "1d",
   "3M": "3d",
-  "6M": "1w",
   "1Y": "1w",
+  
 };
 
 export default function TradeScreen() {
@@ -176,7 +176,7 @@ export default function TradeScreen() {
                 marginBottom: 8,
                 borderRadius: 6,
                 backgroundColor:
-                  selectedRange === range ? theme.accent : "#ccc",
+                  selectedRange === range ? theme.accent : theme.background,
               }}
               onPress={() =>
                 setSelectedRange(range as keyof typeof timeIntervals)

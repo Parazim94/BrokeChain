@@ -24,8 +24,8 @@ export default function SettingsScreen() {
       ...user,
       prefTheme: [colorTheme, accent]
     };
-    
     const payload = updatedUserData;
+    console.log(payload);
     try {
       const response = await fetch("https://broke-end.vercel.app/settings", {
         method: "POST",
