@@ -39,8 +39,8 @@ export default function Holding({ data, theme }: HoldingProps) {
                 />
               )}
               <Text style={styles.marketName}>
-                {item.coinId}{" "}
-                {item.marketInfo?.symbol ? `(${item.marketInfo.symbol})` : ""}
+                
+                {item.marketInfo?.symbol ? `${item.marketInfo.name}` : ""}
               </Text>
               {item.marketInfo && (
                 <Sparkline
