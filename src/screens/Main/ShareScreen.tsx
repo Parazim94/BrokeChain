@@ -86,7 +86,7 @@ export default function ShareScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Card
-              style={{ marginBottom: 16, maxWidth: 350 }}
+              style={{ marginTop: 16, maxWidth: 350 }}
               onPress={() =>
                 setExpandedPost(expandedPost === item.id ? null : item.id)
               }
@@ -173,7 +173,7 @@ function createShareStyles() {
   return StyleSheet.create({
     postContainer: {
       width: "95%",
-      marginBottom: 16,
+      marginTop: 16,
       padding: 12,
       backgroundColor: theme.background,
       borderRadius: 10,

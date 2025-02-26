@@ -39,7 +39,7 @@ export function createStyles() {
     // Aktualisierte Schattenstile: Verwende "boxShadow" (primär für Web) statt "shadow*" Props  
     sparklineShadow: {
       // Beispiel für Web: Box-Shadow; für Mobile wird evtl. elevation benötigt.
-      boxShadow: `0px 2px 2px ${theme.accent}`,
+      boxShadow: `0px 0px 2px ${theme.accent}`,
       backgroundColor: "transparent",
       borderRadius: 8,
       padding: 4,
