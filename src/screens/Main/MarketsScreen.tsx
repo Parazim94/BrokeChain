@@ -1,15 +1,24 @@
 import { createStyles } from "@/src/styles/style";
-import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, TextInput, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  SafeAreaView,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import MarketList from "@/src/components/MarketList";
 import { Ionicons } from "@expo/vector-icons";
 import { RootStackParamList } from "@/src/navigation/types";
 import { useData } from "@/src/context/DataContext";
+import CashInfo from "@/src/components/CashInfo";
 
 type Ticker = {
   id: string;
-  name: string; 
+  name: string;
   symbol: string;
   current_price: number;
   price_change_percentage_24h: number;
@@ -25,7 +34,9 @@ export default function MarketsScreen() {
   const styles = createStyles();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { marketData, loadingMarketData, refreshMarketData } = useData();
-  const [sortCriterion, setSortCriterion] = useState<"cap" | "vol" | "change24h">("cap");
+  const [sortCriterion, setSortCriterion] = useState<
+    "cap" | "vol" | "change24h"
+  >("cap");
   const [sortedAscending, setSortedAscending] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -78,7 +89,7 @@ export default function MarketsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>         
+    <SafeAreaView style={styles.container}>
       {/* Sortier-Zeile */}
       <View style={sortLocalStyles.sortRow}>
         <TouchableOpacity
@@ -94,7 +105,9 @@ export default function MarketsScreen() {
             sortLocalStyles.sortButton,
             {
               borderColor:
-                sortCriterion === "cap" ? styles.accent.color : styles.defaultText.backgroundColor,
+                sortCriterion === "cap"
+                  ? styles.accent.color
+                  : styles.defaultText.backgroundColor,
             },
           ]}
         >
@@ -115,12 +128,14 @@ export default function MarketsScreen() {
             sortLocalStyles.sortButton,
             {
               borderColor:
-                sortCriterion === "vol" ? styles.accent.color : styles.defaultText.backgroundColor,
+                sortCriterion === "vol"
+                  ? styles.accent.color
+                  : styles.defaultText.backgroundColor,
             },
           ]}
         >
           <Text style={styles.defaultText}>
-            Vol {sortCriterion === "vol" ? (sortedAscending ? "↓":"↑") : ""}
+            Vol {sortCriterion === "vol" ? (sortedAscending ? "↓" : "↑") : ""}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -136,32 +151,38 @@ export default function MarketsScreen() {
             sortLocalStyles.sortButton,
             {
               borderColor:
-                sortCriterion === "change24h" ? styles.accent.color : styles.defaultText.backgroundColor,
+                sortCriterion === "change24h"
+                  ? styles.accent.color
+                  : styles.defaultText.backgroundColor,
             },
           ]}
         >
           <Text style={styles.defaultText}>
-            24h {sortCriterion === "change24h" ? (sortedAscending ? "↓" : "↑") : ""}
+            24h{" "}
+            {sortCriterion === "change24h" ? (sortedAscending ? "↓" : "↑") : ""}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setIsSearchActive(prev => !prev)} 
+          onPress={() => setIsSearchActive((prev) => !prev)}
           style={[
             sortLocalStyles.sortButton,
-            { borderColor: isSearchActive ? styles.accent.color : styles.defaultText.backgroundColor },
+            {
+              borderColor: isSearchActive
+                ? styles.accent.color
+                : styles.defaultText.backgroundColor,
+            },
           ]}
         >
           <Ionicons name="search" size={18} color={styles.defaultText.color} />
         </TouchableOpacity>
-       
       </View>
-        {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
- {isSearchActive && (
+      {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
+      {isSearchActive && (
         <TextInput
           placeholder="Suche..."
           placeholderTextColor={styles.defaultText.color}
           value={searchQuery}
-          onChangeText={text => setSearchQuery(text)}
+          onChangeText={(text) => setSearchQuery(text)}
           style={[styles.input, { alignSelf: "center" }]}
         />
       )}
@@ -176,6 +197,16 @@ export default function MarketsScreen() {
         containerBackground={styles.container.backgroundColor}
         onRefresh={refreshMarketData}
       />
+      <View
+        style={{
+          maxWidth: 600,
+          minWidth: 280,
+          marginHorizontal: "auto",
+          width: "95%",
+        }}
+      >
+        <CashInfo />
+      </View>
     </SafeAreaView>
   );
 }

@@ -137,7 +137,6 @@ export default function PortfolioScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <CashInfo />
       <UserInfo
         userName={userData.userName}
         cash={userData.cash}
