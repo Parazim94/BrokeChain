@@ -154,19 +154,27 @@ export default function TradeScreen() {
             justifyContent: "space-between",
           }}
         >
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
           <Text
             style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}
           >
             {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
-          </Text>
-          <CashInfo />
-        </View>
-
-        {marketPrice !== null && (
+          </Text>{marketPrice !== null && (
           <Text style={[styles.defaultText, { fontSize: 14, color: "gray" }]}>
             Market: {formatCurrency(marketPrice)}
           </Text>
         )}
+        </View>
+          <CashInfo />
+        </View>
+
+        
 
         <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 12, flexWrap: "wrap" }}>
           {Object.keys(timeIntervals).map((range) => (
@@ -224,7 +232,7 @@ export default function TradeScreen() {
               stroke={theme.accent}
               strokeWidth={2}
               width="100%"
-              height={100}
+              height={300}
               staticFlag={true}
             />
           </View>
@@ -233,8 +241,9 @@ export default function TradeScreen() {
             <CandlestickChart
               symbol={coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"}
               interval={timeIntervals[selectedRange]}
-              width={containerWidth ? containerWidth * 0.95 : 300}
-              height={250}
+              width={containerWidth ? containerWidth * 0.91 : 300}
+              height={300}
+              
             />
           </View>
         )}

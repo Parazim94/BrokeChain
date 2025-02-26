@@ -17,7 +17,7 @@ const defaultWidth = Dimensions.get("window").width * 0.95;
 interface CandlestickChartProps {
   symbol: string;
   interval: string;
-  width?: number;
+  width?: any;
   height?: number;
 }
 
@@ -41,7 +41,7 @@ function adjustColor(hex: string, amt: number): string {
 export default function CandlestickChart({
   symbol,
   interval,
-  width = defaultWidth,
+  width = "90%",
   height = 200,
 }: CandlestickChartProps) {
   const { theme } = useContext(ThemeContext);  // Theme abrufen
@@ -111,7 +111,7 @@ export default function CandlestickChart({
     <View style={styles.container} {...panResponder.panHandlers}>
       <Svg width={width} height={height}>
         {candles.map((candle, index) => {
-          const x = index * (candleWidth + gap) + gap / 2 + offsetX;
+          const x = index * (candleWidth + gap) + gap / 2;
           const yHigh = priceToY(candle.high);
           const yLow = priceToY(candle.low);
           const yOpen = priceToY(candle.open);
@@ -154,7 +154,9 @@ export default function CandlestickChart({
 }
 
 const styles = StyleSheet.create({
-  container: { position: "relative" },
+  container: { position: "relative",
+    backgroundColor: "transparent",
+  },
   tooltip: {
     position: "absolute",
     backgroundColor: "rgba(0,0,0,0.8)",
