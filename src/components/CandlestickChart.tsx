@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  PanResponder,
-  GestureResponderEvent,
-} from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, Text, StyleSheet, PanResponder, GestureResponderEvent } from "react-native";
 import Svg, { Rect, Line } from "react-native-svg";
+import { ThemeContext } from "@/src/context/ThemeContext"; // Neu: ThemeContext importieren
 
 export interface CandleData {
   timestamp: number;
@@ -23,19 +18,33 @@ interface CandlestickChartProps {
   height?: number;
 }
 
+// Helper: Passe einen Hex-Farbcode an (positive Werte hellen, negative dunkeln)
+function adjustColor(hex: string, amt: number): string {
+  let usePound = false;
+  if (hex[0] === "#") {
+    hex = hex.slice(1);
+    usePound = true;
+  }
+  let num = parseInt(hex, 16);
+  let r = (num >> 16) + amt;
+  let g = ((num >> 8) & 0x00ff) + amt;
+  let b = (num & 0x0000ff) + amt;
+  r = Math.max(Math.min(255, r), 0);
+  g = Math.max(Math.min(255, g), 0);
+  b = Math.max(Math.min(255, b), 0);
+  return (usePound ? "#" : "") + ((r << 16) | (g << 8) | b).toString(16).padStart(6, "0");
+}
+
 export default function CandlestickChart({
   symbol,
   interval,
   width = 300,
   height = 200,
 }: CandlestickChartProps) {
+  const { theme } = useContext(ThemeContext);  // Theme abrufen
   const [candles, setCandles] = useState<CandleData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [tooltip, setTooltip] = useState<{
-    index: number;
-    x: number;
-    y: number;
-  } | null>(null);
+  const [tooltip, setTooltip] = useState<{ index: number; x: number; y: number } | null>(null);
 
   useEffect(() => {
     const fetchCandles = async () => {
@@ -71,8 +80,7 @@ export default function CandlestickChart({
   const range = maxValue - minValue || 1;
   const candleWidth = (width / candles.length) * 0.8;
   const gap = (width / candles.length) * 0.2;
-  const priceToY = (price: number) =>
-    height - ((price - minValue) / range) * height;
+  const priceToY = (price: number) => height - ((price - minValue) / range) * height;
 
   // 📌 PanResponder für Touch-Events (mit nativeEvent.locationX)
   const panResponder = PanResponder.create({
@@ -102,8 +110,10 @@ export default function CandlestickChart({
           const yLow = priceToY(candle.low);
           const yOpen = priceToY(candle.open);
           const yClose = priceToY(candle.close);
-          const candleColor = candle.close >= candle.open ? "green" : "red";
-
+          // Verwende die angepasste Farbe: Heller (bullish) bzw. Dunkler (bearish)
+          const candleColor = candle.close >= candle.open 
+            ? adjustColor(theme.accent, 80) 
+            : adjustColor(theme.accent, -40);
           return (
             <React.Fragment key={index}>
               <Line
@@ -127,18 +137,9 @@ export default function CandlestickChart({
       </Svg>
 
       {tooltip && (
-        <View
-          style={[
-            styles.tooltip,
-            { left: tooltip.x - 50, top: tooltip.y - 40 },
-          ]}
-        >
+        <View style={[styles.tooltip, { left: tooltip.x - 50, top: tooltip.y - 40 }]}>
           <Text style={styles.tooltipText}>
-            {`O: ${candles[tooltip.index].open}\nC: ${
-              candles[tooltip.index].close
-            }\nH: ${candles[tooltip.index].high}\nL: ${
-              candles[tooltip.index].low
-            }`}
+            {`O: ${candles[tooltip.index].open}\nC: ${candles[tooltip.index].close}\nH: ${candles[tooltip.index].high}\nL: ${candles[tooltip.index].low}`}
           </Text>
         </View>
       )}
@@ -153,6 +154,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.8)",
     padding: 6,
     borderRadius: 4,
+    zIndex: 9999,
   },
   tooltipText: { color: "white", fontSize: 10 },
 });

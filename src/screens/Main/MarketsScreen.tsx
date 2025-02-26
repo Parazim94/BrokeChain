@@ -176,6 +176,8 @@ export default function MarketsScreen() {
           <Ionicons name="search" size={18} color={styles.defaultText.color} />
         </TouchableOpacity>
       </View>
+      {/* Neue horizontale Linie unter den Sortier-Buttons */}
+      <View style={{ height: 1, backgroundColor: "gray", marginVertical: 8 }} />
       {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
       {isSearchActive && (
         <TextInput

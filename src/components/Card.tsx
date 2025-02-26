@@ -33,6 +33,6 @@ return StyleSheet.create({
     width: "96%",    
     borderRadius: 8,
     // Ersetze die veralteten "shadow*" Props mit "boxShadow":
-    boxShadow: `0px 0px 6px 0px ${theme.accent}`,
+    boxShadow: `0px 0px 6px 0px ${theme.accent +"55"}`,
   },
 })};
