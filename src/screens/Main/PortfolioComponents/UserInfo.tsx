@@ -2,13 +2,15 @@ import React from "react";
 import { View, Text } from "react-native";
 import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
+import { createStyles as createGlobalStyles } from "@/src/styles/style";
 
 interface UserInfoProps {
   userName: string;
   cash: number;
   positionsValue: number;
   combinedValue: number;
-  history: number[];
+  // Neues Datenformat: Array von Objekten mit total und date
+  history: {total: number, date: string}[];
   theme: any;
   styles: any;
 }
@@ -22,6 +24,12 @@ export default function UserInfo({
   theme,
   styles,
 }: UserInfoProps) {
+  // Die globalen Stile für den Sparkline-Shadow
+  const globalStyles = createGlobalStyles();
+
+  // Extrahiere nur die total-Werte für die Sparkline
+  const historyValues = history.map(item => item.total);
+  
   return (
     <View
       style={{
@@ -64,13 +72,16 @@ export default function UserInfo({
       </View>
       <View style={styles.hr} />
       <Text style={{ color: theme.text, marginVertical: 4 }}>History</Text>
-      <Sparkline
-        prices={history}
-        width="100%"
-        height={80}
-        stroke={theme.accent}
-        strokeWidth={2}
-      />
+      {/* Verwende den globalen Shadow-Stil */}
+      <View style={globalStyles.sparklineShadow}>
+        <Sparkline
+          prices={historyValues}
+          width="100%"
+          height={80}
+          stroke={theme.accent}
+          strokeWidth={2}
+        />
+      </View>
     </View>
   );
 }

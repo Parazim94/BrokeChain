@@ -19,7 +19,7 @@ export function createStyles() {
     },
     input: {
       width: "100%",
-      maxWidth:300,
+      maxWidth: 300,
       padding: 10,
       marginVertical: 10,
       borderWidth: 1,
@@ -68,7 +68,28 @@ export function createStyles() {
       width: 50,
       height: 40,
       alignItems: "center",
+    },
+    // Neuer allgemeiner Box-Shadow-Stil für Sparklines
+    sparklineShadow: {
+      shadowColor: theme.accent,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.23,
+      shadowRadius: 2.62,
+      elevation: 4,
+      backgroundColor: 'transparent',
+      borderRadius: 8,
+      padding: 4,
+    },
+    // Variante mit kleinerem Padding und Radius für kompaktere Displays
+    sparklineShadowCompact: {
+      shadowColor: theme.accent,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.23,
+      shadowRadius: 2.62,
+      elevation: 4,
+      backgroundColor: 'transparent',
+      borderRadius: 4,
+      padding: 2,
     }
-   
   });
 }

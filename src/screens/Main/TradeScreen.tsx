@@ -154,7 +154,7 @@ export default function TradeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ padding: 16 }}>
+      <View style={{ padding: 16, maxWidth:1024,width:"100%" , marginHorizontal: "auto" }}>
         <Text style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}>
           {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
         </Text>
@@ -191,12 +191,15 @@ export default function TradeScreen() {
           ))}
         </View>
 
-        <Sparkline
-          prices={chartData.map(data => data.value)}
-          stroke={theme.accent}
-          width="100%"
-          height={100}
-        />
+        {/* Sparkline mit einheitlichem Shadow-Stil */}
+        <View style={styles.sparklineShadow}>
+          <Sparkline
+            prices={chartData.map(data => data.value)}
+            stroke={theme.accent}
+            width="100%"
+            height={100}
+          />
+        </View>
 
         <View
           style={{

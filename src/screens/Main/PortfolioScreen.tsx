@@ -121,17 +121,27 @@ export default function PortfolioScreen() {
   );
 
   const getHistoryData = () => {
-    // Bei Server-User gibt es nur ein history-Array; je nach Auswahl wird ein Teil zurückgegeben.
-    if (!userData.history || userData.history.length === 0) return [];
+    // Überprüfe, ob history existiert und ein Array ist
+    if (!userData.history || !Array.isArray(userData.history) || userData.history.length === 0) 
+      return [];
+    
+    // Bestimme basierend auf der Auswahl, wie viele Datenpunkte zurückgegeben werden sollen
+    let dataPoints = 7; // Standardwert für "7d"
+    
     switch (selectedHistory) {
       case "30d":
-        return userData.history.slice(-30);
+        dataPoints = 30;
+        break;
       case "360d":
-        return userData.history.slice(-360);
-      case "7d":
-      default:
-        return userData.history.slice(-7);
+        dataPoints = 360;
+        break;
+      default: // "7d"
+        dataPoints = 7;
     }
+    
+    // Holen Sie sich die letzten 'dataPoints' Einträge aus dem History-Array
+    // Nehmen Sie Rücksicht auf das neue Format {total: number, date: string}
+    return userData.history.slice(-dataPoints);
   };
 
   return (
