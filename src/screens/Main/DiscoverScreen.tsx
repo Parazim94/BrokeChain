@@ -64,7 +64,7 @@ export default function CryptoNews() {
           keyExtractor={(item) => item.guid}
           renderItem={({ item }) => (
             <Card
-              style={{ minWidth: "98%", marginBottom: 16, maxWidth: 350 }}
+              style={{ minWidth: "98%", marginTop: 16, maxWidth: 350 }}
               onPress={() =>
                 setExpandedNews(expandedNews === item.guid ? null : item.guid)
               }
