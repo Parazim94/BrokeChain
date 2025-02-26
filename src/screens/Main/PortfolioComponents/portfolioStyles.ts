@@ -142,5 +142,28 @@ export const createStyles = (theme: Theme) =>
       width: "30%",
       textAlign: "right",
       alignItems: "flex-end",
+    },
+    intervalButton: {
+      paddingVertical: 4,
+      paddingHorizontal: 8,
+      borderRadius: 8,
+      backgroundColor: theme.background, // Standard-Hintergrund
+      marginHorizontal: 4,
+    },
+    intervalButtonActive: {
+      backgroundColor: theme.accent, // Aktiv: den Accent-Farbwert verwenden
+    },
+    intervalText: {
+      fontSize: 14,
+      color: theme.text,
+    },
+    intervalTextActive: {
+      fontSize: 14,
+      color: "#fff",
+      fontWeight: "bold",
+    },
+    sparklineContainer: {
+      // Beispiel: minimaler Abstand
+      marginTop: 8,
     }
   });

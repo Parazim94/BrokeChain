@@ -11,7 +11,8 @@ export function CashInfo() {
   const { user } = useContext(AuthContext);
   if (user) {
     let total = user.cash;
-    Object.keys(user.positions).forEach((key) => {
+    const positions = user && user.positions ? Object.keys(user.positions) : [];
+    positions.forEach((key) => {
       const coin = context?.marketData.find((item) => item.symbol === key);
 
       if (coin?.current_price) {
