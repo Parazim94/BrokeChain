@@ -19,4 +19,3 @@ const Colors = {
   },
 };
 export default Colors;
-// nice joerg
