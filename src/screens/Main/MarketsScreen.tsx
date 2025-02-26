@@ -1,19 +1,11 @@
 import { createStyles } from "@/src/styles/style";
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  SafeAreaView, 
-} from "react-native";
+import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, TextInput, SafeAreaView } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useNavigation, NavigationProp } from "@react-navigation/native"; // geändert
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import MarketList from "@/src/components/MarketList";
 import { Ionicons } from "@expo/vector-icons";
-import { RootStackParamList } from "@/src/navigation/types"; 
-
+import { RootStackParamList } from "@/src/navigation/types";
+import { useData } from "@/src/context/DataContext";
 
 type Ticker = {
   id: string;
@@ -32,8 +24,7 @@ type Ticker = {
 export default function MarketsScreen() {
   const styles = createStyles();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const [tickers, setTickers] = useState<Ticker[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { marketData, loadingMarketData, refreshMarketData } = useData();
   const [sortCriterion, setSortCriterion] = useState<"cap" | "vol" | "change24h">("cap");
   const [sortedAscending, setSortedAscending] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,33 +46,8 @@ export default function MarketsScreen() {
     },
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("https://broke-end.vercel.app/marketData");
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setTickers(data);
-        } else {
-          console.error("Unerwartetes Datenformat:", data);
-          setTickers([]);
-        }
-      } catch (error) {
-        console.error("Fehler beim Abrufen der CoinGecko-Daten:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Erstes Abrufen
-    fetchData();
-    // Intervall: alle 5 Sekunde
-    const interval = setInterval(fetchData, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
   // Aktualisierte Sortierlogik abhängig von sortedAscending
-  const sortedTickers = [...tickers].sort((a, b) => {
+  const sortedTickers = [...marketData].sort((a, b) => {
     if (sortCriterion === "cap") {
       return sortedAscending
         ? b.market_cap - a.market_cap
@@ -103,7 +69,7 @@ export default function MarketsScreen() {
     (ticker.name || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (loading) {
+  if (loadingMarketData && marketData.length === 0) {
     return (
       <SafeAreaView style={styles.container}>
         <ActivityIndicator size="large" color="#00a9d7" />
@@ -208,6 +174,7 @@ export default function MarketsScreen() {
         accentColor={styles.accent.color}
         defaultTextColor={styles.defaultText.color}
         containerBackground={styles.container.backgroundColor}
+        onRefresh={refreshMarketData}
       />
     </SafeAreaView>
   );

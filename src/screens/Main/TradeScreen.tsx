@@ -1,107 +1,72 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  SafeAreaView,
-  TextInput,
-  Dimensions,
-} from "react-native";
+import { View, Text, TouchableOpacity, SafeAreaView, TextInput, ActivityIndicator } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "@/src/context/AuthContext";
 import { createStyles } from "@/src/styles/style";
 import { formatCurrency } from "@/src/utils/formatCurrency";
-import { fetchHistoricalData } from "./fetchHistoricalData";
 import Sparkline from "@/src/components/Sparkline";
+import { useData } from "@/src/context/DataContext";
 
-// Definiert, welche Binance-Intervalle zu welchen Zeiträumen gehören.
 const timeIntervals = {
   "1D": "1h",
   "1W": "4h",
   "1M": "1d",
   "3M": "3d",
   "1Y": "1w",
-  
 };
 
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
+  const { user } = useContext(AuthContext);
   const styles = createStyles();
   const navigation = useNavigation();
   const route = useRoute();
+  const { marketData, executeTrade, getHistoricalData } = useData();
 
-  // Auth-Context für Benutzer & Positionen
-  const { user, setUser } = useContext(AuthContext);
-
-  // Coin kommt aus den Route-Parametern (z. B. { coin: { symbol: "btc", name: "Bitcoin" } })
   const { coin: routeCoin } = (route.params || {}) as { coin?: any };
-
-  // Lokale States
   const [coin, setCoin] = useState<any>(routeCoin);
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
   const [quantity, setQuantity] = useState("");
-
-  // Zeitbereichsauswahl (Standard: "1D")
-  const [selectedRange, setSelectedRange] =
-    useState<keyof typeof timeIntervals>("1D");
-  // Chartdaten, die ausschließlich von Binance kommen
-  const [chartData, setChartData] = useState<
-    { label: string; value: number }[]
-  >([]);
+  const [selectedRange, setSelectedRange] = useState<keyof typeof timeIntervals>("1D");
+  const [chartData, setChartData] = useState<{ label: string; value: number }[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (routeCoin && routeCoin !== coin) {
-      setCoin(routeCoin);
-    }
+    if (routeCoin && routeCoin !== coin) setCoin(routeCoin);
   }, [routeCoin]);
 
   useEffect(() => {
-    if (!coin) {
-      fetch("https://broke-end.vercel.app/marketData")
-        .then((res) => res.json())
-        .then((data) => {
-          const btcCoin = data.find(
-            (item: any) => item.symbol.toLowerCase() === "btc"
-          );
-          if (btcCoin) {
-            setCoin(btcCoin);
-          }
-        })
-        .catch((err) => console.error(err));
+    if (!coin && marketData.length > 0) {
+      const btcCoin = marketData.find(item => item.symbol.toLowerCase() === "btc");
+      btcCoin && setCoin(btcCoin);
     }
-  }, [coin]);
+  }, [coin, marketData]);
 
   useEffect(() => {
-    if (coin && coin.symbol) {
-      fetch("https://broke-end.vercel.app/marketData")
-        .then((res) => res.json())
-        .then((data) => {
-          const ticker = data.find(
-            (item: any) =>
-              item.symbol.toLowerCase() === coin.symbol.toLowerCase()
-          );
-          if (ticker?.current_price) {
-            setMarketPrice(parseFloat(ticker.current_price));
-          }
-        })
-        .catch((err) => console.error(err));
+    if (coin?.symbol && marketData.length > 0) {
+      const ticker = marketData.find(item => item.symbol.toLowerCase() === coin.symbol.toLowerCase());
+      if (ticker?.current_price) {
+        setMarketPrice(typeof ticker.current_price === 'string'
+          ? parseFloat(ticker.current_price)
+          : ticker.current_price);
+      }
     }
-  }, [coin]);
+  }, [coin, marketData]);
 
   useEffect(() => {
-    if (coin && coin.symbol) {
-      const symbol = coin.symbol.toUpperCase() + "USDT";
-      const binanceInterval = timeIntervals[selectedRange];
-
-      fetchHistoricalData(symbol, binanceInterval)
-        .then((data) => {
-          console.log("📈 Geladene historische Daten:", data.slice(0, 5));
-          setChartData(data);
-        })
-        .catch((err) => console.error(err));
-    }
-  }, [coin, selectedRange]);
+    const loadHistorical = async () => {
+      if (coin?.symbol) {
+        setIsLoading(true);
+        const symbol = coin.symbol.toUpperCase() + "USDT";
+        const binanceInterval = timeIntervals[selectedRange];
+        const data = await getHistoricalData(symbol, binanceInterval);
+        setChartData(data);
+        setIsLoading(false);
+      }
+    };
+    loadHistorical();
+  }, [coin, selectedRange, getHistoricalData]);
 
   const handleTrade = async (type: "buy" | "sell") => {
     if (!coin || !user?.token) {
@@ -109,25 +74,20 @@ export default function TradeScreen() {
       return;
     }
     const quantityInput = parseFloat(quantity);
-    if (isNaN(quantityInput)) {
+    if (isNaN(quantityInput) || quantityInput <= 0) {
       alert("Ungültige Menge");
       return;
     }
     const amount = type === "sell" ? -Math.abs(quantityInput) : quantityInput;
-    const payload = { symbol: coin.symbol, value: amount, token: user.token };
-
     try {
-      const response = await fetch("https://broke-end.vercel.app/trade", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) throw new Error(`${type} Trade fehlgeschlagen`);
-      const updatedUser = await response.json();
-      setUser(updatedUser);
-      alert(`${type} Trade erfolgreich!`);
+      setIsLoading(true);
+      await executeTrade({ symbol: coin.symbol, value: amount });
+      alert(`${type === "buy" ? "Kaufvorgang" : "Verkaufsvorgang"} erfolgreich!`);
+      setQuantity("");
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unerwarteter Fehler");
+    } finally {
+      setIsLoading(false);
     }
   };
 
