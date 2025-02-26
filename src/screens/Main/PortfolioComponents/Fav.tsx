@@ -36,7 +36,7 @@ export default function Fav({ data, theme }: FavProps) {
           >
             {/* Erste Zeile: Icon, Name und Sparkline */}
             <View style={[styles.row, { width: '100%' }]}>
-              <Image source={{ uri: item.image }} style={styles.coinIcon} />
+              <Image source={{ uri: item.image }} tintColor={theme.accent} style={styles.coinIcon} />
               <Text style={[styles.labelText, { flex: 1, marginLeft: 8 }]}>
                 {item.name}
               </Text>

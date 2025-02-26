@@ -32,13 +32,7 @@ return StyleSheet.create({
     margin: 4,
     width: "96%",    
     borderRadius: 8,
-    shadowColor: theme.accent,    
-    shadowOpacity: 1,
-    shadowRadius: 2,
-    elevation: 2,       
-    // borderTopColor: theme.accent,
-    // borderTopWidth: 1,
-    // borderLeftColor: theme.accent,
-    // borderLeftWidth: 1, 
+    // Ersetze die veralteten "shadow*" Props mit "boxShadow":
+    boxShadow: `0px 2px 2px ${theme.accent}`,
   },
 })};

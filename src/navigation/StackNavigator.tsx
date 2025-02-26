@@ -44,11 +44,11 @@ export default function StackNavigator() {
               />
               <Image
                 source={require("../../assets/images/Brokechain3.png")}
+                tintColor={theme.accent}
                 style={{
                   width: 110,
                   height: 45,
                   marginTop: 5,
-                  tintColor: theme.accent,
                 }}
                 resizeMode="contain"
               />
