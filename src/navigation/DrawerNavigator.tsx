@@ -18,6 +18,7 @@ export default function DrawerNavigator() {
   return (
     <Drawer.Navigator
       screenOptions={{
+        drawerPosition: "right",
         drawerStyle: {
           backgroundColor: theme.background,
           width: width >= 768 ? 250 : 0,
