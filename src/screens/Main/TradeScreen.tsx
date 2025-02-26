@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, TouchableOpacity, SafeAreaView, TextInput, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  TextInput,
+  ActivityIndicator,
+} from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
 import { AuthContext } from "@/src/context/AuthContext";
@@ -8,6 +15,7 @@ import { formatCurrency } from "@/src/utils/formatCurrency";
 import Sparkline from "@/src/components/Sparkline";
 import { useData } from "@/src/context/DataContext";
 import CandlestickChart from "@/src/components/CandlestickChart";
+import CashInfo from "@/src/components/CashInfo";
 
 const timeIntervals = {
   "1D": "1h",
@@ -29,8 +37,11 @@ export default function TradeScreen() {
   const [coin, setCoin] = useState<any>(routeCoin);
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
   const [quantity, setQuantity] = useState("");
-  const [selectedRange, setSelectedRange] = useState<keyof typeof timeIntervals>("1D");
-  const [chartData, setChartData] = useState<{ label: string; value: number }[]>([]);
+  const [selectedRange, setSelectedRange] =
+    useState<keyof typeof timeIntervals>("1D");
+  const [chartData, setChartData] = useState<
+    { label: string; value: number }[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [chartType, setChartType] = useState<"line" | "candlestick">("line");
   const [containerWidth, setContainerWidth] = useState<number>(0);
@@ -41,18 +52,24 @@ export default function TradeScreen() {
 
   useEffect(() => {
     if (!coin && marketData.length > 0) {
-      const btcCoin = marketData.find(item => item.symbol.toLowerCase() === "btc");
+      const btcCoin = marketData.find(
+        (item) => item.symbol.toLowerCase() === "btc"
+      );
       btcCoin && setCoin(btcCoin);
     }
   }, [coin, marketData]);
 
   useEffect(() => {
     if (coin?.symbol && marketData.length > 0) {
-      const ticker = marketData.find(item => item.symbol.toLowerCase() === coin.symbol.toLowerCase());
+      const ticker = marketData.find(
+        (item) => item.symbol.toLowerCase() === coin.symbol.toLowerCase()
+      );
       if (ticker?.current_price) {
-        setMarketPrice(typeof ticker.current_price === 'string'
-          ? parseFloat(ticker.current_price)
-          : ticker.current_price);
+        setMarketPrice(
+          typeof ticker.current_price === "string"
+            ? parseFloat(ticker.current_price)
+            : ticker.current_price
+        );
       }
     }
   }, [coin, marketData]);
@@ -85,7 +102,9 @@ export default function TradeScreen() {
     try {
       setIsLoading(true);
       await executeTrade({ symbol: coin.symbol, value: amount });
-      alert(`${type === "buy" ? "Kaufvorgang" : "Verkaufsvorgang"} erfolgreich!`);
+      alert(
+        `${type === "buy" ? "Kaufvorgang" : "Verkaufsvorgang"} erfolgreich!`
+      );
       setQuantity("");
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unerwarteter Fehler");
@@ -117,16 +136,32 @@ export default function TradeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View 
-        style={{ padding: 16, maxWidth:1024, width:"100%", marginHorizontal: "auto" }}
+      <View
+        style={{
+          padding: 16,
+          maxWidth: 1024,
+          width: "100%",
+          marginHorizontal: "auto",
+        }}
         onLayout={(event) => {
-          const { width } = event.nativeEvent.layout;
-          setContainerWidth(width);
+          setContainerWidth(event.nativeEvent.layout.width);
         }}
       >
-        <Text style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}>
-          {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
-        </Text>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text
+            style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}
+          >
+            {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
+          </Text>
+          <CashInfo />
+        </View>
+
         {marketPrice !== null && (
           <Text style={[styles.defaultText, { fontSize: 14, color: "gray" }]}>
             Market: {formatCurrency(marketPrice)}
@@ -181,10 +216,11 @@ export default function TradeScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Conditional: Nur einer der Charts wird angezeigt */}
         {chartType === "line" ? (
           <View style={styles.sparklineShadow}>
             <Sparkline
-              prices={chartData.map(data => data.value)}
+              prices={chartData.map((data) => data.value)}
               stroke={theme.accent}
               strokeWidth={2}
               width="100%"

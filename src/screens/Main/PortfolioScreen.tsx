@@ -11,6 +11,7 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/navigation/types";
 import { AuthContext } from "../../context/AuthContext";
 import { useData } from "@/src/context/DataContext";
+import CashInfo from "@/src/components/CashInfo";
 
 const filterOptions = ["Holding", "Favorites", "New"];
 const historyOptions = ["7d", "30d", "360d"];
@@ -60,7 +61,10 @@ export default function PortfolioScreen() {
 
   // Neues: Positionswert und kombinierter Gesamtwert
   const positionsValue = mergedPositions.reduce(
-    (acc: number, pos: { amount: number; marketInfo?: { current_price: number } }) => {
+    (
+      acc: number,
+      pos: { amount: number; marketInfo?: { current_price: number } }
+    ) => {
       if (pos.marketInfo)
         return acc + pos.amount * pos.marketInfo.current_price;
       return acc;
@@ -105,12 +109,16 @@ export default function PortfolioScreen() {
 
   const getHistoryData = () => {
     // Überprüfe, ob history existiert und ein Array ist
-    if (!userData.history || !Array.isArray(userData.history) || userData.history.length === 0) 
+    if (
+      !userData.history ||
+      !Array.isArray(userData.history) ||
+      userData.history.length === 0
+    )
       return [];
-    
+
     // Bestimme basierend auf der Auswahl, wie viele Datenpunkte zurückgegeben werden sollen
     let dataPoints = 7; // Standardwert für "7d"
-    
+
     switch (selectedHistory) {
       case "30d":
         dataPoints = 30;
@@ -121,7 +129,7 @@ export default function PortfolioScreen() {
       default: // "7d"
         dataPoints = 7;
     }
-    
+
     // Holen Sie sich die letzten 'dataPoints' Einträge aus dem History-Array
     // Nehmen Sie Rücksicht auf das neue Format {total: number, date: string}
     return userData.history.slice(-dataPoints);
@@ -153,7 +161,9 @@ export default function PortfolioScreen() {
       />
       {/* Absicherung mit || [] hinzugefügt, um "cannot read properties of undefined" zu vermeiden */}
       {(userData.positions || []).length === 0 ? (
-        <Text style={[styles.header, {marginLeft:12}]}>Login or Register first!</Text>
+        <Text style={[styles.header, { marginLeft: 12 }]}>
+          Login or Register first!
+        </Text>
       ) : selectedFilter === "Favorites" ? (
         <Fav data={favoriteMarketData} theme={theme} />
       ) : selectedFilter === "New" ? (
