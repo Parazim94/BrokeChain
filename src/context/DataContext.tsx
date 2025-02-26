@@ -50,7 +50,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   
   // Zentrale Marktdaten via useFetch – hier rufen wir alle Daten (inkl. Bilder & Sparkline) von unserem Backend ab
   const { data: marketData, loading: loadingMarketData, error: errorMarketData, refetch: refreshMarketData } =
-    useFetch<MarketData[]>('marketData', { autoRefetch: true, refetchInterval: 300000, expectJson: true });
+    useFetch<MarketData[]>('marketData', { autoRefetch: true, refetchInterval: 3600, expectJson: true });
   
   // Positionen, abhängig vom Token
   const { data: rawPositions, loading: loadingPositions, error: errorPositions, refetch: refreshPositions } =

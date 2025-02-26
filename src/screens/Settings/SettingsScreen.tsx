@@ -44,7 +44,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View style={[styles.container, { justifyContent: "center"}]}>
+    <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
       <TouchableOpacity
         onPress={toggleTheme}
         style={{
@@ -68,7 +68,7 @@ export default function SettingsScreen() {
       </TouchableOpacity>
       
       {/* Neue Dropdown-Auswahl für Akzentfarbe */}
-      <View style={{ marginTop: 20 }}>
+      <View style={{ marginTop: 20, alignItems: "center" }}>
         <Text style={{ color: theme.text, marginBottom: 10 }}>
           Wähle Akzentfarbe:
         </Text>
@@ -88,7 +88,6 @@ export default function SettingsScreen() {
             padding: 10,
             backgroundColor: theme.accent,
             borderRadius: 5,
-            width: "80%",
             maxWidth: 200,
             alignItems: "flex-start",
           }}
