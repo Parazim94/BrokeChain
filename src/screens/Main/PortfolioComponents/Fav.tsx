@@ -32,7 +32,7 @@ export default function Fav({ data, theme }: FavProps) {
             onPress={() => {
               navigation.navigate("Trade", { coin: item });
             }}
-            style={{ ...styles.card, width: '98%', marginHorizontal: "auto" }}
+            style={{ ...styles.card, width: '95%', marginHorizontal: "auto" }}
           >
             {/* Erste Zeile: Icon, Name und Sparkline */}
             <View style={[styles.row, { width: '100%' }]}>

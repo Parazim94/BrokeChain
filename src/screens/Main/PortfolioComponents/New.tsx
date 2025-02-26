@@ -31,7 +31,7 @@ export default function New({ data, theme }: NewProps) {
             onPress={() => {
               navigation.navigate("Trade", { coin: item.marketInfo || item });
             }}
-            style={{ ...styles.card, width: '98%', marginHorizontal: "auto" }}
+            style={{ ...styles.card, width: '95%', marginHorizontal: "auto" }}
           >
             {/* Zeile 1: Bild, Name und Sparkline */}
             <View style={[styles.row, { width: '100%' }]}>

@@ -156,6 +156,7 @@ export default function TradeScreen() {
           <Sparkline
             prices={chartData.map(data => data.value)}
             stroke={theme.accent}
+            strokeWidth={2}
             width="100%"
             height={100}
           />
