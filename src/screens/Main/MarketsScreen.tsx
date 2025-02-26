@@ -155,6 +155,8 @@ export default function MarketsScreen() {
         </TouchableOpacity>
        
       </View>
+      {/* Neue horizontale Linie unter den Sortier-Buttons */}
+      <View style={{ height: 1, backgroundColor: "gray", marginVertical: 8 }} />
         {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
  {isSearchActive && (
         <TextInput
