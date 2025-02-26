@@ -25,8 +25,8 @@ export function CashInfo() {
         style={{
           width: "15%",
           minWidth: 120,
-          alignSelf: "flex-end",
-          margin: 10,
+          alignSelf: "center",
+          
         }}
       >
         <View

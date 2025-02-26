@@ -91,7 +91,7 @@ export default function MarketsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Sortier-Zeile */}
-      <View style={sortLocalStyles.sortRow}>
+      <View style={[sortLocalStyles.sortRow, {marginTop: 15}]}>
         <TouchableOpacity
           onPress={() => {
             if (sortCriterion === "cap") {

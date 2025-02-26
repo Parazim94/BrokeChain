@@ -63,7 +63,6 @@ export const createStyles = (theme: Theme) =>
     hr: {
       height: 1,
       backgroundColor: "gray",
-      marginVertical: 4,
     },
     card: {
       backgroundColor: theme.background,

@@ -176,52 +176,56 @@ export default function TradeScreen() {
 
         
 
-        <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 12, flexWrap: "wrap" }}>
-          {Object.keys(timeIntervals).map((range) => (
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 12 }}>
+          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+            {Object.keys(timeIntervals).map((range) => (
+              <TouchableOpacity
+                key={range}
+                style={{
+                  padding: 6,
+                  marginRight: 8,
+                  marginBottom: 8,
+                  borderRadius: 6,
+                  backgroundColor: selectedRange === range ? theme.accent : theme.background,
+                }}
+                onPress={() => setSelectedRange(range as keyof typeof timeIntervals)}
+              >
+                <Text style={{ color: theme.text }}>
+                  {range}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
             <TouchableOpacity
-              key={range}
               style={{
                 padding: 6,
                 marginRight: 8,
                 marginBottom: 8,
                 borderRadius: 6,
-                backgroundColor: selectedRange === range ? theme.accent : theme.background,
+                backgroundColor: chartType === "line" ? theme.accent : theme.background,
               }}
-              onPress={() => setSelectedRange(range as keyof typeof timeIntervals)}
+              onPress={() => setChartType("line")}
             >
-              <Text style={{ color: selectedRange === range ? "#000" : "#fff" }}>
-                {range}
+              <Text style={{ color: theme.text }}>
+                Line
               </Text>
             </TouchableOpacity>
-          ))}
-          <TouchableOpacity
-            style={{
-              padding: 6,
-              marginRight: 8,
-              marginBottom: 8,
-              borderRadius: 6,
-              backgroundColor: chartType === "line" ? theme.accent : theme.background,
-            }}
-            onPress={() => setChartType("line")}
-          >
-            <Text style={{ color: chartType === "line" ? "#000" : "#fff" }}>
-              Line
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              padding: 6,
-              marginRight: 8,
-              marginBottom: 8,
-              borderRadius: 6,
-              backgroundColor: chartType === "candlestick" ? theme.accent : theme.background,
-            }}
-            onPress={() => setChartType("candlestick")}
-          >
-            <Text style={{ color: chartType === "candlestick" ? "#000" : "#fff" }}>
-              Candlestick
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                padding: 6,
+                marginRight: 8,
+                marginBottom: 8,
+                borderRadius: 6,
+                backgroundColor: chartType === "candlestick" ? theme.accent : theme.background,
+              }}
+              onPress={() => setChartType("candlestick")}
+            >
+              <Text style={{ color: theme.text }}>
+                Candlestick
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Conditional: Nur einer der Charts wird angezeigt */}
