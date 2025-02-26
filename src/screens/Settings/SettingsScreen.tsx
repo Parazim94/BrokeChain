@@ -90,7 +90,7 @@ export default function SettingsScreen() {
             borderRadius: 5,
             width: "80%",
             maxWidth: 200,
-            alignItems: "center",
+            alignItems: "flex-start",
           }}
         >
           <Text style={{ color: "white", fontSize: 16 }}>Speichern</Text>
