@@ -10,6 +10,7 @@ import New from "./PortfolioComponents/New";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/navigation/types";
 import { AuthContext } from "../../context/AuthContext";
+import { useData } from "@/src/context/DataContext";
 
 const filterOptions = ["Holding", "Favorites", "New"];
 const historyOptions = ["7d", "30d", "360d"];
@@ -19,10 +20,10 @@ export default function PortfolioScreen() {
   const styles = createStyles(theme);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { isLoggedIn, user } = useContext(AuthContext);
+  const { marketData } = useData();
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [sortedAscending, setSortedAscending] = useState(true);
   const [selectedHistory, setSelectedHistory] = useState("360d");
-  const [marketData, setMarketData] = useState<any[]>([]);
 
   const userData = user || {
     userName: "Gast",
@@ -37,24 +38,6 @@ export default function PortfolioScreen() {
       navigation.navigate("Login");
     }
   }, [isLoggedIn, navigation]);
-
-  useEffect(() => {
-    async function fetchMarketData() {
-      try {
-        const response = await fetch("https://broke-end.vercel.app/marketData");
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setMarketData(data);
-        } else {
-          console.error("Unerwartetes Datenformat:", data);
-          setMarketData([]);
-        }
-      } catch (error) {
-        console.error("Fehler beim Abrufen der Marktdaten:", error);
-      }
-    }
-    fetchMarketData();
-  }, []);
 
   // Absicherung für neue Benutzer ohne positions
   const userPositionsArray = Object.entries(userData.positions || {}).map(
@@ -108,7 +91,7 @@ export default function PortfolioScreen() {
       b: { amount: number; marketInfo?: { current_price: number } }
     ) => {
       const valueA = a.marketInfo ? a.amount * a.marketInfo.current_price : 0;
-      const valueB = b.marketInfo ? b.amount * b.marketInfo.current_price : 0;
+      const valueB = b.marketInfo ? a.amount * b.marketInfo.current_price : 0;
       return sortedAscending ? valueA - valueB : valueB - valueA;
     }
   );
@@ -121,17 +104,27 @@ export default function PortfolioScreen() {
   );
 
   const getHistoryData = () => {
-    // Bei Server-User gibt es nur ein history-Array; je nach Auswahl wird ein Teil zurückgegeben.
-    if (!userData.history || userData.history.length === 0) return [];
+    // Überprüfe, ob history existiert und ein Array ist
+    if (!userData.history || !Array.isArray(userData.history) || userData.history.length === 0) 
+      return [];
+    
+    // Bestimme basierend auf der Auswahl, wie viele Datenpunkte zurückgegeben werden sollen
+    let dataPoints = 7; // Standardwert für "7d"
+    
     switch (selectedHistory) {
       case "30d":
-        return userData.history.slice(-30);
+        dataPoints = 30;
+        break;
       case "360d":
-        return userData.history.slice(-360);
-      case "7d":
-      default:
-        return userData.history.slice(-7);
+        dataPoints = 360;
+        break;
+      default: // "7d"
+        dataPoints = 7;
     }
+    
+    // Holen Sie sich die letzten 'dataPoints' Einträge aus dem History-Array
+    // Nehmen Sie Rücksicht auf das neue Format {total: number, date: string}
+    return userData.history.slice(-dataPoints);
   };
 
   return (

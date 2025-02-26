@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import StackNavigator from "./src/navigation/StackNavigator";
 import { ThemeProvider, ThemeContext } from "./src/context/ThemeContext";
 import { AuthProvider, AuthContext } from "./src/context/AuthContext";
+import { DataProvider } from "./src/context/DataContext";
 
 function AppContent() {
   const { user, isLoggedIn } = useContext(AuthContext);
@@ -32,9 +33,11 @@ function AppContent() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
+      <DataProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </DataProvider>
     </ThemeProvider>
   );
 }

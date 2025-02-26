@@ -120,4 +120,27 @@ export const createStyles = (theme: Theme) =>
       fontWeight: "bold",
       color: theme.text,
     },
+
+    // Grid Layout für Karten-Inhalte
+    gridRow: {
+      flexDirection: "row",
+      width: "100%",
+      alignItems: "center",
+      marginVertical: 4,
+    },
+    gridCol1: {
+      width: "40%",
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    gridCol2: {
+      width: "30%",
+      textAlign: "center",
+      alignItems: "center",
+    },
+    gridCol3: {
+      width: "30%",
+      textAlign: "right",
+      alignItems: "flex-end",
+    }
   });

@@ -78,12 +78,15 @@ export default function ShareScreen() {
       ) : (
         <FlatList
           data={posts}
-          style={{ width: "100%", }}
-          contentContainerStyle={{ alignItems: "center", justifyContent: "center" }}
+          style={{ width: "100%" }}
+          contentContainerStyle={{
+            alignItems: "center",
+            justifyContent: "center",
+          }}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Card
-              style={{ marginBottom: 16, maxWidth:350 }}             
+              style={{ marginBottom: 16, maxWidth: 350 }}
               onPress={() =>
                 setExpandedPost(expandedPost === item.id ? null : item.id)
               }

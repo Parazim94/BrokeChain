@@ -44,7 +44,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { justifyContent: "center"}]}>
       <TouchableOpacity
         onPress={toggleTheme}
         style={{
@@ -54,6 +54,7 @@ export default function SettingsScreen() {
           padding: 10,
           borderRadius: 5,
           backgroundColor: styles.accent.color,
+          maxWidth: 200,
         }}
       >
         {colorTheme === "light" ? (
@@ -88,6 +89,7 @@ export default function SettingsScreen() {
             backgroundColor: theme.accent,
             borderRadius: 5,
             width: "80%",
+            maxWidth: 200,
             alignItems: "center",
           }}
         >

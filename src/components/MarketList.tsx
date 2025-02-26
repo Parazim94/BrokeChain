@@ -1,6 +1,6 @@
 import React from "react";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, RefreshControl } from "react-native";
 import Card from "@/src/components/Card";
 import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
@@ -25,6 +25,7 @@ interface MarketListProps {
   accentColor: string;
   defaultTextColor: string;
   containerBackground: string;
+  onRefresh?: () => Promise<any>; // Neu hinzugefügt
 }
 
 export default function MarketList({
@@ -33,6 +34,7 @@ export default function MarketList({
   accentColor,
   defaultTextColor,
   containerBackground,
+  onRefresh,
 }: MarketListProps) {
   const localStyles = StyleSheet.create({
     cardStyle: {
@@ -151,6 +153,15 @@ export default function MarketList({
             </Animated.View>
           );
         }}
+        refreshControl={
+          onRefresh && (
+            <RefreshControl
+              refreshing={false}
+              onRefresh={onRefresh}
+              tintColor={accentColor}
+            />
+          )
+        }
       />
     </View>
   );
