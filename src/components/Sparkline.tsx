@@ -15,7 +15,7 @@ type SparklineProps = {
   height?: number;
   stroke?: string;
   strokeWidth?: number;
-  staticFlag?: boolean; // optionaler statischer Flag, standardmäßig true
+  staticFlag?: boolean;
 };
 
 export default function Sparkline({
@@ -24,32 +24,49 @@ export default function Sparkline({
   height = 30,
   stroke = "black",
   strokeWidth = 2,
-  staticFlag = true, // standardmäßig true
+  staticFlag = true,
 }: SparklineProps) {
-  if (!prices || prices.length === 0) return null;
+  // Prüfe, ob das Array existiert und gültige Werte enthält
+  const validPrices = Array.isArray(prices) ? 
+    prices.filter(p => p !== undefined && p !== null && !isNaN(p)) : [];
+  
+  // Wenn keine gültigen Preise vorhanden sind, zeige nichts an
+  if (validPrices.length === 0) return null;
   
   const effectiveWidth =
     typeof width === "number" ? width : Dimensions.get("window").width;
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-  const scaleY = (value: number) =>
-    height - ((value - min) / (max - min || 1)) * height;
+  
+  // Berechne min/max mit Sicherheitsüberprüfung
+  const min = Math.min(...validPrices);
+  const max = Math.max(...validPrices);
+  
+  // Verhindere Division durch Null und stelle sicher, dass wir keine NaN erhalten
+  const range = max - min || 1; // Wenn max === min, verwende 1 als Bereich
+  
+  const scaleY = (value: number) => {
+    if (value === undefined || value === null || isNaN(value)) return height / 2;
+    return height - ((value - min) / range) * height;
+  };
   
   // Erzeuge Punkte-String und Array für Längenberechnung
-  const pointsArray = prices.map((price, index) => {
-    const x = (index / (prices.length - 1)) * effectiveWidth;
+  const pointsArray = validPrices.map((price, index) => {
+    const x = (index / Math.max(validPrices.length - 1, 1)) * effectiveWidth;
     const y = scaleY(price);
     return { x, y };
   });
+  
   const points = pointsArray.map(p => `${p.x},${p.y}`).join(" ");
 
-  // Berechne die Gesamt-Linie (einfache euklidische Summe)
+  // Berechne die Gesamt-Linie
   let totalLength = 0;
   for (let i = 1; i < pointsArray.length; i++) {
     const dx = pointsArray[i].x - pointsArray[i - 1].x;
     const dy = pointsArray[i].y - pointsArray[i - 1].y;
     totalLength += Math.sqrt(dx * dx + dy * dy);
   }
+
+  // Wenn nichts zu zeichnen ist, zeige nichts an
+  if (totalLength <= 0) return null;
 
   // Shared value für animierten dashOffset
   const animatedDashOffset = useSharedValue(totalLength);
@@ -61,7 +78,7 @@ export default function Sparkline({
 
   useEffect(() => {
     animatedDashOffset.value = withTiming(0, { duration: 1500 });
-  }, [animatedDashOffset]);
+  }, [animatedDashOffset, points]); // Reagiere auch auf Änderungen in den Punkten
 
   return (
     <Svg width={width} height={height}>
