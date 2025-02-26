@@ -47,7 +47,7 @@ export function createStyles() {
     sparklineShadowCompact: {
       boxShadow: `0px 2px 2px ${theme.accent}`,
       backgroundColor: "transparent",
-      borderRadius: 4,
+      borderRadius: 0,
       padding: 2,
     },
     // Hinweis: Für pointerEvents in Views – statt <View pointerEvents="none" /> verwende:

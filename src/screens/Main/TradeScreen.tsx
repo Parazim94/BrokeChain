@@ -14,6 +14,7 @@ import { createStyles } from "@/src/styles/style";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import Sparkline from "@/src/components/Sparkline";
 import { useData } from "@/src/context/DataContext";
+import CandlestickChart from "@/src/components/CandlestickChart";
 import CashInfo from "@/src/components/CashInfo";
 
 const timeIntervals = {
@@ -197,6 +198,22 @@ export default function TradeScreen() {
             strokeWidth={2}
             width="100%"
             height={100}
+          />
+        </View>
+
+        {/* Neuer Candlestick-Chart */}
+        <View style={{ marginTop: 20 }}>
+          <CandlestickChart
+            symbol={
+              coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"
+            }
+            interval={timeIntervals[selectedRange]}
+            width={
+              typeof styles.container.width === "number"
+                ? styles.container.width * 0.95
+                : 300
+            }
+            height={250}
           />
         </View>
 
