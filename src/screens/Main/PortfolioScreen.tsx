@@ -55,7 +55,9 @@ export default function PortfolioScreen() {
     }
     fetchMarketData();
   }, []);
-  const userPositionsArray = Object.entries(userData.positions).map(
+
+  // Absicherung für neue Benutzer ohne positions
+  const userPositionsArray = Object.entries(userData.positions || {}).map(
     ([key, value]) => {
       return { coinId: key, amount: value as number };
     }
@@ -156,7 +158,8 @@ export default function PortfolioScreen() {
         setSelectedHistory={setSelectedHistory}
         historyOptions={historyOptions}
       />
-      {userData.positions.length === 0 ? (
+      {/* Absicherung mit || [] hinzugefügt, um "cannot read properties of undefined" zu vermeiden */}
+      {(userData.positions || []).length === 0 ? (
         <Text style={[styles.header, {marginLeft:12}]}>Login or Register first!</Text>
       ) : selectedFilter === "Favorites" ? (
         <Fav data={favoriteMarketData} theme={theme} />
