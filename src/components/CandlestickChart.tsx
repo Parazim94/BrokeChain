@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, PanResponder, GestureResponderEvent } from "react-native";
+import { View, Text, StyleSheet, PanResponder, GestureResponderEvent, Dimensions } from "react-native";
 import Svg, { Rect, Line } from "react-native-svg";
 import { ThemeContext } from "@/src/context/ThemeContext"; // Neu: ThemeContext importieren
 
@@ -10,6 +10,9 @@ export interface CandleData {
   high: number;
   low: number;
 }
+
+// Verwende 95% der Fensterbreite als Default
+const defaultWidth = Dimensions.get("window").width * 0.95;
 
 interface CandlestickChartProps {
   symbol: string;
@@ -38,13 +41,15 @@ function adjustColor(hex: string, amt: number): string {
 export default function CandlestickChart({
   symbol,
   interval,
-  width = 300,
+  width = defaultWidth,
   height = 200,
 }: CandlestickChartProps) {
   const { theme } = useContext(ThemeContext);  // Theme abrufen
   const [candles, setCandles] = useState<CandleData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [tooltip, setTooltip] = useState<{ index: number; x: number; y: number } | null>(null);
+
+
 
   useEffect(() => {
     const fetchCandles = async () => {
@@ -80,8 +85,9 @@ export default function CandlestickChart({
   const range = maxValue - minValue || 1;
   const candleWidth = (width / candles.length) * 0.8;
   const gap = (width / candles.length) * 0.2;
-  const priceToY = (price: number) => height - ((price - minValue) / range) * height;
-
+  const priceToY = (price: number) =>
+    height - ((price - minValue) / range) * height;
+    const offsetX = (width - candles.length * (candleWidth + gap)) / 2;
   // 📌 PanResponder für Touch-Events (mit nativeEvent.locationX)
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -105,7 +111,7 @@ export default function CandlestickChart({
     <View style={styles.container} {...panResponder.panHandlers}>
       <Svg width={width} height={height}>
         {candles.map((candle, index) => {
-          const x = index * (candleWidth + gap) + gap / 2;
+          const x = index * (candleWidth + gap) + gap / 2 + offsetX;
           const yHigh = priceToY(candle.high);
           const yLow = priceToY(candle.low);
           const yOpen = priceToY(candle.open);
@@ -155,6 +161,7 @@ const styles = StyleSheet.create({
     padding: 6,
     borderRadius: 4,
     zIndex: 9999,
+    gap: 4,
   },
   tooltipText: { color: "white", fontSize: 10 },
 });

@@ -18,7 +18,7 @@ type SparklineProps = {
   staticFlag?: boolean;
 };
 
-export default function Sparkline({
+function Sparkline({
   prices,
   width = 100,
   height = 30,
@@ -89,7 +89,10 @@ export default function Sparkline({
         strokeWidth={strokeWidth}
         strokeDasharray={totalLength}
         animatedProps={animatedProps}
+        
       />
     </Svg>
   );
 }
+
+export default React.memo(Sparkline);
