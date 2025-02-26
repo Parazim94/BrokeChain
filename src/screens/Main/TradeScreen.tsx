@@ -166,9 +166,9 @@ export default function TradeScreen() {
         {/* Neuer Candlestick-Chart */}
         <View style={{ marginTop: 20 }}>
           <CandlestickChart
-            symbol="BTCUSDT"    // Beispielwert, anpassen nach Bedarf
-            interval="1h"       // Beispielwert, anpassen nach Bedarf
-            width={typeof styles.container.width === 'number' ? styles.container.width : 500}
+            symbol={coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"}
+            interval={timeIntervals[selectedRange]}
+            width={typeof styles.container.width === 'number' ? styles.container.width * 0.95 : 300}
             height={250}
           />
         </View>
