@@ -1,5 +1,15 @@
 import React, { useEffect, useState, useContext } from "react";
-import { SafeAreaView, View, Text, FlatList, ActivityIndicator, Image, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import * as Linking from "expo-linking";
 import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
@@ -49,12 +59,12 @@ export default function CryptoNews() {
       ) : (
         <FlatList
           data={news}
-          style={{ padding:5 }}
+          style={{ padding: 5 }}
           contentContainerStyle={{ alignItems: "center" }}
           keyExtractor={(item) => item.guid}
           renderItem={({ item }) => (
             <Card
-              style={{ minWidth: "98%", marginBottom: 16,maxWidth: 350 }}
+              style={{ minWidth: "98%", marginBottom: 16, maxWidth: 350 }}
               onPress={() =>
                 setExpandedNews(expandedNews === item.guid ? null : item.guid)
               }
@@ -104,7 +114,7 @@ export default function CryptoNews() {
                       alignItems: "center",
                     }}
                   >
-                    <Text style={{color:"white"}}>Artikel öffnen</Text>
+                    <Text style={{ color: "white" }}>Artikel öffnen</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -118,7 +128,7 @@ export default function CryptoNews() {
 
 function createNewsStyles() {
   const { colorTheme, theme } = useContext(ThemeContext);
-  const styles = createStyles();  
+  const styles = createStyles();
   return StyleSheet.create({
     newsTopRow: {
       flexDirection: "row",
