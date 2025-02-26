@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  PanResponder,
+  GestureResponderEvent,
+} from "react-native";
 import Svg, { Rect, Line } from "react-native-svg";
 
 export interface CandleData {
@@ -11,8 +17,8 @@ export interface CandleData {
 }
 
 interface CandlestickChartProps {
-  symbol: string;           // z.B. "BTCUSDT"
-  interval: string;         // z.B. "1h", "1d"
+  symbol: string;
+  interval: string;
   width?: number;
   height?: number;
 }
@@ -25,7 +31,11 @@ export default function CandlestickChart({
 }: CandlestickChartProps) {
   const [candles, setCandles] = useState<CandleData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [tooltip, setTooltip] = useState<{ index: number; x: number; y: number } | null>(null);
+  const [tooltip, setTooltip] = useState<{
+    index: number;
+    x: number;
+    y: number;
+  } | null>(null);
 
   useEffect(() => {
     const fetchCandles = async () => {
@@ -35,7 +45,6 @@ export default function CandlestickChart({
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Fehler: ${response.status}`);
         const data = await response.json();
-        // Mappe die Binance-Daten in CandleData
         const mapped: CandleData[] = data.map((item: any[]) => ({
           timestamp: item[0],
           open: parseFloat(item[1]),
@@ -56,17 +65,36 @@ export default function CandlestickChart({
 
   if (loading || candles.length === 0) return null;
 
-  // Berechne min/max Werte
-  const allValues = candles.flatMap(c => [c.open, c.close, c.high, c.low]);
+  const allValues = candles.flatMap((c) => [c.open, c.close, c.high, c.low]);
   const minValue = Math.min(...allValues);
   const maxValue = Math.max(...allValues);
   const range = maxValue - minValue || 1;
   const candleWidth = (width / candles.length) * 0.8;
   const gap = (width / candles.length) * 0.2;
-  const priceToY = (price: number) => height - ((price - minValue) / range) * height;
+  const priceToY = (price: number) =>
+    height - ((price - minValue) / range) * height;
+
+  // 📌 PanResponder für Touch-Events (mit nativeEvent.locationX)
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderGrant: (event: GestureResponderEvent) => {
+      const { locationX } = event.nativeEvent; // ✅ Fix für locationX
+      const index = Math.floor(locationX / (candleWidth + gap));
+      if (index >= 0 && index < candles.length) {
+        setTooltip({
+          index,
+          x: index * (candleWidth + gap) + gap / 2 + candleWidth / 2,
+          y: priceToY(candles[index].close),
+        });
+      }
+    },
+    onPanResponderRelease: () => {
+      setTimeout(() => setTooltip(null), 2000); // Tooltip nach 2 Sekunden ausblenden
+    },
+  });
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} {...panResponder.panHandlers}>
       <Svg width={width} height={height}>
         {candles.map((candle, index) => {
           const x = index * (candleWidth + gap) + gap / 2;
@@ -75,38 +103,42 @@ export default function CandlestickChart({
           const yOpen = priceToY(candle.open);
           const yClose = priceToY(candle.close);
           const candleColor = candle.close >= candle.open ? "green" : "red";
+
           return (
-            <TouchableWithoutFeedback
-              key={index}
-              onPress={() =>
-                setTooltip({ index, x: x + candleWidth / 2, y: Math.min(yOpen, yClose) })
-              }
-            >
-              <>
-                <Line
-                  x1={x + candleWidth / 2}
-                  y1={yHigh}
-                  x2={x + candleWidth / 2}
-                  y2={yLow}
-                  stroke={candleColor}
-                  strokeWidth={1}
-                />
-                <Rect
-                  x={x}
-                  y={Math.min(yOpen, yClose)}
-                  width={candleWidth}
-                  height={Math.abs(yOpen - yClose)}
-                  fill={candleColor}
-                />
-              </>
-            </TouchableWithoutFeedback>
+            <React.Fragment key={index}>
+              <Line
+                x1={x + candleWidth / 2}
+                y1={yHigh}
+                x2={x + candleWidth / 2}
+                y2={yLow}
+                stroke={candleColor}
+                strokeWidth={1}
+              />
+              <Rect
+                x={x}
+                y={Math.min(yOpen, yClose)}
+                width={candleWidth}
+                height={Math.abs(yOpen - yClose)}
+                fill={candleColor}
+              />
+            </React.Fragment>
           );
         })}
       </Svg>
+
       {tooltip && (
-        <View style={[styles.tooltip, { left: tooltip.x, top: tooltip.y - 40 }]}>
+        <View
+          style={[
+            styles.tooltip,
+            { left: tooltip.x - 50, top: tooltip.y - 40 },
+          ]}
+        >
           <Text style={styles.tooltipText}>
-            {`O: ${candles[tooltip.index].open}\nC: ${candles[tooltip.index].close}\nH: ${candles[tooltip.index].high}\nL: ${candles[tooltip.index].low}`}
+            {`O: ${candles[tooltip.index].open}\nC: ${
+              candles[tooltip.index].close
+            }\nH: ${candles[tooltip.index].high}\nL: ${
+              candles[tooltip.index].low
+            }`}
           </Text>
         </View>
       )}
