@@ -37,7 +37,7 @@ export function createStyles() {
     button: { backgroundColor: theme.accent, padding: 10, borderRadius: 5, width: 200, alignItems: "center" },
     buySellButton: { padding: 10, borderRadius: 5, width: 50, height: 40, alignItems: "center" },
     sparklineShadow: {   
-      boxShadow: `0px 0px 4px ${theme.accent+"88"}`,
+      boxShadow: `0px 0px 1px ${theme.accent+"88"}`,
       backgroundColor: "transparent",
       borderRadius: 8,
     },  

@@ -252,14 +252,13 @@ export default function TradeScreen() {
           </View>
         )}
 
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-around",
-            alignItems: "center",
-            marginTop: 16,
-          }}
-        >
+        <View style={{
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          marginTop: 16,
+          gap: 8,
+        }}>
           <TextInput
             style={[styles.input, { width: "35%" }]}
             placeholder="Menge eingeben..."
@@ -268,27 +267,20 @@ export default function TradeScreen() {
             onChangeText={setQuantity}
             keyboardType="numeric"
           />
-          <TouchableOpacity
-            onPress={handleMax}
-            style={{
-              padding: 10,
-              backgroundColor: theme.accent,
-              borderRadius: 5,
-            }}
-          >
-            <Text style={{ color: "white" }}>Max</Text>
+          <TouchableOpacity onPress={handleMax} style={styles.baseButton}>
+            <Text style={styles.baseButtonText}>Max</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.buySellButton, { backgroundColor: "green" }]}
             onPress={() => handleTrade("buy")}
+            style={styles.baseButton}
           >
-            <Text style={{ color: "white" }}>Buy</Text>
+            <Text style={styles.baseButtonText}>Buy</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.buySellButton, { backgroundColor: "red" }]}
             onPress={() => handleTrade("sell")}
+            style={styles.baseButton}
           >
-            <Text style={{ color: "white" }}>Sell</Text>
+            <Text style={styles.baseButtonText}>Sell</Text>
           </TouchableOpacity>
         </View>
       </View>

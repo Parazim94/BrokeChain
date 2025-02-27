@@ -91,7 +91,7 @@ export default function MarketsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Sortier-Zeile */}
-      <View style={[sortLocalStyles.sortRow, {marginTop: 15}]}>
+      <View style={[{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginVertical: 8, marginTop:15 }]}>
         <TouchableOpacity
           onPress={() => {
             if (sortCriterion === "cap") {
@@ -102,16 +102,19 @@ export default function MarketsScreen() {
             }
           }}
           style={[
-            sortLocalStyles.sortButton,
+            styles.baseButton,
             {
-              borderColor:
+              paddingVertical: 4,
+              paddingHorizontal: 8,
+              marginHorizontal: 12,
+              backgroundColor:               
                 sortCriterion === "cap"
                   ? styles.accent.color
-                  : styles.defaultText.backgroundColor,
+                  : styles.container.backgroundColor,
             },
           ]}
         >
-          <Text style={styles.defaultText}>
+          <Text style={styles.baseButtonText}>
             Cap {sortCriterion === "cap" ? (sortedAscending ? "↓" : "↑") : ""}
           </Text>
         </TouchableOpacity>
@@ -125,16 +128,19 @@ export default function MarketsScreen() {
             }
           }}
           style={[
-            sortLocalStyles.sortButton,
+            styles.baseButton,
             {
-              borderColor:
+              paddingVertical: 4,
+              paddingHorizontal: 8,
+              marginHorizontal: 12,
+              backgroundColor:
                 sortCriterion === "vol"
                   ? styles.accent.color
                   : styles.defaultText.backgroundColor,
             },
           ]}
         >
-          <Text style={styles.defaultText}>
+          <Text style={styles.baseButtonText}>
             Vol {sortCriterion === "vol" ? (sortedAscending ? "↓" : "↑") : ""}
           </Text>
         </TouchableOpacity>
@@ -148,28 +154,33 @@ export default function MarketsScreen() {
             }
           }}
           style={[
-            sortLocalStyles.sortButton,
+            styles.baseButton,
             {
-              borderColor:
+              paddingVertical: 4,
+              paddingHorizontal: 8,
+              marginHorizontal: 12,
+              backgroundColor:               
                 sortCriterion === "change24h"
                   ? styles.accent.color
-                  : styles.defaultText.backgroundColor,
+                  : styles.container.backgroundColor,
             },
           ]}
         >
-          <Text style={styles.defaultText}>
-            24h{" "}
-            {sortCriterion === "change24h" ? (sortedAscending ? "↓" : "↑") : ""}
+          <Text style={styles.baseButtonText}>
+            24h {sortCriterion === "change24h" ? (sortedAscending ? "↓" : "↑") : ""}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setIsSearchActive((prev) => !prev)}
           style={[
-            sortLocalStyles.sortButton,
+            styles.baseButton,
             {
-              borderColor: isSearchActive
+              paddingVertical: 4,
+              paddingHorizontal: 8,
+              marginHorizontal: 12,
+              backgroundColor: isSearchActive
                 ? styles.accent.color
-                : styles.defaultText.backgroundColor,
+                : styles.container.backgroundColor,
             },
           ]}
         >
