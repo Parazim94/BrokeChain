@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import Svg, { Rect, Line, Text as SvgText, G } from "react-native-svg";
 import * as d3Scale from "d3-scale";
-import * as d3Array from "d3-array";
 import { format } from "date-fns";
 import { ThemeContext } from "@/src/context/ThemeContext";
 import { formatCurrency } from "@/src/utils/formatCurrency";
@@ -57,7 +56,7 @@ interface CandlestickChartProps {
 export default function D3CandlestickChart({
   symbol,
   interval,
-  width = Dimensions.get("window").width * 0.95,
+  width = Dimensions.get("window").width * 0.90,
   height = 300,
 }: CandlestickChartProps) {
   const { theme } = useContext(ThemeContext);
@@ -78,7 +77,8 @@ export default function D3CandlestickChart({
   const CHART_HEIGHT = Math.round(height * 0.8);
   const VOLUME_HEIGHT = Math.round(height * 0.15);
   const MARGIN = { top: 10, right: 10, bottom: 30, left: 50 };
-  const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
+  const effectiveWidth = width * 0.90; // neu: effectiveWidth berechnen
+  const INNER_WIDTH = effectiveWidth - MARGIN.left - MARGIN.right;
   const INNER_HEIGHT = CHART_HEIGHT - MARGIN.top - MARGIN.bottom;
 
   // Moving average period
@@ -167,7 +167,7 @@ export default function D3CandlestickChart({
   const xScale = d3Scale
     .scaleBand()
     .domain(candles.map((_, i) => i.toString()))
-    .range([MARGIN.left, width - MARGIN.right])
+    .range([MARGIN.left, effectiveWidth - MARGIN.right]) // angepasst
     .padding(0.2);
 
   // Calculate tick values for Y-axis
@@ -221,16 +221,16 @@ export default function D3CandlestickChart({
   }
 
   return (
-    <ScrollView horizontal={true} contentContainerStyle={{ minWidth: width, margin: "auto", marginTop: 10 }}>
+    <ScrollView horizontal={true} contentContainerStyle={{ minWidth: effectiveWidth, margin: "auto", marginTop: 10 }}>
       <View style={styles.container} {...panResponder.panHandlers}>
-        <Svg width={width} height={height}>
+        <Svg width={effectiveWidth} height={height}>
           {/* Grid lines */}
           {yTicks.map((tick) => (
             <Line
               key={`grid-${tick}`}
               x1={MARGIN.left}
               y1={yScale(tick)}
-              x2={width - MARGIN.right}
+              x2={effectiveWidth - MARGIN.right} // angepasst
               y2={yScale(tick)}
               stroke={`${theme.text}20`}
               strokeWidth={0.5}
@@ -242,11 +242,9 @@ export default function D3CandlestickChart({
           {yTicks.map((tick) => (
             <SvgText
               key={`label-${tick}`}
-              x={MARGIN.left - 5}
+              x={5} // angepasst, um dieselbe Position wie im Linechart zu erreichen
               y={yScale(tick)}
               fontSize="10"
-              textAnchor="end"
-              alignmentBaseline="middle"
               fill={theme.text}
             >
               {formatCurrency(tick)}
@@ -353,7 +351,7 @@ export default function D3CandlestickChart({
           <Line
             x1={MARGIN.left}
             y1={CHART_HEIGHT}
-            x2={width - MARGIN.right}
+            x2={effectiveWidth - MARGIN.right} // angepasst
             y2={CHART_HEIGHT}
             stroke={`${theme.text}40`}
             strokeWidth={0.5}
