@@ -8,21 +8,24 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
-import { AuthContext } from "@/src/context/AuthContext";  // Angepasst: setUser hinzufügen
+import { AuthContext } from "@/src/context/AuthContext";  // setUser hinzugefügt
 import { createStyles } from "@/src/styles/style";
 import { formatCurrency } from "@/src/utils/formatCurrency";
-import Sparkline from "@/src/components/Sparkline";
+import D3LineChart from "@/src/components/d3-LineChart";
 import { useData } from "@/src/context/DataContext";
-import CandlestickChart from "@/src/components/CandlestickChart";
 import D3CandlestickChart from "@/src/components/d3-Candlestick";
 import CashInfo from "@/src/components/CashInfo";
 
 const timeIntervals = {
-  "1D": "1h",
-  "1W": "4h",
-  "1M": "1d",
-  "3M": "3d",
-  "1Y": "1w",
+  "1m": "1m",
+  "5m": "5m",
+  "1h": "1h",
+  "4h": "4h",
+  "1d": "1d",
+  "3d": "3d",
+  "1w": "1w",
+  "1M": "1M",
+  
 };
 
 export default function TradeScreen() {
@@ -38,13 +41,13 @@ export default function TradeScreen() {
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
   const [quantity, setQuantity] = useState("");
   const [selectedRange, setSelectedRange] =
-    useState<keyof typeof timeIntervals>("1D");
+    useState<keyof typeof timeIntervals>("1h");
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [chartType, setChartType] = useState<
-    "line" | "candlestick" | "d3-candlestick"
+    "line" | "d3-candlestick"
   >("line");
   const [containerWidth, setContainerWidth] = useState<number>(0);
 
@@ -180,7 +183,7 @@ export default function TradeScreen() {
               </Text>
             )}
           </View>
-          <CashInfo />
+         
         </View>
 
         <View
@@ -233,48 +236,22 @@ export default function TradeScreen() {
                 marginBottom: 8,
                 borderRadius: 6,
                 backgroundColor:
-                  chartType === "candlestick" ? theme.accent : theme.background,
-              }}
-              onPress={() => setChartType("candlestick")}
-            >
-              <Text style={{ color: theme.text }}>Candlestick</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                padding: 6,
-                marginRight: 8,
-                marginBottom: 8,
-                borderRadius: 6,
-                backgroundColor:
                   chartType === "d3-candlestick"
                     ? theme.accent
                     : theme.background,
               }}
               onPress={() => setChartType("d3-candlestick")}
             >
-              <Text style={{ color: theme.text }}>D3 Candle</Text>
+              <Text style={{ color: theme.text }}>Candle</Text>
             </TouchableOpacity>
           </View>
         </View>
         {chartType === "line" ? (
           <View style={styles.sparklineShadow}>
-            <Sparkline
-              prices={chartData.map((data) => data.value)}
-              stroke={theme.accent}
-              strokeWidth={2}
-              width="100%"
-              height={300}
-              staticFlag={true}
-            />
-          </View>
-        ) : chartType === "candlestick" ? (
-          <View style={styles.sparklineShadow}>
-            <CandlestickChart
-              symbol={
-                coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"
-              }
+            <D3LineChart
+              symbol={coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"}
               interval={timeIntervals[selectedRange]}
-              width={containerWidth ? containerWidth * 0.91 : 300}
+              width={containerWidth ? containerWidth*0.9666 : 300}
               height={300}
             />
           </View>

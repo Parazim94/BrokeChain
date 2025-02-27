@@ -47,6 +47,7 @@ interface DataContextType {
   executeTrade: (trade: Trade) => Promise<any>;
 
   getHistoricalData: (symbol: string, interval: string) => Promise<any[]>;
+  getHistoricalCandleData: (symbol: string, interval: string) => Promise<any[]>;
 }
 
 export const DataContext = createContext<DataContextType | undefined>(
@@ -132,7 +133,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   const getHistoricalData = useCallback(
     async (symbol: string, interval: string) => {
       try {
-        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=100`;
+        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=1000`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Binance Fehler: ${response.status}`);
         const data = await response.json();
@@ -142,6 +143,31 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
         }));
       } catch (error) {
         console.error("Historische Daten von Binance fehlgeschlagen:", error);
+        return [];
+      }
+    },
+    []
+  );
+
+  // Historische Candlestick Daten abrufen
+  const getHistoricalCandleData = useCallback(
+    async (symbol: string, interval: string) => {
+      try {
+        // Erhöhe das Limit z.B. auf 1000, damit mehr Daten vorhanden sind
+        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=400`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Binance Fehler: ${response.status}`);
+        const data = await response.json();
+        return data.map((item: any[]) => ({
+          timestamp: item[0],
+          open: parseFloat(item[1]),
+          high: parseFloat(item[2]),
+          low: parseFloat(item[3]),
+          close: parseFloat(item[4]),
+          volume: parseFloat(item[5]),
+        }));
+      } catch (error) {
+        console.error("Historische Candlestick data fehlgeschlagen:", error);
         return [];
       }
     },
@@ -161,6 +187,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
 
     executeTrade,
     getHistoricalData,
+    getHistoricalCandleData, // Neu hinzugefügt
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

@@ -16,6 +16,27 @@ import * as d3Array from "d3-array";
 import { format } from "date-fns";
 import { ThemeContext } from "@/src/context/ThemeContext";
 import { formatCurrency } from "@/src/utils/formatCurrency";
+import { useData } from "@/src/context/DataContext";
+
+// Neue helper-Funktion: adjustColor (wie in der normalen CandlestickChart)
+function adjustColor(hex: string, amt: number): string {
+  let usePound = false;
+  if (hex[0] === "#") {
+    hex = hex.slice(1);
+    usePound = true;
+  }
+  let num = parseInt(hex, 16);
+  let r = (num >> 16) + amt;
+  let g = ((num >> 8) & 0x00ff) + amt;
+  let b = (num & 0x0000ff) + amt;
+  r = Math.max(Math.min(255, r), 0);
+  g = Math.max(Math.min(255, g), 0);
+  b = Math.max(Math.min(255, b), 0);
+  return (
+    (usePound ? "#" : "") +
+    ((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")
+  );
+}
 
 export interface CandleData {
   timestamp: number;
@@ -40,6 +61,7 @@ export default function D3CandlestickChart({
   height = 300,
 }: CandlestickChartProps) {
   const { theme } = useContext(ThemeContext);
+  const { getHistoricalCandleData } = useData(); // Neu: getHistoricalCandleData verwenden
   const [candles, setCandles] = useState<CandleData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [tooltip, setTooltip] = useState<{
@@ -49,6 +71,8 @@ export default function D3CandlestickChart({
     isVisible: boolean;
   } | null>(null);
   const [showMA, setShowMA] = useState<boolean>(true);
+  // Neuer State: Verwendung von Theme-Farben
+  const [useThemeColors, setUseThemeColors] = useState<boolean>(false);
 
   // Configuration
   const CHART_HEIGHT = Math.round(height * 0.8);
@@ -64,19 +88,8 @@ export default function D3CandlestickChart({
     const fetchCandles = async () => {
       setLoading(true);
       try {
-        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=100`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
-        const data = await response.json();
-        const mapped: CandleData[] = data.map((item: any[]) => ({
-          timestamp: item[0],
-          open: parseFloat(item[1]),
-          high: parseFloat(item[2]),
-          low: parseFloat(item[3]),
-          close: parseFloat(item[4]),
-          volume: parseFloat(item[5]),
-        }));
-        setCandles(mapped);
+        const data = await getHistoricalCandleData(symbol, interval);
+        setCandles(data);
       } catch (error) {
         console.error("Error fetching candlestick data:", error);
         setCandles([]);
@@ -85,7 +98,7 @@ export default function D3CandlestickChart({
       }
     };
     fetchCandles();
-  }, [symbol, interval]);
+  }, [symbol, interval, getHistoricalCandleData]);
 
   // Calculate moving averages
   const movingAverages = useMemo(() => {
@@ -123,6 +136,10 @@ export default function D3CandlestickChart({
       </View>
     );
   }
+
+  // Bestimme die Farben: Standard oder abhängig vom theme.accent
+  const bullColor = useThemeColors ? adjustColor(theme.accent, 80) : "#4CAF50";
+  const bearColor = useThemeColors ? adjustColor(theme.accent, -40) : "#F44336";
 
   // Calculate price range and scales
   const allPrices = candles.flatMap((c) => [c.open, c.close, c.high, c.low]);
@@ -203,12 +220,8 @@ export default function D3CandlestickChart({
     }
   }
 
-  // Generate bullish/bearish colors based on theme
-  const bullColor = "#4CAF50"; // Green for bullish
-  const bearColor = "#F44336"; // Red for bearish
-
   return (
-    <ScrollView horizontal={true} contentContainerStyle={{ minWidth: width }}>
+    <ScrollView horizontal={true} contentContainerStyle={{ minWidth: width, margin: "auto", marginTop: 10 }}>
       <View style={styles.container} {...panResponder.panHandlers}>
         <Svg width={width} height={height}>
           {/* Grid lines */}
@@ -328,7 +341,7 @@ export default function D3CandlestickChart({
                       xScale(point.index.toString())! + xScale.bandwidth() / 2
                     }
                     y2={yScale(point.value)}
-                    stroke="#FF9800" // Orange color for MA line
+                    stroke={theme.accent} // Orange color for MA line
                     strokeWidth={2}
                   />
                 );
@@ -429,11 +442,19 @@ export default function D3CandlestickChart({
             onPress={() => setShowMA(!showMA)}
           >
             <View
-              style={[styles.legendColor, { backgroundColor: "#FF9800" }]}
+              style={[styles.legendColor, { backgroundColor: theme.accent }]}
             />
             <Text style={{ color: theme.text, fontSize: 10 }}>
               MA({MA_PERIOD})
             </Text>
+          </TouchableOpacity>
+          {/* Neuer Button: Toggle für Theme-Farben */}
+          <TouchableOpacity
+            style={[styles.legendItem, useThemeColors ? styles.legendItemActive : {}]}
+            onPress={() => setUseThemeColors(!useThemeColors)}
+          >
+            <View style={[styles.legendColor, { backgroundColor: theme.accent }]} />
+            <Text style={{ color: theme.text, fontSize: 10 }}>Theme Colors</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -521,22 +542,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// Helper function to adjust color brightness
-function adjustColor(hex: string, amt: number): string {
-  let usePound = false;
-  if (hex[0] === "#") {
-    hex = hex.slice(1);
-    usePound = true;
-  }
-  let num = parseInt(hex, 16);
-  let r = (num >> 16) + amt;
-  let g = ((num >> 8) & 0x00ff) + amt;
-  let b = (num & 0x0000ff) + amt;
-  r = Math.max(Math.min(255, r), 0);
-  g = Math.max(Math.min(255, g), 0);
-  b = Math.max(Math.min(255, b), 0);
-  return (
-    (usePound ? "#" : "") +
-    ((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")
-  );
-}
+

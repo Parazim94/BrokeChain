@@ -58,9 +58,9 @@ export default function StackNavigator() {
           headerRight: () => (
 
             <View style={{ flexDirection: "row", marginRight: 15 }}>
-               
+               <View style={{ flexDirection: "row", marginRight: 15 }}>
                       <CashInfo />
-                
+                </View>
               {/* Burger-Button für Sidebar (nur bei großen Screens) */}
               {width >= 768 && (
                 <TouchableOpacity
@@ -84,7 +84,7 @@ export default function StackNavigator() {
               >
                 <Ionicons
                   name="settings-outline"
-                  size={24}
+                  size={28}
                   color={theme.text}
                 />
               </TouchableOpacity>
