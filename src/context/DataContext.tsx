@@ -3,11 +3,10 @@ import React, {
   useContext,
   useCallback,
   ReactNode,
-  useState,
-  useEffect,
 } from "react";
 import { useFetch, fetchPost } from "../hooks/useFetch";
 import { AuthContext } from "./AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface MarketData {
   id: string;
@@ -97,8 +96,24 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   // Trade-Funktion
   const executeTrade = useCallback(
     async (trade: Trade) => {
-      if (!user?.token) throw new Error("Benutzer ist nicht angemeldet");
-      const payload = { ...trade, token: user.token };
+      // Versuche zuerst den Token aus dem Kontext zu bekommen
+      let token = user?.token;
+      
+      // Falls kein Token im Kontext, versuche ihn aus dem AsyncStorage zu laden
+      if (!token) {
+        try {
+          token = await AsyncStorage.getItem('userToken');
+          console.log("Token aus AsyncStorage geladen:", token ? token.substring(0, 15) + "..." : "nicht gefunden");
+        } catch (error) {
+          console.error("Fehler beim Laden des Tokens:", error);
+        }
+      } else {
+        console.log("Token aus Context verwendet:", token.substring(0, 15) + "...");
+      }
+
+      if (!token) throw new Error("Benutzer ist nicht angemeldet");
+      
+      const payload = { ...trade, token };
       const result = await fetchPost("trade", payload);
       // Nach erfolgreichem Trade werden Positionen neu geladen:
       await refreshPositions();

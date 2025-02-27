@@ -5,6 +5,7 @@ import { StackParamList } from "@/src/navigation/types";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "./authStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen() {
   const styles = createStyles();
@@ -24,9 +25,19 @@ export default function LoginScreen() {
       if (!response.ok) throw new Error("Login fehlgeschlagen");
       const userData = await response.json();
       
-        setUser(userData);
-        setIsLoggedIn(true);
+      // Token im AsyncStorage speichern für persistenten Zugriff
+      if (userData.token) {
+        await AsyncStorage.setItem('userToken', userData.token);
+        console.log("Token gespeichert:", userData.token.substring(0, 15) + "...");
+      }
+      
+      setUser(userData);
+      setIsLoggedIn(true);
+
+      // Kurze Verzögerung vor der Navigation, damit der Kontext aktualisiert wird
+      setTimeout(() => {
         navigation.navigate("Main", { screen: "Portfolio" });
+      }, 100);
     
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unexpected error occurred");

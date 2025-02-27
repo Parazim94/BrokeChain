@@ -6,6 +6,7 @@ interface AuthContextType {
   user: any;
   setIsLoggedIn: (value: boolean) => void;
   setUser: (user: any) => void;
+  logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -13,6 +14,7 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   setIsLoggedIn: () => {},
   setUser: () => {},
+  logout: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -43,8 +45,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadAuthState();
   }, []);
 
+  // Beim Start versuchen, den gespeicherten Token zu laden
+  useEffect(() => {
+    const restoreToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        if (token) {
+          // Hier könnte man einen API-Aufruf machen, um die Benutzerdaten mit dem Token abzurufen
+          console.log("Gespeicherter Token gefunden:", token.substring(0, 15) + "...");
+          // Wenn nötig, setze den Benutzer und den eingeloggten Status
+          // setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error("Fehler beim Wiederherstellen des Tokens:", error);
+      }
+    };
+    
+    restoreToken();
+  }, []);
+
+  // Logout-Funktion aktualisieren, um auch den gespeicherten Token zu löschen
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem('userToken');
+    } catch (error) {
+      console.error("Fehler beim Löschen des Tokens:", error);
+    }
+    setUser(null);
+    setIsLoggedIn(false);
+  };
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, setIsLoggedIn, setUser }}>
+    <AuthContext.Provider value={{ 
+      isLoggedIn, 
+      user, 
+      setIsLoggedIn, 
+      setUser,
+      logout // Neue logout-Funktion
+    }}>
       {children}
     </AuthContext.Provider>
   );
