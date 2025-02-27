@@ -174,7 +174,7 @@ export default function D3CandlestickChart({
   const yTicks = d3Scale
     .scaleLinear()
     .domain([minPrice - priceMargin, maxPrice + priceMargin])
-    .ticks(5);
+    .ticks(10);
 
   // Format dates for X-axis labels
   const getDateLabel = (index: number): string => {

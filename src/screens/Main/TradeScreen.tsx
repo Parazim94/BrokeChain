@@ -15,7 +15,6 @@ import D3LineChart from "@/src/components/d3-LineChart";
 import { useData } from "@/src/context/DataContext";
 import D3CandlestickChart from "@/src/components/d3-Candlestick";
 import CashInfo from "@/src/components/CashInfo";
-import { Picker } from '@react-native-picker/picker';
 
 const timeIntervals = {
   "1m": "1m",
@@ -187,59 +186,37 @@ export default function TradeScreen() {
          
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginVertical: 12,
-          }}
-        >
-          <View style={{ marginVertical: 8 }}>
-            <Picker
-              selectedValue={selectedRange}
-              onValueChange={(itemValue) => setSelectedRange(itemValue as keyof typeof timeIntervals)}
-              style={{ color: theme.text, backgroundColor: theme.background }}
-              dropdownIconColor={theme.text}
-            >
-              {Object.keys(timeIntervals).map((range) => (
-                <Picker.Item key={range} label={range} value={range} />
-              ))}
-            </Picker>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 8 }}>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", flex: 1 }}>
+            {Object.keys(timeIntervals).map((range) => (
+              <TouchableOpacity
+                key={range}
+                style={{
+                  paddingVertical: 2,
+                  paddingHorizontal: 4,
+                  marginRight: 4,
+                  marginBottom: 4,
+                  borderRadius: 4,
+                  backgroundColor: selectedRange === range ? theme.accent : theme.background,
+                }}
+                onPress={() => setSelectedRange(range as keyof typeof timeIntervals)}
+              >
+                <Text style={{ color: theme.text, fontSize: 10 }}>{range}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
-          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-            <TouchableOpacity
-              style={{
-                padding: 6,
-                marginRight: 8,
-                marginBottom: 8,
-                borderRadius: 6,
-                backgroundColor:
-                  chartType === "line" ? theme.accent : theme.background,
-              }}
-              onPress={() => setChartType("line")}
-            >
-              <Text style={{ color: theme.text }}>Line</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                padding: 6,
-                marginRight: 8,
-                marginBottom: 8,
-                borderRadius: 6,
-                backgroundColor:
-                  chartType === "d3-candlestick"
-                    ? theme.accent
-                    : theme.background,
-              }}
-              onPress={() => setChartType("d3-candlestick")}
-            >
-              <Text style={{ color: theme.text }}>Candle</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            onPress={() => setChartType(chartType === "line" ? "d3-candlestick" : "line")}
+            style={[styles.baseButton, { paddingVertical: 4, paddingHorizontal: 8 }]}
+          >
+            <Text style={[styles.baseButtonText, { fontSize: 12 }]}>
+              {chartType === "line" ? "Candle" : "Line"}
+            </Text>
+          </TouchableOpacity>
         </View>
+
         {chartType === "line" ? (
-          <View style={styles.sparklineShadow}>
+          <View style={[styles.sparklineShadow, { padding: 16 }]}>
             <D3LineChart
               symbol={coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"}
               interval={timeIntervals[selectedRange]}
@@ -248,7 +225,7 @@ export default function TradeScreen() {
             />
           </View>
         ) : (
-          <View style={styles.sparklineShadow}>
+          <View style={[styles.sparklineShadow, { padding: 8 }]}>
             <D3CandlestickChart
               symbol={
                 coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"

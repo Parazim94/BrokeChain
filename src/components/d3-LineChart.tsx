@@ -84,10 +84,14 @@ export default function D3LineChart({
   }
 
   // Skalierung berechnen
-  const effectiveWidth = width * 0.96;
+  const effectiveWidth = width * 0.90;
   const minValue = Math.min(...lineData.map(d => d.value));
   const maxValue = Math.max(...lineData.map(d => d.value));
   const yScale = d3Scale.scaleLinear().domain([minValue, maxValue]).range([height - margin.bottom, margin.top]);
+
+  // Neue Tick-Werte für die Y-Achse
+  const yTicks = d3Scale.scaleLinear().domain([minValue, maxValue]).ticks(10);
+
   const xScale = d3Scale.scaleLinear().domain([0, lineData.length - 1]).range([margin.left, effectiveWidth - margin.right]);
 
   // Punkte für Linie generieren
@@ -161,13 +165,12 @@ export default function D3LineChart({
           }
           return null;
         })}
-        {/* Y-Achsen-Beschriftungen für max und min */}
-        <SvgText x={5} y={yScale(maxValue)} fontSize="10" fill={theme.text}>
-          {maxValue.toFixed(2)}
-        </SvgText>
-        <SvgText x={5} y={yScale(minValue)} fontSize="10" fill={theme.text}>
-          {minValue.toFixed(2)}
-        </SvgText>
+        {/* Ersetze die bisherigen Y-Achsen-Beschriftungen */}
+        {yTicks.map((tick) => (
+          <SvgText key={`ytick-${tick}`} x={5} y={yScale(tick)} fontSize="10" fill={theme.text}>
+            {tick.toFixed(2)}
+          </SvgText>
+        ))}
       </Svg>
       {tooltip && tooltip.isVisible && (
         <View style={[styles.tooltip, { left: tooltip.x - 50, top: tooltip.y - 60 }]}>
@@ -186,6 +189,7 @@ const styles = StyleSheet.create({
   container: {
     position: "relative",
     backgroundColor: "transparent",
+    overflow: "visible", // Neuer Eintrag
   },
   loadingContainer: {
     justifyContent: "center",

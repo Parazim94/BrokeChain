@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import { AuthContext } from "../../context/AuthContext";
@@ -11,6 +11,7 @@ export default function SettingsScreen() {
   const { colorTheme, setColorTheme, accent, setAccent, theme } = useContext(ThemeContext);
   const { user, setUser } = useContext(AuthContext); 
   const styles = createStyles();
+  const [isSaving, setIsSaving] = useState(false);
 
   const toggleTheme = () => {
     setColorTheme(colorTheme === "light" ? "dark" : "light");
@@ -19,7 +20,7 @@ export default function SettingsScreen() {
   // Speichert die aktuellen Einstellungen (prefTheme: [colorTheme, accent])
   const handleSave = async () => {
     if (!user) return;
-      
+    setIsSaving(true);
     const updatedUserData = {
       ...user,
       prefTheme: [colorTheme, accent]
