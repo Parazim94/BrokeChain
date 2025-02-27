@@ -43,6 +43,7 @@ export default function MarketList({
       minWidth: 280,
       marginHorizontal: "auto",
       width: "95%",
+      marginTop: 8,
     },
     row: {
       flexDirection: "row",

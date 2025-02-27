@@ -15,7 +15,7 @@ export function createStyles() {
       marginVertical: 10,
       borderWidth: 1,
       borderColor: theme.accent,
-      borderRadius: 5,
+      borderRadius: 4,
       color: theme.text,
       backgroundColor: theme.background,
     },
@@ -25,7 +25,7 @@ export function createStyles() {
     navButton: {
       backgroundColor: theme.background,
       borderColor: theme.text,
-      borderRadius: 5,
+      borderRadius: 4,
       borderWidth: 1,
       paddingHorizontal: 24,
       paddingVertical: 8,
@@ -36,16 +36,25 @@ export function createStyles() {
     accent: { color: theme.accent, fontSize: 16 },
     button: { backgroundColor: theme.accent, padding: 10, borderRadius: 5, width: 200, alignItems: "center" },
     buySellButton: { padding: 10, borderRadius: 5, width: 50, height: 40, alignItems: "center" },
- 
     sparklineShadow: {   
       boxShadow: `0px 0px 4px ${theme.accent+"88"}`,
       backgroundColor: "transparent",
       borderRadius: 8,
     },  
-     hr: {
+    hr: {
       height: 1,
       backgroundColor: "gray",
     },
-  
+    baseButton: { 
+      padding: 10, 
+      borderRadius: 4, 
+      alignItems: "center", 
+      justifyContent: "center",
+      backgroundColor: theme.accent,
+    },
+    baseButtonText: {
+      color: "white",
+      fontSize: 16,
+    },
   });
 }

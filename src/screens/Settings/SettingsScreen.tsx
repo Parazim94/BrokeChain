@@ -47,22 +47,14 @@ export default function SettingsScreen() {
     <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
       <TouchableOpacity
         onPress={toggleTheme}
-        style={{
-          marginTop: 20,
-          flexDirection: "row",
-          alignItems: "center",
-          padding: 10,
-          borderRadius: 5,
-          backgroundColor: styles.accent.color,
-          maxWidth: 200,
-        }}
+        style={styles.baseButton}
       >
         {colorTheme === "light" ? (
           <Ionicons name="moon" size={24} color={"white"} />
         ) : (
           <Ionicons name="sunny" size={24} color={styles.defaultText.color} />
         )}
-        <Text style={{ color: "white", marginLeft: 8 }}>
+        <Text style={[styles.baseButtonText, { marginLeft: 8 }]}>
           {colorTheme === "light" ? "Darkmode" : "Lightmode"}
         </Text>
       </TouchableOpacity>
@@ -84,15 +76,9 @@ export default function SettingsScreen() {
       <View style={{ marginTop: 20, alignItems: "center" }}>
         <TouchableOpacity
           onPress={handleSave}
-          style={{
-            padding: 10,
-            backgroundColor: theme.accent,
-            borderRadius: 5,
-            maxWidth: 200,
-            alignItems: "flex-start",
-          }}
+          style={styles.baseButton}
         >
-          <Text style={{ color: "white", fontSize: 16 }}>Speichern</Text>
+          <Text style={styles.baseButtonText}>Speichern</Text>
         </TouchableOpacity>
       </View>
     </View>

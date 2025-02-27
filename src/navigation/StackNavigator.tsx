@@ -16,6 +16,7 @@ import SettingsScreen from "../screens/Settings/SettingsScreen";
 import AuthScreen from "../screens/Auth/AuthScreen";
 import LoginScreen from "../screens/Auth/LoginScreen";
 import RegisterScreen from "../screens/Auth/RegisterScreen";
+import CashInfo from "../components/CashInfo";
 
 const Stack = createStackNavigator();
 
@@ -55,7 +56,11 @@ export default function StackNavigator() {
             </View>
           ),
           headerRight: () => (
+
             <View style={{ flexDirection: "row", marginRight: 15 }}>
+               
+                      <CashInfo />
+                
               {/* Burger-Button für Sidebar (nur bei großen Screens) */}
               {width >= 768 && (
                 <TouchableOpacity

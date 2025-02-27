@@ -176,6 +176,16 @@ export default function MarketsScreen() {
           <Ionicons name="search" size={18} color={styles.defaultText.color} />
         </TouchableOpacity>
       </View>
+      {/* <View
+        style={{
+          maxWidth: 600,
+          minWidth: 280,
+          marginHorizontal: "auto",
+          width: "95%",
+        }}
+      >
+        <CashInfo />
+      </View> */}
       {/* Neue horizontale Linie unter den Sortier-Buttons */}
       <View style={{ height: 1, backgroundColor: "gray", marginVertical: 8 }} />
       {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
@@ -199,16 +209,7 @@ export default function MarketsScreen() {
         containerBackground={styles.container.backgroundColor}
         onRefresh={refreshMarketData}
       />
-      <View
-        style={{
-          maxWidth: 600,
-          minWidth: 280,
-          marginHorizontal: "auto",
-          width: "95%",
-        }}
-      >
-        <CashInfo />
-      </View>
+      
     </SafeAreaView>
   );
 }

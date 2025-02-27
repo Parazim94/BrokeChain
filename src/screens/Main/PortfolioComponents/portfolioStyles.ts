@@ -27,7 +27,7 @@ export const createStyles = (theme: Theme) =>
     filterButton: {
       paddingVertical: 4,
       paddingHorizontal: 8,
-      borderRadius: 8,
+      borderRadius: 4,
       color: theme.text,
     },
     selectedFilterButton: { backgroundColor: theme.accent },
@@ -45,7 +45,7 @@ export const createStyles = (theme: Theme) =>
     categoryButton: {
       paddingVertical: 6,
       paddingHorizontal: 10,
-      borderRadius: 8,
+      borderRadius: 4,
       marginRight: 8,
       color: theme.text,	
     },
@@ -56,7 +56,7 @@ export const createStyles = (theme: Theme) =>
       alignSelf: "flex-end",
       paddingVertical: 6,
       paddingHorizontal: 10,
-      borderRadius: 8,
+      borderRadius: 4,
       marginLeft:"auto",
     },
     amountSortText: { color: theme.text, fontSize: 14, fontWeight: "bold" },
@@ -68,7 +68,7 @@ export const createStyles = (theme: Theme) =>
       backgroundColor: theme.background,
       padding: 12,
       marginVertical: 8,
-      borderRadius: 8,
+      borderRadius: 4,
     },
     menuButton: { position: "absolute", top: 10, right: 10 },
     name: { fontSize: 18, color: theme.text },
@@ -145,7 +145,7 @@ export const createStyles = (theme: Theme) =>
     intervalButton: {
       paddingVertical: 4,
       paddingHorizontal: 8,
-      borderRadius: 8,
+      borderRadius: 4,
       backgroundColor: theme.background, // Standard-Hintergrund
       marginHorizontal: 4,
     },
