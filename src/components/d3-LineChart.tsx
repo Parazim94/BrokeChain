@@ -131,6 +131,22 @@ export default function D3LineChart({
     }
   }
 
+  // Format dates for X-axis labels, abhängig vom interval-Prop
+  const getDateLabel = (index: number): string => {
+    if (index < 0 || index >= lineData.length) return "";
+    const date = new Date(lineData[index].timestamp);
+    let formatString = "HH:mm";
+    if (interval.endsWith("m")) {
+      const val = parseInt(interval.slice(0, -1));
+      formatString = val <= 5 ? "HH:mm" : "MMM d, HH:mm";
+    } else if (interval.endsWith("h")) {
+      formatString = "MMM d";
+    } else {
+      formatString = "MMM yyyy";
+    }
+    return format(date, formatString);
+  };
+
   // X-Achsen-Beschriftungen in regelmäßigen Abständen
   const labelInterval = Math.max(1, Math.floor(lineData.length / 6));
 
@@ -159,7 +175,7 @@ export default function D3LineChart({
                 fill={theme.text}
                 textAnchor="middle"
               >
-                {format(new Date(d.timestamp), "MMM d")}
+                {getDateLabel(i)} {/* neu: Uhrzeit */}
               </SvgText>
             );
           }
@@ -177,7 +193,7 @@ export default function D3LineChart({
           <Text style={styles.tooltipText}>
             {`Date: ${format(new Date(lineData[tooltip.index].timestamp), "MMM d, yyyy")}\n`}
             {`Value: ${lineData[tooltip.index].value.toFixed(2)}\n`}
-            {`Volume: ${Number(lineData[tooltip.index].volume).toLocaleString()}`}
+        
           </Text>
         </View>
       )}

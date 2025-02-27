@@ -30,7 +30,10 @@ export interface Position {
 
 export interface Trade {
   symbol: string;
-  value: number;
+  value?: number;
+  token?: string;
+  amount?: number;
+  threshold?: number;
 }
 
 interface DataContextType {
@@ -44,7 +47,7 @@ interface DataContextType {
   errorPositions: Error | null;
   refreshPositions: () => Promise<any>;
 
-  executeTrade: (trade: Trade) => Promise<any>;
+  executeTrade: (trade: Trade, mode?: "spot" | "order") => Promise<any>;
 
   getHistoricalData: (symbol: string, interval: string) => Promise<any[]>;
   getHistoricalCandleData: (symbol: string, interval: string) => Promise<any[]>;
@@ -94,9 +97,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     });
   }, [rawPositions, marketData]);
 
-  // Trade-Funktion
+  // Aktualisierte executeTrade Funktion mit mode Parameter
   const executeTrade = useCallback(
-    async (trade: Trade) => {
+    async (trade: Trade, mode: "spot" | "order" = "spot") => {
       // Versuche zuerst den Token aus dem Kontext zu bekommen
       let token = user?.token;
       
@@ -114,12 +117,19 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
 
       if (!token) throw new Error("Benutzer ist nicht angemeldet");
       
-      const payload = { ...trade, token };
-      const result = await fetchPost("trade", payload);
+      // Füge den Token hinzu, falls er nicht bereits im Payload ist
+      const payload = { ...trade };
+      if (!payload.token) {
+        payload.token = token;
+      }
       
-      // Neue Zeile: Aktualisierung des Users (State & AsyncStorage) anhand des Ergebnisses
-      if(result.user) {
-        setUser(result.user);
+      // Verwende die richtige Route basierend auf dem Modus
+      const endpoint = mode === "order" ? "trade/order" : "trade";
+      const result = await fetchPost(endpoint, payload);
+      
+      // Benutzeraktualisierung
+      if (result) {
+        setUser(result);
       }
       
       // Nach erfolgreichem Trade werden Positionen neu geladen:

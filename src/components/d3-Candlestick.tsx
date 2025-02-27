@@ -168,7 +168,7 @@ export default function D3CandlestickChart({
     .scaleBand()
     .domain(candles.map((_, i) => i.toString()))
     .range([MARGIN.left, effectiveWidth - MARGIN.right]) // angepasst
-    .padding(0.2);
+    .padding(0.1);
 
   // Calculate tick values for Y-axis
   const yTicks = d3Scale
@@ -180,7 +180,7 @@ export default function D3CandlestickChart({
   const getDateLabel = (index: number): string => {
     if (index < 0 || index >= candles.length) return "";
     const date = new Date(candles[index].timestamp);
-    return format(date, "MMM d");
+    return format(date, "HH:mm"); // neu: Zeige Uhrzeit statt "MMM d"
   };
 
   // Get X-axis labels (show fewer labels to avoid crowding)
@@ -271,8 +271,8 @@ export default function D3CandlestickChart({
             const x = xScale(i.toString())!;
             const isBullish = candle.close >= candle.open;
             const volumeColor = isBullish
-              ? `${bullColor}40` // Semi-transparent green for bullish
-              : `${bearColor}40`; // Semi-transparent red for bearish
+              ? `${bullColor}80` // Semi-transparent green for bullish
+              : `${bearColor}80`; // Semi-transparent red for bearish
 
             return (
               <Rect

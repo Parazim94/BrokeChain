@@ -50,6 +50,8 @@ export default function TradeScreen() {
     "line" | "d3-candlestick"
   >("line");
   const [containerWidth, setContainerWidth] = useState<number>(0);
+  const [tradeType, setTradeType] = useState<"spot" | "order">("spot");
+  const [orderPrice, setOrderPrice] = useState("");
 
   useEffect(() => {
     if (routeCoin && routeCoin !== coin) setCoin(routeCoin);
@@ -103,18 +105,42 @@ export default function TradeScreen() {
       alert("Ungültige Menge");
       return;
     }
-    const amount = type === "sell" ? -Math.abs(quantityInput) : quantityInput;
+    
     try {
       setIsLoading(true);
-      const result = await executeTrade({ symbol: coin.symbol, value: amount });
-      console.log(result);
+      const amount = type === "sell" ? -Math.abs(quantityInput) : quantityInput;
       
-      // Ähnlich wie in Settings: User aktualisieren, falls enthalten
-      if(result) {
-        setUser(result);
+      if (tradeType === "order") {
+        // Für Orders: Neues Payload-Format und Route "trade/order"
+        const threshold = parseFloat(orderPrice);
+        if (isNaN(threshold)) {
+          alert("Ungültiger Order-Preis");
+          return;
+        }
+        
+        const orderPayload = { 
+          token: user.token,
+          symbol: coin.symbol, 
+          amount: amount, 
+          threshold: threshold 
+        };
+        const result = await executeTrade(orderPayload, "order");
+        if (result) {
+          setUser(result);
+        }
+        alert(`${type === "buy" ? "Kaufauftrag" : "Verkaufsauftrag"} erfolgreich platziert!`);
+      } else {
+        // Für Spot-Trades: Bisheriges Format beibehalten
+        const spotPayload = { symbol: coin.symbol, value: amount };
+        const result = await executeTrade(spotPayload, "spot");
+        if (result) {
+          setUser(result);
+        }
+        alert(`${type === "buy" ? "Kaufvorgang" : "Verkaufsvorgang"} erfolgreich!`);
       }
-      alert(`${type === "buy" ? "Kaufvorgang" : "Verkaufsvorgang"} erfolgreich!`);
+      
       setQuantity("");
+      if(tradeType === "order") setOrderPrice("");
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unerwarteter Fehler");
     } finally {
@@ -246,6 +272,14 @@ export default function TradeScreen() {
             gap: 8,
           }}
         >
+          <TouchableOpacity
+            onPress={() => setTradeType(tradeType === "spot" ? "order" : "spot")}
+            style={styles.baseButton}
+          >
+            <Text style={styles.baseButtonText}>
+              {tradeType === "spot" ? "Spot" : "Order"}
+            </Text>
+          </TouchableOpacity>
           <TextInput
             style={[styles.input, { width: "35%" }]}
             placeholder="Amount..."
@@ -254,6 +288,16 @@ export default function TradeScreen() {
             onChangeText={setQuantity}
             keyboardType="numeric"
           />
+          {tradeType === "order" && (
+            <TextInput
+              style={[styles.input, { width: "35%" }]}
+              placeholder="Price Threshold..."
+              placeholderTextColor={styles.defaultText.color}
+              value={orderPrice}
+              onChangeText={setOrderPrice}
+              keyboardType="numeric"
+            />
+          )}
           <TouchableOpacity onPress={handleMax} style={styles.baseButton}>
             <Text style={styles.baseButtonText}>Max</Text>
           </TouchableOpacity>
