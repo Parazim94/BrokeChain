@@ -8,7 +8,6 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   Share,
 } from "react-native";
 import * as Linking from "expo-linking";

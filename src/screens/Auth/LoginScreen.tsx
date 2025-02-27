@@ -23,13 +23,11 @@ export default function LoginScreen() {
       });
       if (!response.ok) throw new Error("Login fehlgeschlagen");
       const userData = await response.json();
-      if (userData.status === "ok") {
+      
         setUser(userData);
         setIsLoggedIn(true);
         navigation.navigate("Main", { screen: "Portfolio" });
-      } else {
-        throw new Error(userData.error || "Login nicht erfolgreich");
-      }
+    
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unexpected error occurred");
     }

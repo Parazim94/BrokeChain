@@ -14,7 +14,6 @@ import MarketList from "@/src/components/MarketList";
 import { Ionicons } from "@expo/vector-icons";
 import { RootStackParamList } from "@/src/navigation/types";
 import { useData } from "@/src/context/DataContext";
-import CashInfo from "@/src/components/CashInfo";
 
 type Ticker = {
   id: string;

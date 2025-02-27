@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
-  ActivityIndicator,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
@@ -15,7 +14,6 @@ import { formatCurrency } from "@/src/utils/formatCurrency";
 import Sparkline from "@/src/components/Sparkline";
 import { useData } from "@/src/context/DataContext";
 import CandlestickChart from "@/src/components/CandlestickChart";
-import CashInfo from "@/src/components/CashInfo";
 
 const timeIntervals = {
   "1D": "1h",
@@ -213,7 +211,7 @@ export default function TradeScreen() {
               onPress={() => setChartType("candlestick")}
             >
               <Text style={{ color: theme.text }}>
-                Candlestick
+                Candles
               </Text>
             </TouchableOpacity>
           </View>

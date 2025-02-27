@@ -127,8 +127,7 @@ export default function CryptoNews() {
 }
 
 function createNewsStyles() {
-  const { colorTheme, theme } = useContext(ThemeContext);
-  const styles = createStyles();
+  const { theme } = useContext(ThemeContext);
   return StyleSheet.create({
     newsTopRow: {
       flexDirection: "row",
