@@ -14,6 +14,8 @@ import { formatCurrency } from "@/src/utils/formatCurrency";
 import Sparkline from "@/src/components/Sparkline";
 import { useData } from "@/src/context/DataContext";
 import CandlestickChart from "@/src/components/CandlestickChart";
+import D3CandlestickChart from "@/src/components/d3-Candlestick";
+import CashInfo from "@/src/components/CashInfo";
 
 const timeIntervals = {
   "1D": "1h",
@@ -41,7 +43,9 @@ export default function TradeScreen() {
     { label: string; value: number }[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [chartType, setChartType] = useState<"line" | "candlestick">("line");
+  const [chartType, setChartType] = useState<
+    "line" | "candlestick" | "d3-candlestick"
+  >("line");
   const [containerWidth, setContainerWidth] = useState<number>(0);
 
   useEffect(() => {
@@ -152,19 +156,37 @@ export default function TradeScreen() {
             justifyContent: "space-between",
           }}
         >
-       
-          <Text
-            style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
-          </Text>{marketPrice !== null && (
-          <Text style={[styles.defaultText, { fontSize: 14, color: "gray" }]}>
-            Market: {formatCurrency(marketPrice)}
-          </Text>
-        )}
-         </View>     
+            <Text
+              style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}
+            >
+              {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
+            </Text>
+            {marketPrice !== null && (
+              <Text
+                style={[styles.defaultText, { fontSize: 14, color: "gray" }]}
+              >
+                Market: {formatCurrency(marketPrice)}
+              </Text>
+            )}
+          </View>
+          <CashInfo />
+        </View>
 
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 12 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginVertical: 12,
+          }}
+        >
           <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
             {Object.keys(timeIntervals).map((range) => (
               <TouchableOpacity
@@ -175,13 +197,14 @@ export default function TradeScreen() {
                   marginRight: 8,
                   marginBottom: 8,
                   borderRadius: 6,
-                  backgroundColor: selectedRange === range ? theme.accent : theme.background,
+                  backgroundColor:
+                    selectedRange === range ? theme.accent : theme.background,
                 }}
-                onPress={() => setSelectedRange(range as keyof typeof timeIntervals)}
+                onPress={() =>
+                  setSelectedRange(range as keyof typeof timeIntervals)
+                }
               >
-                <Text style={{ color: theme.text }}>
-                  {range}
-                </Text>
+                <Text style={{ color: theme.text }}>{range}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -192,13 +215,12 @@ export default function TradeScreen() {
                 marginRight: 8,
                 marginBottom: 8,
                 borderRadius: 6,
-                backgroundColor: chartType === "line" ? theme.accent : theme.background,
+                backgroundColor:
+                  chartType === "line" ? theme.accent : theme.background,
               }}
               onPress={() => setChartType("line")}
             >
-              <Text style={{ color: theme.text }}>
-                Line
-              </Text>
+              <Text style={{ color: theme.text }}>Line</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -206,18 +228,30 @@ export default function TradeScreen() {
                 marginRight: 8,
                 marginBottom: 8,
                 borderRadius: 6,
-                backgroundColor: chartType === "candlestick" ? theme.accent : theme.background,
+                backgroundColor:
+                  chartType === "candlestick" ? theme.accent : theme.background,
               }}
               onPress={() => setChartType("candlestick")}
             >
-              <Text style={{ color: theme.text }}>
-                Candles
-              </Text>
+              <Text style={{ color: theme.text }}>Candlestick</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                padding: 6,
+                marginRight: 8,
+                marginBottom: 8,
+                borderRadius: 6,
+                backgroundColor:
+                  chartType === "d3-candlestick"
+                    ? theme.accent
+                    : theme.background,
+              }}
+              onPress={() => setChartType("d3-candlestick")}
+            >
+              <Text style={{ color: theme.text }}>D3 Candle</Text>
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* Conditional: Nur einer der Charts wird angezeigt */}
         {chartType === "line" ? (
           <View style={styles.sparklineShadow}>
             <Sparkline
@@ -229,25 +263,39 @@ export default function TradeScreen() {
               staticFlag={true}
             />
           </View>
-        ) : (
+        ) : chartType === "candlestick" ? (
           <View style={styles.sparklineShadow}>
             <CandlestickChart
-              symbol={coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"}
+              symbol={
+                coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"
+              }
               interval={timeIntervals[selectedRange]}
               width={containerWidth ? containerWidth * 0.91 : 300}
               height={300}
-              
+            />
+          </View>
+        ) : (
+          <View style={styles.sparklineShadow}>
+            <D3CandlestickChart
+              symbol={
+                coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"
+              }
+              interval={timeIntervals[selectedRange]}
+              width={containerWidth ? containerWidth * 0.91 : 300}
+              height={300}
             />
           </View>
         )}
 
-        <View style={{
-          flexDirection: "row",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          marginTop: 16,
-          gap: 8,
-        }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            marginTop: 16,
+            gap: 8,
+          }}
+        >
           <TextInput
             style={[styles.input, { width: "35%" }]}
             placeholder="Amount..."
