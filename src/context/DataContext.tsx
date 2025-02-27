@@ -56,7 +56,7 @@ export const DataContext = createContext<DataContextType | undefined>(
 export const DataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext); // Erweiterung: Wir holen setUser
 
   // Zentrale Marktdaten via useFetch – hier rufen wir alle Daten (inkl. Bilder & Sparkline) von unserem Backend ab
   const {
@@ -115,11 +115,17 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
       
       const payload = { ...trade, token };
       const result = await fetchPost("trade", payload);
+      
+      // Neue Zeile: Aktualisierung des Users (State & AsyncStorage) anhand des Ergebnisses
+      if(result.user) {
+        setUser(result.user);
+      }
+      
       // Nach erfolgreichem Trade werden Positionen neu geladen:
       await refreshPositions();
       return result;
     },
-    [user, refreshPositions]
+    [user, refreshPositions, setUser]
   );
 
   // Historische Daten – erstmal von Binance, mit Fallback auf Marktdaten

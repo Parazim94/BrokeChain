@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
-import { AuthContext } from "@/src/context/AuthContext";
+import { AuthContext } from "@/src/context/AuthContext";  // Angepasst: setUser hinzufügen
 import { createStyles } from "@/src/styles/style";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import Sparkline from "@/src/components/Sparkline";
@@ -27,7 +27,7 @@ const timeIntervals = {
 
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);  // setUser hinzugefügt
   const styles = createStyles();
   const navigation = useNavigation();
   const route = useRoute();
@@ -103,10 +103,14 @@ export default function TradeScreen() {
     const amount = type === "sell" ? -Math.abs(quantityInput) : quantityInput;
     try {
       setIsLoading(true);
-      await executeTrade({ symbol: coin.symbol, value: amount });
-      alert(
-        `${type === "buy" ? "Kaufvorgang" : "Verkaufsvorgang"} erfolgreich!`
-      );
+      const result = await executeTrade({ symbol: coin.symbol, value: amount });
+      console.log(result);
+      
+      // Ähnlich wie in Settings: User aktualisieren, falls enthalten
+      if(result) {
+        setUser(result);
+      }
+      alert(`${type === "buy" ? "Kaufvorgang" : "Verkaufsvorgang"} erfolgreich!`);
       setQuantity("");
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unerwarteter Fehler");
