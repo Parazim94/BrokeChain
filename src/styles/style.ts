@@ -11,7 +11,7 @@ export function createStyles() {
       flex: 1,
       width: "100%",
       backgroundColor: theme.background,
-      
+
       padding: 10,
     },
     input: {
@@ -72,7 +72,7 @@ export function createStyles() {
       backgroundColor: theme.accent,
     },
     baseButtonText: {
-      color: "white",
+      color: theme.text,
       fontSize: 16,
     },
   });
