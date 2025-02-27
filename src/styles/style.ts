@@ -7,12 +7,18 @@ export function createStyles() {
 
   return StyleSheet.create({
     body: { flex: 1, backgroundColor: theme.background },
-    container: { flex: 1, width: "100%", backgroundColor: theme.background, padding: 10 },
+    container: {
+      flex: 1,
+      width: "100%",
+      backgroundColor: theme.background,
+      
+      padding: 10,
+    },
     input: {
       width: "100%",
       maxWidth: 300,
-      padding: 10,
-      marginVertical: 10,
+      padding: 7,
+      marginVertical: 8,
       borderWidth: 1,
       borderColor: theme.accent,
       borderRadius: 4,
@@ -34,21 +40,34 @@ export function createStyles() {
       width: 200,
     },
     accent: { color: theme.accent, fontSize: 16 },
-    button: { backgroundColor: theme.accent, padding: 10, borderRadius: 5, width: 200, alignItems: "center" },
-    buySellButton: { padding: 10, borderRadius: 5, width: 50, height: 40, alignItems: "center" },
-    sparklineShadow: {   
-      boxShadow: `0px 0px 1px ${theme.accent+"88"}`,
+    button: {
+      backgroundColor: theme.accent,
+      padding: 10,
+      borderRadius: 5,
+      width: 200,
+      alignItems: "center",
+    },
+    buySellButton: {
+      padding: 10,
+      borderRadius: 5,
+      width: 50,
+      height: 40,
+      alignItems: "center",
+    },
+    sparklineShadow: {
+      boxShadow: `0px 0px 1px ${theme.accent + "88"}`,
       backgroundColor: "transparent",
       borderRadius: 8,
-    },  
+    },
     hr: {
       height: 1,
       backgroundColor: "gray",
     },
-    baseButton: { 
-      padding: 10, 
-      borderRadius: 4, 
-      alignItems: "center", 
+    baseButton: {
+      padding: 6,
+      paddingHorizontal: 10,
+      borderRadius: 4,
+      alignItems: "center",
       justifyContent: "center",
       backgroundColor: theme.accent,
     },

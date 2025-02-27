@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Svg, { Polyline } from "react-native-svg";
+import Svg, { Polyline, Defs, LinearGradient, Stop, Path } from "react-native-svg";
 import { Dimensions } from "react-native";
 import Animated, {
   useSharedValue,
@@ -57,6 +57,14 @@ function Sparkline({
   
   const points = pointsArray.map(p => `${p.x},${p.y}`).join(" ");
 
+  // Erzeuge fillPath: Beginne beim ersten x an der unteren Kante, folge dann den Punkten und schließe beim letzten Punkt an der unteren Kante
+  const fillPath = (() => {
+    const first = pointsArray[0];
+    const last = pointsArray[pointsArray.length - 1];
+    const linePath = pointsArray.map((p, idx) => (idx === 0 ? `L ${p.x} ${p.y}` : `${p.x} ${p.y}`)).join(" ");
+    return `M ${first.x} ${height} L ${first.x} ${first.y} ${linePath} L ${last.x} ${height} Z`;
+  })();
+
   // Berechne die Gesamt-Linie
   let totalLength = 0;
   for (let i = 1; i < pointsArray.length; i++) {
@@ -82,6 +90,15 @@ function Sparkline({
 
   return (
     <Svg width={width} height={height}>
+      <Defs>
+        <LinearGradient id="sparkGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <Stop offset="0%" stopColor={stroke} stopOpacity="0.5" />
+          <Stop offset="100%" stopColor={stroke} stopOpacity="0" />
+        </LinearGradient>
+      </Defs>
+      {/* Bereich unter der Linie */}
+      <Path d={fillPath} fill="url(#sparkGradient)" />
+      {/* Die animierte Linie */}
       <AnimatedPolyline
         points={points}
         fill="none"

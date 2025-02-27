@@ -8,7 +8,7 @@ import {
   TextInput,
   SafeAreaView,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import MarketList from "@/src/components/MarketList";
 import { Ionicons } from "@expo/vector-icons";
@@ -57,28 +57,28 @@ export default function MarketsScreen() {
     },
   });
 
-  // Aktualisierte Sortierlogik abhängig von sortedAscending
-  const sortedTickers = [...marketData].sort((a, b) => {
-    if (sortCriterion === "cap") {
-      return sortedAscending
-        ? b.market_cap - a.market_cap
-        : a.market_cap - b.market_cap;
-    } else if (sortCriterion === "vol") {
-      return sortedAscending
-        ? b.total_volume - a.total_volume
-        : a.total_volume - b.total_volume;
-    } else if (sortCriterion === "change24h") {
-      return sortedAscending
-        ? b.price_change_percentage_24h - a.price_change_percentage_24h
-        : a.price_change_percentage_24h - b.price_change_percentage_24h;
-    }
-    return 0;
-  });
+  // useMemo für das Sortieren der Ticker
+  const sortedTickers = useMemo(() => {
+    return [...marketData].sort((a, b) => {
+      if (sortCriterion === "cap") {
+        return sortedAscending ? b.market_cap - a.market_cap : a.market_cap - b.market_cap;
+      } else if (sortCriterion === "vol") {
+        return sortedAscending ? b.total_volume - a.total_volume : a.total_volume - b.total_volume;
+      } else if (sortCriterion === "change24h") {
+        return sortedAscending
+          ? b.price_change_percentage_24h - a.price_change_percentage_24h
+          : a.price_change_percentage_24h - b.price_change_percentage_24h;
+      }
+      return 0;
+    });
+  }, [marketData, sortCriterion, sortedAscending]);
 
-  // Filtere die Ticker basierend auf dem Suchtext
-  const filteredTickers = sortedTickers.filter((ticker) =>
-    (ticker.name || "").toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // useMemo für das Filtern der Ticker
+  const filteredTickers = useMemo(() => {
+    return sortedTickers.filter((ticker) =>
+      (ticker.name || "").toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [sortedTickers, searchQuery]);
 
   if (loadingMarketData && marketData.length === 0) {
     return (

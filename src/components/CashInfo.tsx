@@ -24,7 +24,7 @@ export function CashInfo() {
       <SafeAreaView
         style={{
           width: "15%",
-          minWidth: 120,
+          minWidth: 80,
           alignSelf: "center",
           
         }}
@@ -36,8 +36,8 @@ export function CashInfo() {
             justifyContent: "space-between",
           }}
         >
-          <Text style={styles.defaultText}>Cash</Text>
-          <Text style={styles.defaultText}>
+          <Text style={[styles.defaultText,{fontSize:10}]}>Cash</Text>
+          <Text style={[styles.defaultText,{fontSize:10}]}>
             {formatCurrency(user ? user.cash : 0)}
           </Text>
         </View>
@@ -48,8 +48,8 @@ export function CashInfo() {
             justifyContent: "space-between",
           }}
         >
-          <Text style={styles.defaultText}>Total</Text>
-          <Text style={styles.defaultText}>{formatCurrency(total)}</Text>
+          <Text style={[styles.defaultText,{fontSize:10}]}>Total</Text>
+          <Text style={[styles.defaultText,{fontSize:10}]}>{formatCurrency(total)}</Text>
         </View>
       </SafeAreaView>
     );

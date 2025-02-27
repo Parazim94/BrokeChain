@@ -154,13 +154,7 @@ export default function TradeScreen() {
             justifyContent: "space-between",
           }}
         >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
+       
           <Text
             style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}
           >
@@ -170,11 +164,7 @@ export default function TradeScreen() {
             Market: {formatCurrency(marketPrice)}
           </Text>
         )}
-        </View>
-          <CashInfo />
-        </View>
-
-        
+         </View>     
 
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 12 }}>
           <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
@@ -183,6 +173,7 @@ export default function TradeScreen() {
                 key={range}
                 style={{
                   padding: 6,
+                  paddingHorizontal: 10,
                   marginRight: 8,
                   marginBottom: 8,
                   borderRadius: 6,
@@ -261,7 +252,7 @@ export default function TradeScreen() {
         }}>
           <TextInput
             style={[styles.input, { width: "35%" }]}
-            placeholder="Menge eingeben..."
+            placeholder="Amount..."
             placeholderTextColor={styles.defaultText.color}
             value={quantity}
             onChangeText={setQuantity}
