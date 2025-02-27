@@ -154,7 +154,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     async (symbol: string, interval: string) => {
       try {
         // Erhöhe das Limit z.B. auf 1000, damit mehr Daten vorhanden sind
-        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=400`;
+        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=300`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Binance Fehler: ${response.status}`);
         const data = await response.json();

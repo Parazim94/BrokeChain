@@ -7,7 +7,6 @@ import {
   GestureResponderEvent,
   Dimensions,
   ActivityIndicator,
-  ScrollView,
   TouchableOpacity,
 } from "react-native";
 import Svg, { Polyline, Path, Defs, LinearGradient, Stop, Text as SvgText } from "react-native-svg";
@@ -19,6 +18,7 @@ import { useData } from "@/src/context/DataContext";
 interface LineData {
   timestamp: number;
   value: number;
+  volume: number;
 }
 
 interface D3LineChartProps {
@@ -49,10 +49,12 @@ export default function D3LineChart({
       setLoading(true);
       try {
         const data = await getHistoricalData(symbol, interval);
-        // Umwandlung: label als Timestamp
+        // Umwandlung: label als Timestamp, und zusätzlich Volume extrahieren – 
+        // setze voraus, dass getHistoricalData jetzt auch item.volume liefert.
         const mapped: LineData[] = data.map((item: any) => ({
           timestamp: new Date(item.label).getTime(),
           value: item.value,
+          volume: item.volume ? Number(item.volume) : 0,
         }));
         setLineData(mapped);
       } catch (error) {
@@ -82,7 +84,7 @@ export default function D3LineChart({
   }
 
   // Skalierung berechnen
-  const effectiveWidth = width;
+  const effectiveWidth = width * 0.96;
   const minValue = Math.min(...lineData.map(d => d.value));
   const maxValue = Math.max(...lineData.map(d => d.value));
   const yScale = d3Scale.scaleLinear().domain([minValue, maxValue]).range([height - margin.bottom, margin.top]);
@@ -129,54 +131,54 @@ export default function D3LineChart({
   const labelInterval = Math.max(1, Math.floor(lineData.length / 6));
 
   return (
-    <ScrollView horizontal contentContainerStyle={{ minWidth: effectiveWidth }}>
-      <View style={styles.container} {...panResponder.panHandlers}>
-        <Svg width={effectiveWidth} height={height}>
-          <Defs>
-            <LinearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0%" stopColor={theme.accent} stopOpacity="0.5" />
-              <Stop offset="100%" stopColor={theme.accent} stopOpacity="0" />
-            </LinearGradient>
-          </Defs>
-          {/* Füllbereich */}
-          <Path d={fillPath} fill="url(#lineGradient)" />
-          {/* Linie */}
-          <Polyline points={points} fill="none" stroke={theme.accent} strokeWidth={2} />
-          {/* X-Achsen-Beschriftungen */}
-          {lineData.map((d, i) => {
-            if (i % labelInterval === 0) {
-              return (
-                <SvgText
-                  key={i}
-                  x={xScale(i)}
-                  y={height - margin.bottom + 15}
-                  fontSize="10"
-                  fill={theme.text}
-                  textAnchor="middle"
-                >
-                  {format(new Date(d.timestamp), "MMM d")}
-                </SvgText>
-              );
-            }
-            return null;
-          })}
-          {/* Y-Achsen-Beschriftungen für max und min */}
-          <SvgText x={5} y={yScale(maxValue)} fontSize="10" fill={theme.text}>
-            {maxValue.toFixed(2)}
-          </SvgText>
-          <SvgText x={5} y={yScale(minValue)} fontSize="10" fill={theme.text}>
-            {minValue.toFixed(2)}
-          </SvgText>
-        </Svg>
-        {tooltip && tooltip.isVisible && (
-          <View style={[styles.tooltip, { left: tooltip.x - 50, top: tooltip.y - 40 }]}>
-            <Text style={styles.tooltipText}>
-              {`Value: ${lineData[tooltip.index].value.toFixed(2)}`}
-            </Text>
-          </View>
-        )}
-      </View>
-    </ScrollView>
+    <View style={[styles.container, { width: effectiveWidth }]} {...panResponder.panHandlers}>
+      <Svg width={effectiveWidth} height={height}>
+        <Defs>
+          <LinearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0%" stopColor={theme.accent} stopOpacity="0.5" />
+            <Stop offset="100%" stopColor={theme.accent} stopOpacity="0" />
+          </LinearGradient>
+        </Defs>
+        {/* Füllbereich */}
+        <Path d={fillPath} fill="url(#lineGradient)" />
+        {/* Linie */}
+        <Polyline points={points} fill="none" stroke={theme.accent} strokeWidth={2} />
+        {/* X-Achsen-Beschriftungen */}
+        {lineData.map((d, i) => {
+          if (i % labelInterval === 0) {
+            return (
+              <SvgText
+                key={i}
+                x={xScale(i)}
+                y={height - margin.bottom + 15}
+                fontSize="10"
+                fill={theme.text}
+                textAnchor="middle"
+              >
+                {format(new Date(d.timestamp), "MMM d")}
+              </SvgText>
+            );
+          }
+          return null;
+        })}
+        {/* Y-Achsen-Beschriftungen für max und min */}
+        <SvgText x={5} y={yScale(maxValue)} fontSize="10" fill={theme.text}>
+          {maxValue.toFixed(2)}
+        </SvgText>
+        <SvgText x={5} y={yScale(minValue)} fontSize="10" fill={theme.text}>
+          {minValue.toFixed(2)}
+        </SvgText>
+      </Svg>
+      {tooltip && tooltip.isVisible && (
+        <View style={[styles.tooltip, { left: tooltip.x - 50, top: tooltip.y - 60 }]}>
+          <Text style={styles.tooltipText}>
+            {`Date: ${format(new Date(lineData[tooltip.index].timestamp), "MMM d, yyyy")}\n`}
+            {`Value: ${lineData[tooltip.index].value.toFixed(2)}\n`}
+            {`Volume: ${Number(lineData[tooltip.index].volume).toLocaleString()}`}
+          </Text>
+        </View>
+      )}
+    </View>
   );
 }
 

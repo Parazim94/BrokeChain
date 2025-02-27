@@ -15,6 +15,7 @@ import D3LineChart from "@/src/components/d3-LineChart";
 import { useData } from "@/src/context/DataContext";
 import D3CandlestickChart from "@/src/components/d3-Candlestick";
 import CashInfo from "@/src/components/CashInfo";
+import { Picker } from '@react-native-picker/picker';
 
 const timeIntervals = {
   "1m": "1m",
@@ -167,17 +168,17 @@ export default function TradeScreen() {
             style={{
               display: "flex",
               flexDirection: "column",
-              alignItems: "center",
+              alignItems: "flex-start",
             }}
           >
             <Text
-              style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}
+              style={[styles.defaultText, { fontSize: 20, marginBottom: 12}]}
             >
               {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
             </Text>
             {marketPrice !== null && (
               <Text
-                style={[styles.defaultText, { fontSize: 14, color: "gray" }]}
+                style={[styles.defaultText, { fontSize: 14, color: theme.accent} ]}
               >
                 Market: {formatCurrency(marketPrice)}
               </Text>
@@ -194,26 +195,17 @@ export default function TradeScreen() {
             marginVertical: 12,
           }}
         >
-          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-            {Object.keys(timeIntervals).map((range) => (
-              <TouchableOpacity
-                key={range}
-                style={{
-                  padding: 6,
-                  paddingHorizontal: 10,
-                  marginRight: 8,
-                  marginBottom: 8,
-                  borderRadius: 6,
-                  backgroundColor:
-                    selectedRange === range ? theme.accent : theme.background,
-                }}
-                onPress={() =>
-                  setSelectedRange(range as keyof typeof timeIntervals)
-                }
-              >
-                <Text style={{ color: theme.text }}>{range}</Text>
-              </TouchableOpacity>
-            ))}
+          <View style={{ marginVertical: 8 }}>
+            <Picker
+              selectedValue={selectedRange}
+              onValueChange={(itemValue) => setSelectedRange(itemValue as keyof typeof timeIntervals)}
+              style={{ color: theme.text, backgroundColor: theme.background }}
+              dropdownIconColor={theme.text}
+            >
+              {Object.keys(timeIntervals).map((range) => (
+                <Picker.Item key={range} label={range} value={range} />
+              ))}
+            </Picker>
           </View>
           <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
             <TouchableOpacity
