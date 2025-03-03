@@ -170,4 +170,14 @@ export const createStyles = (theme: Theme) =>
       alignItems: "center",
       backgroundColor: theme.background,
     },
+    
+    // Leerer Container für "keine Daten" Anzeige
+    emptyContainer: {
+      padding: 20,
+      alignItems: "center",
+      justifyContent: "center",
+      width: "100%",
+      backgroundColor: theme.background,
+      borderRadius: 8,
+    },
   });

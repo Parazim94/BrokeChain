@@ -13,12 +13,17 @@ export type Ticker = {
 };
 
 export type RootStackParamList = {
+  LandingPage: undefined;
+  Main: undefined;
   Markets: undefined;
   Share: undefined;
-  Trade: { coin: Ticker };
+  Trade: { coin: any };
   Discover: undefined;
   Portfolio: undefined;
+  Settings: undefined;
+  Auth: undefined;
   Login: undefined;
+  Register: undefined;
 };
 
 export type StackParamList = {

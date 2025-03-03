@@ -6,6 +6,7 @@ import { Image, Text, View } from "react-native";
 import Card from "@/src/components/Card";
 import Sparkline from "@/src/components/Sparkline";
 import { createStyles } from "@/src/screens/Main/PortfolioComponents/portfolioStyles";
+import { formatCurrency } from "@/src/utils/formatCurrency";
 
 interface NewProps {
   data: any[];
@@ -41,9 +42,16 @@ export default function New({ data, theme }: NewProps) {
                   style={styles.coinIconLarge}
                 />
               )}
-              <Text style={[styles.marketName, { flex: 1 }]}>
-                {item.coinId} {item.marketInfo?.symbol ? `(${item.marketInfo.symbol})` : ""}
-              </Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.marketName}>
+                  {item.coinId} {item.marketInfo?.symbol ? `(${item.marketInfo.symbol})` : ""}
+                </Text>
+                {item.marketInfo && (
+                  <Text style={{ color: theme.text, fontSize: 14 }}>
+                    {formatCurrency(item.marketInfo.current_price)}
+                  </Text>
+                )}
+              </View>
               {item.marketInfo && (
                 <Sparkline
                   prices={item.marketInfo.sparkline.price}
@@ -78,9 +86,9 @@ export default function New({ data, theme }: NewProps) {
                   </View>
                   <View style={styles.gridCol3}>
                     <Text style={{ color: theme.text }}>
-                      {(
+                      {formatCurrency(
                         item.amount * item.marketInfo.current_price
-                      ).toLocaleString()} $
+                      )}
                     </Text>
                   </View>
                 </>

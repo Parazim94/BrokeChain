@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import Svg, { G, Path, Circle, Text as SvgText } from "react-native-svg";
 import * as d3Shape from "d3-shape";
@@ -50,7 +51,7 @@ export default function PortfolioPieChart({
   portfolioPositions = [],
   totalValue = 0,
   width = Dimensions.get("window").width * 0.95,
-  height = 300,
+  height = 200,
   outerRadius = Math.min(width, height) * 0.4,
   innerRadius = outerRadius * 0.4, // für Donut-Stil
 }: PortfolioPieChartProps) {

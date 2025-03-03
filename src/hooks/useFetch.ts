@@ -47,5 +47,5 @@ export async function fetchPost(endpoint: string, body: any) {
 	if (!response.ok) {
 		throw new Error(`Error ${response.status}`);
 	}
-	return response.json();
+	return await response.json();
 }

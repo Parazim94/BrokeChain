@@ -26,7 +26,7 @@ export default function UserInfo({
   const globalStyles = createGlobalStyles();
   
   // Interne History-Auswahl, initial "360d"
-  const [localHistory, setLocalHistory] = React.useState("360d");
+  const [localHistory, setLocalHistory] = React.useState("7d");
   const historyOptions = ["7d", "30d", "360d"];
   
   let dataPoints = 7;
@@ -62,26 +62,26 @@ export default function UserInfo({
       </View>
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, fontSize: 16 }}>Cash</Text>
+          <Text style={{ color: theme.text, fontSize: 12 }}>Cash</Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, fontSize: 16, textAlign: "right" }}>
+          <Text style={{ color: theme.text, fontSize: 12, textAlign: "right" }}>
             {formatCurrency(cash)}
           </Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, fontSize: 16 }}>Positions</Text>
+          <Text style={{ color: theme.text, fontSize: 12 }}>Positions</Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, fontSize: 16, textAlign: "right" }}>
+          <Text style={{ color: theme.text, fontSize: 12, textAlign: "right" }}>
             {formatCurrency(positionsValue)}
           </Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.accent, fontSize: 16 }}>Total</Text>
+          <Text style={{ color: theme.accent, fontSize: 12 }}>Total</Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.accent, fontSize: 16, textAlign: "right" }}>
+          <Text style={{ color: theme.accent, fontSize: 12, textAlign: "right" }}>
             {formatCurrency(combinedValue)}
           </Text>
         </View>

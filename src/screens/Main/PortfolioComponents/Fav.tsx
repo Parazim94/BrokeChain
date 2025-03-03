@@ -37,9 +37,14 @@ export default function Fav({ data, theme }: FavProps) {
             {/* Erste Zeile: Icon, Name und Sparkline */}
             <View style={[styles.row, { width: '100%' }]}>
               <Image source={{ uri: item.image }} tintColor={theme.accent} style={styles.coinIcon} />
-              <Text style={[styles.labelText, { flex: 1, marginLeft: 8 }]}>
-                {item.name}
-              </Text>
+              <View style={{ flex: 1, marginLeft: 8 }}>
+                <Text style={styles.labelText}>
+                  {item.name}
+                </Text>
+                <Text style={{ color: theme.text, fontSize: 14 }}>
+                  {formatCurrency(item.current_price)}
+                </Text>
+              </View>
               <Sparkline
                 prices={item.sparkline.price}
                 width={100}

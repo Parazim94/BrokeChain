@@ -42,12 +42,19 @@ export default function Holding({ data, theme }: HoldingProps) {
                   style={styles.coinIconLarge}
                 />
               )}
-              <Text style={[styles.marketName, { flex: 1 }]}>
-                {item.coinId}{" "}
-                {item.marketInfo?.symbol
-                  ? `(${item.marketInfo.symbol.toUpperCase()})`
-                  : ""}
-              </Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.marketName}>
+                  {item.coinId}{" "}
+                  {item.marketInfo?.symbol
+                    ? `(${item.marketInfo.symbol.toUpperCase()})`
+                    : ""}
+                </Text>
+                {item.marketInfo && (
+                  <Text style={{ color: theme.text, fontSize: 14 }}>
+                    {formatCurrency(item.marketInfo.current_price)}
+                  </Text>
+                )}
+              </View>
               {item.marketInfo && (
                 <Sparkline
                   prices={item.marketInfo.sparkline.price}

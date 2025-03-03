@@ -17,8 +17,10 @@ import AuthScreen from "../screens/Auth/AuthScreen";
 import LoginScreen from "../screens/Auth/LoginScreen";
 import RegisterScreen from "../screens/Auth/RegisterScreen";
 import CashInfo from "../components/CashInfo";
+import LandingPage from "../screens/LandingPage";
+import { RootStackParamList } from "./types";
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
   const { width } = useWindowDimensions();
@@ -27,11 +29,17 @@ export default function StackNavigator() {
 
   return (
     <Stack.Navigator
+      initialRouteName="LandingPage"
       screenOptions={{
         headerStyle: { backgroundColor: theme.background },
         headerTintColor: theme.text,
       }}
     >
+      <Stack.Screen
+        name="LandingPage"
+        component={LandingPage}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="Main"
         component={width >= 768 ? DrawerNavigator : TabNavigator}
@@ -56,7 +64,6 @@ export default function StackNavigator() {
             </View>
           ),
           headerRight: () => (
-
             <View style={{ flexDirection: "row", marginRight: 15 }}>
                <View style={{ flexDirection: "row", marginRight: 15 }}>
                       <CashInfo />

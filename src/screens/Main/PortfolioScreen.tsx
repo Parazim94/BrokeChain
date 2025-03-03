@@ -13,6 +13,7 @@ import Sorting from "./PortfolioComponents/Sorting";
 import Holding from "./PortfolioComponents/Holding";
 import Fav from "./PortfolioComponents/Fav";
 import New from "./PortfolioComponents/New";
+import Orders from "./PortfolioComponents/Orders"; // Neue Orders-Komponente importieren
 import PortfolioPieChart from "./PortfolioComponents/PortfolioPieChart";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/navigation/types";
@@ -20,7 +21,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { useData } from "@/src/context/DataContext";
 import { fetchPost } from "../../hooks/useFetch";
 
-const filterOptions = ["Holding", "Favorites", "New"];
+const filterOptions = ["Holding", "Favorites", "New", "Orders"]; // Orders hinzugefügt
 
 export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
@@ -37,6 +38,7 @@ export default function PortfolioScreen() {
     positions: [] as { coinId: string; amount: number; [key: string]: any }[],
     history: [] as number[],
     favorites: [] as string[],
+    orders: [] as { symbol: string; amount: number; threshold: number; user_id: string; }[], // Orders hinzugefügt
   };
 
   useEffect(() => {
@@ -47,13 +49,17 @@ export default function PortfolioScreen() {
 
   // useEffect zum Abrufen des aktuellen Benutzers via POST mit Token
   useEffect(() => {
-    if (user && user.token) {
-      fetchPost("user", { token: user.token })
-        .then((updatedUser) => setUser(updatedUser))
-        .catch((err) =>
-          console.error("Fehler beim Abrufen des Benutzers:", err)
-        );
-    }
+    const fetchUserData = async () => {
+      if (user && user.token) {
+        try {
+          const updatedUser = await fetchPost("user", { token: user.token });
+          setUser(updatedUser);
+        } catch (err) {
+          console.error("Fehler beim Abrufen des Benutzers:", err);
+        }
+      }
+    };    
+    fetchUserData();
   }, []); // Wird einmalig beim Mount ausgeführt
 
   // Absicherung für neue Benutzer ohne positions
@@ -128,6 +134,26 @@ export default function PortfolioScreen() {
       )
   );
 
+  // Handle-Funktion zum Löschen einer Order
+  const handleDeleteOrder = (orderId: string) => {
+    if (!user || !user.token) return;
+    
+    console.log("Lösche Order mit ID:", orderId); // Debugging-Ausgabe hinzufügen
+    
+    fetchPost("deleteOrder", { token: user.token, orderId })
+      .then((response) => {
+        if (response.success) {
+          // Aktualisieren des Benutzers nach Löschung
+          fetchPost("user", { token: user.token })
+            .then((updatedUser) => setUser(updatedUser))
+            .catch((err) => console.error("Fehler beim Aktualisieren:", err));
+        } else {
+          console.error("Fehler beim Löschen:", response.message || "Unbekannter Fehler");
+        }
+      })
+      .catch((err) => console.error("Fehler beim Löschen der Order:", err));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={{ width: "100%" }}>
@@ -168,6 +194,12 @@ export default function PortfolioScreen() {
               ? "Login or Register first!"
               : "buy some!"}
           </Text>
+        ) : selectedFilter === "Orders" ? (
+          <Orders 
+            data={userData.orders || []} 
+            theme={theme}
+            onDeleteOrder={handleDeleteOrder}
+          />
         ) : selectedFilter === "Favorites" ? (
           <Fav data={favoriteMarketData} theme={theme} />
         ) : selectedFilter === "New" ? (
