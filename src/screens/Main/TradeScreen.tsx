@@ -202,7 +202,7 @@ export default function TradeScreen() {
             </Text>
             {marketPrice !== null && (
               <Text
-                style={[styles.defaultText, { fontSize: 14, color: theme.accent} ]}
+                style={[styles.defaultText, { fontSize: 14, color: theme.accent, fontFamily: "monospace" } ]}
               >
                 Market: {formatCurrency(marketPrice)}
               </Text>
@@ -280,7 +280,7 @@ export default function TradeScreen() {
             </Text>
           </TouchableOpacity>
           <TextInput
-            style={[styles.input, { width: "35%", padding: 2 }]}
+            style={[styles.input, { width: "35%", padding: 2, fontFamily: "monospace" }]}
             placeholder="Amount..."
             placeholderTextColor={styles.defaultText.color}
             value={quantity}
@@ -289,7 +289,7 @@ export default function TradeScreen() {
           />
           {tradeType === "order" && (
             <TextInput
-              style={[styles.input, { width: "35%", padding: 2  }]}
+              style={[styles.input, { width: "35%", padding: 2, fontFamily: "monospace" }]}
               placeholder="Price Threshold..."
               placeholderTextColor={styles.defaultText.color}
               value={orderPrice}

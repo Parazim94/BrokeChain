@@ -16,7 +16,7 @@ import New from "./PortfolioComponents/New";
 import Orders from "./PortfolioComponents/Orders"; // Neue Orders-Komponente importieren
 import PortfolioPieChart from "./PortfolioComponents/PortfolioPieChart";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "@/src/navigation/types";
+import { RootStackParamList } from "@/src/types/types";
 import { AuthContext } from "../../context/AuthContext";
 import { useData } from "@/src/context/DataContext";
 import { fetchPost } from "../../hooks/useFetch";

@@ -65,7 +65,7 @@ export default function UserInfo({
           <Text style={{ color: theme.text, fontSize: 12 }}>Cash</Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, fontSize: 12, textAlign: "right" }}>
+          <Text style={{ color: theme.text, fontSize: 12, textAlign: "right", fontFamily: "monospace" }}>
             {formatCurrency(cash)}
           </Text>
         </View>
@@ -73,7 +73,7 @@ export default function UserInfo({
           <Text style={{ color: theme.text, fontSize: 12 }}>Positions</Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, fontSize: 12, textAlign: "right" }}>
+          <Text style={{ color: theme.text, fontSize: 12, textAlign: "right", fontFamily: "monospace" }}>
             {formatCurrency(positionsValue)}
           </Text>
         </View>
@@ -81,7 +81,7 @@ export default function UserInfo({
           <Text style={{ color: theme.accent, fontSize: 12 }}>Total</Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.accent, fontSize: 12, textAlign: "right" }}>
+          <Text style={{ color: theme.accent, fontSize: 12, textAlign: "right", fontFamily: "monospace" }}>
             {formatCurrency(combinedValue)}
           </Text>
         </View>

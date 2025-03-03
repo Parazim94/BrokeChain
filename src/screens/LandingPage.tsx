@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated, Dimensions, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@react-navigation/native';
-import { RootStackParamList } from '@/src/navigation/types';
+import { RootStackParamList } from '@/src/types/types';
 import { StatusBar } from 'expo-status-bar';
 import { useContext } from 'react';
 import { ThemeContext } from '@/src/context/ThemeContext';

@@ -75,7 +75,8 @@ export default function MarketList({
       marginVertical: 4,
     },
     monoText: {
-      fontFamily: "monospace",
+      fontFamily: "monospace",    
+      fontWeight: "bold",
     },
   });
 
@@ -104,34 +105,26 @@ export default function MarketList({
                 <View style={localStyles.hr} />
                 {/* Zweite Zeile: Preis und prozentuale Veränderung */}
                 <View style={localStyles.row}>
-                  <Text style={[localStyles.labelText, localStyles.monoText]}>
-                    {item.current_price.toLocaleString("de-DE", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })} $
+                  <Text style={[localStyles.labelText, localStyles.monoText, { fontSize: 16 }]}>
+                    {formatCurrency(item.current_price)}
                   </Text>
-                  <Text style={[{ color: item.price_change_percentage_24h < 0 ? "red" : "green" }, localStyles.monoText]}>
-                    {item.price_change_percentage_24h.toFixed(2)}%
+                  <Text>
+                    <Text style={[localStyles.labelText, {fontSize:12}]}>24h:</Text>
+                    <Text style={[{ color: item.price_change_percentage_24h < 0 ? "red" : "green" }, localStyles.monoText]}>{item.price_change_percentage_24h.toFixed(2)}%</Text> 
                   </Text>
                 </View>
                 {/* Dritte Zeile: High und Low */}
                 <View style={localStyles.row}>
                   <Text style={{ color: defaultTextColor }}>
                     <Text style={localStyles.labelText}>High:</Text>
-                    <Text style={[localStyles.monoText, { color: defaultTextColor }]}>
-                      {" "}{item.high_24h.toLocaleString("de-DE", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })} $
+                    <Text style={[localStyles.monoText, { color: "grey" }]}>
+                      {" "}{formatCurrency(item.high_24h)}
                     </Text>
                   </Text>
                   <Text style={{ color: defaultTextColor }}>
                     <Text style={localStyles.labelText}>Low:</Text>
-                    <Text style={[localStyles.monoText, { color: defaultTextColor }]}>
-                      {" "}{item.low_24h.toLocaleString("de-DE", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })} $
+                    <Text style={[localStyles.monoText, { color: "grey"}]}>
+                      {" "}{formatCurrency(item.low_24h)}
                     </Text>
                   </Text>
                 </View>
@@ -139,13 +132,13 @@ export default function MarketList({
                 <View style={localStyles.row}>
                   <Text style={{ color: defaultTextColor }}>
                     <Text style={localStyles.labelText}>Vol:</Text>
-                    <Text style={[localStyles.monoText, { color: defaultTextColor }]}>
+                    <Text style={[localStyles.monoText, { color:"grey" }]}>
                       {" "}{formatCurrency(item.total_volume)}
                     </Text>
                   </Text>
                   <Text style={{ color: defaultTextColor }}>
                     <Text style={localStyles.labelText}>Cap:</Text>
-                    <Text style={[localStyles.monoText, { color: defaultTextColor }]}>
+                    <Text style={[localStyles.monoText, { color:"grey" }]}>
                       {" "}{formatCurrency(item.market_cap)}
                     </Text>
                   </Text>

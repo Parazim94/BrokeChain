@@ -166,6 +166,7 @@ export default function PortfolioPieChart({
               fill={theme.text}
               textAnchor="middle"
               alignmentBaseline="middle"
+              fontFamily="monospace"
             >
               {formatCurrency(totalValue)}
             </SvgText>
@@ -190,6 +191,7 @@ export default function PortfolioPieChart({
                 fontSize={16}
                 fill={theme.text}
                 textAnchor="middle"
+                fontFamily="monospace"
               >
                 {formatCurrency(selectedSegment.value)}
               </SvgText>
@@ -199,6 +201,7 @@ export default function PortfolioPieChart({
                 fontSize={14}
                 fill={theme.text}
                 textAnchor="middle"
+                fontFamily="monospace"
               >
                 {selectedSegment.percentage.toFixed(2)}%
               </SvgText>
@@ -260,5 +263,6 @@ const styles = StyleSheet.create({
   },
   legendText: {
     fontSize: 12,
+    fontFamily: "monospace",
   },
 });

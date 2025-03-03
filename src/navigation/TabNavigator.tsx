@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Platform } from "react-native";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
-import { RootStackParamList } from "@/src/navigation/types"; 
+import { RootStackParamList } from "@/src/types/types"; 
 
 const Tab = createBottomTabNavigator<RootStackParamList>(); // geändert
 

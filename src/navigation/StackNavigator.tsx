@@ -18,7 +18,7 @@ import LoginScreen from "../screens/Auth/LoginScreen";
 import RegisterScreen from "../screens/Auth/RegisterScreen";
 import CashInfo from "../components/CashInfo";
 import LandingPage from "../screens/LandingPage";
-import { RootStackParamList } from "./types";
+import { RootStackParamList } from "../types/types";
 
 const Stack = createStackNavigator<RootStackParamList>();
 

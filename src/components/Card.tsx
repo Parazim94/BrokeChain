@@ -26,8 +26,8 @@ export default function Card({ onPress, children, style }: CardProps) {
 
 function createCardStyles() {
   const { theme } = useContext(ThemeContext);
-  const gradientStart = theme.accent + "11";
-  const gradientEnd = theme.background ;
+  const gradientStart = theme.accent + "15";
+  const gradientEnd = theme.background + "52" ;
 
   const gradientColors = [gradientStart, gradientEnd] as const;
 
@@ -37,9 +37,7 @@ function createCardStyles() {
         padding: 12,
         margin: 4,
         width: "96%",
-        borderRadius: 8,
-        // boxShadow: `0px 1px 2px ${theme.accent + "11"}`,
-       
+        borderRadius: 8,       
       },
     }),
     gradientColors,

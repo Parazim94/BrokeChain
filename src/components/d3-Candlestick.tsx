@@ -12,13 +12,12 @@ import {
 } from "react-native";
 import Svg, { Rect, Line, Text as SvgText, G } from "react-native-svg";
 import * as d3Scale from "d3-scale";
-import * as d3Array from "d3-array";
 import { format } from "date-fns";
 import { ThemeContext } from "@/src/context/ThemeContext";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { useData } from "@/src/context/DataContext";
 
-// Neue helper-Funktion: adjustColor (wie in der normalen CandlestickChart)
+// Neue helper-Funktion: adjustColor zum Anpassen der Helligkeit einer Hex-Farbe
 function adjustColor(hex: string, amt: number): string {
   let usePound = false;
   if (hex[0] === "#") {
@@ -77,8 +76,8 @@ export default function D3CandlestickChart({
   // Configuration
   const CHART_HEIGHT = Math.round(height * 0.8);
   const VOLUME_HEIGHT = Math.round(height * 0.15);
-  const MARGIN = { top: 10, right: 10, bottom: 30, left: 50 };
-  const INNER_WIDTH = width - MARGIN.left - MARGIN.right;
+  const MARGIN = { top: 10, right: 10, bottom: 10, left: 60 };
+  const INNER_WIDTH = width - MARGIN.left - MARGIN.right ;
   const INNER_HEIGHT = CHART_HEIGHT - MARGIN.top - MARGIN.bottom;
 
   // Moving average period

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "@/src/navigation/types";
+import { RootStackParamList } from "@/src/types/types";
 import { Text, View, TouchableOpacity, Modal, TextInput, StyleSheet } from "react-native";
 import Card from "@/src/components/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
@@ -188,22 +188,26 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                 
                 {/* Zeile 2: Menge und Preisschwelle */}
                 <View style={styles.gridRow}>
-                  <View style={styles.gridCol1}>
+                  <View style={{width: '50%'}}>
                     <Text style={{ color: theme.text }}>
                       <Text style={styles.labelText}>Menge:</Text>{" "}
-                      {Math.abs(item.amount)}
+                      <Text style={{ fontFamily: "monospace" }}>
+                        {Math.abs(item.amount)}
+                      </Text>
                     </Text>
                   </View>
-                  <View style={styles.gridCol3}>
-                    <Text style={{ color: theme.text }}>
+                  <View style={{width: '50%'}}>
+                    <Text style={{ color: theme.text, textAlign: 'right' }}>
                       <Text style={styles.labelText}>Limit:</Text>{" "}
-                      {formatCurrency(item.threshold)}
+                      <Text style={{ fontFamily: "monospace" }}>
+                        {formatCurrency(item.threshold)}
+                      </Text>
                     </Text>
                   </View>
                 </View>
                 
                 {/* Optional: Zeile 3 mit Datum oder weiteren Informationen */}
-                {item.createdAt && (
+                {/* {item.createdAt && (
                   <View style={styles.gridRow}>
                     <View style={styles.gridCol1}>
                       <Text style={{ color: theme.text, fontSize: 12 }}>
@@ -211,7 +215,7 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                       </Text>
                     </View>
                   </View>
-                )}
+                )} */}
               </Card>
             </Animated.View>
           );
@@ -240,7 +244,7 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                 <View style={modalStyles.inputContainer}>
                   <Text style={[modalStyles.label, { color: theme.text }]}>Menge:</Text>
                   <TextInput
-                    style={[modalStyles.input, { color: theme.text, borderColor: theme.text }]}
+                    style={[modalStyles.input, { color: theme.text, borderColor: theme.text, fontFamily: "monospace" }]}
                     value={newAmount}
                     onChangeText={setNewAmount}
                     keyboardType="decimal-pad"
@@ -252,7 +256,7 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                 <View style={modalStyles.inputContainer}>
                   <Text style={[modalStyles.label, { color: theme.text }]}>Limit:</Text>
                   <TextInput
-                    style={[modalStyles.input, { color: theme.text, borderColor: theme.text }]}
+                    style={[modalStyles.input, { color: theme.text, borderColor: theme.text, fontFamily: "monospace" }]}
                     value={newThreshold}
                     onChangeText={setNewThreshold}
                     keyboardType="decimal-pad"
@@ -270,7 +274,7 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                   </TouchableOpacity>
                   
                   <TouchableOpacity
-                    style={[modalStyles.button, modalStyles.saveButton, { backgroundColor: theme.accent }]}
+                    style={[modalStyles.button, { backgroundColor: theme.accent }]}
                     onPress={handleSaveEdit}
                   >
                     <Text style={modalStyles.buttonText}>Speichern</Text>
@@ -291,7 +295,7 @@ const modalStyles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
   },
   modalView: {
     margin: 20,
@@ -345,9 +349,6 @@ const modalStyles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: "#9e9e9e",
-  },
-  saveButton: {
-    // Verwendet theme.accent Farbe
   },
   buttonText: {
     color: "white",

@@ -72,11 +72,11 @@ export const createStyles = (theme: Theme) =>
     },
     menuButton: { position: "absolute", top: 10, right: 10 },
     name: { fontSize: 18, color: theme.text },
-    amount: { fontSize: 16, color: theme.text },
-    value: { fontSize: 16, fontWeight: "bold", color: theme.text },
-    profit: { fontSize: 16, fontWeight: "bold", marginTop: 5 },
-    gain: { color: "green" },
-    loss: { color: "red" },
+    amount: { fontSize: 16, color: theme.text, fontWeight: "bold", fontFamily: "monospace" },
+    value: { fontSize: 16, fontWeight: "bold", color: theme.text, fontFamily: "monospace" },
+    profit: { fontSize: 16, fontWeight: "bold", marginTop: 5, fontFamily: "monospace" },
+    gain: { color: "green", fontFamily: "monospace" },
+    loss: { color: "red", fontFamily: "monospace" },
 
     // Gemeinsame Portfolio-Komponenten Styles
     componentContainer: {
@@ -127,17 +127,17 @@ export const createStyles = (theme: Theme) =>
       marginVertical: 4,
     },
     gridCol1: {
-      width: "40%",
+      width: "30%",
       flexDirection: "row",
       alignItems: "center",
     },
     gridCol2: {
-      width: "30%",
+      width: "25%",
       textAlign: "center",
       alignItems: "center",
     },
     gridCol3: {
-      width: "30%",
+      width: "45%",
       textAlign: "right",
       alignItems: "flex-end",
     },

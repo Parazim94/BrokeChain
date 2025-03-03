@@ -15,7 +15,7 @@ import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/Card";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "@/src/navigation/types";
+import { RootStackParamList } from "@/src/types/types";
 
 interface NewsItem {
   guid: string;

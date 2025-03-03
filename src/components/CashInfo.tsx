@@ -37,7 +37,7 @@ export function CashInfo() {
           }}
         >
           <Text style={[styles.defaultText,{fontSize:10}]}>Cash</Text>
-          <Text style={[styles.defaultText,{fontSize:10}]}>
+          <Text style={[styles.defaultText,{fontSize:10, fontFamily: "monospace"}]}>
             {formatCurrency(user ? user.cash : 0)}
           </Text>
         </View>
@@ -49,7 +49,7 @@ export function CashInfo() {
           }}
         >
           <Text style={[styles.defaultText,{fontSize:10}]}>Total</Text>
-          <Text style={[styles.defaultText,{fontSize:10}]}>{formatCurrency(total)}</Text>
+          <Text style={[styles.defaultText,{fontSize:10,fontFamily: "monospace"}]}>{formatCurrency(total)}</Text>
         </View>
       </SafeAreaView>
     );

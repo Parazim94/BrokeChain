@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "@/src/navigation/types";
+import { RootStackParamList } from "@/src/types/types";
 import { FlatList, Image, Text, View } from "react-native";
 import Card from "@/src/components/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
@@ -41,7 +41,7 @@ export default function Fav({ data, theme }: FavProps) {
                 <Text style={styles.labelText}>
                   {item.name}
                 </Text>
-                <Text style={{ color: theme.text, fontSize: 14 }}>
+                <Text style={{ color: theme.text, fontSize: 14, fontFamily: "monospace" }}>
                   {formatCurrency(item.current_price)}
                 </Text>
               </View>
@@ -67,8 +67,8 @@ export default function Fav({ data, theme }: FavProps) {
                 <Text
                   style={
                     item.price_change_percentage_24h < 0
-                      ? { color: "red" }
-                      : { color: "green" }
+                      ? { color: "red", fontFamily: "monospace" }
+                      : { color: "green", fontFamily: "monospace" }
                   }
                 >
                   {item.price_change_percentage_24h.toFixed(2)}%
@@ -81,13 +81,17 @@ export default function Fav({ data, theme }: FavProps) {
               <View style={styles.gridCol1}>
                 <Text style={{ color: theme.text }}>
                   <Text style={styles.labelText}>High:</Text>{" "}
-                  {formatCurrency(item.high_24h)}
+                  <Text style={{ fontFamily: "monospace" }}>
+                    {formatCurrency(item.high_24h)}
+                  </Text>
                 </Text>
               </View>
               <View style={styles.gridCol3}>
                 <Text style={{ color: theme.text }}>
                   <Text style={styles.labelText}>Low:</Text>{" "}
-                  {formatCurrency(item.low_24h)}
+                  <Text style={{ fontFamily: "monospace" }}>
+                    {formatCurrency(item.low_24h)}
+                  </Text>
                 </Text>
               </View>
             </View>
@@ -96,12 +100,18 @@ export default function Fav({ data, theme }: FavProps) {
             <View style={styles.gridRow}>
               <View style={styles.gridCol1}>
                 <Text style={{ color: theme.text }}>
-                  <Text style={styles.labelText}>Vol:</Text> {formatCurrency(item.total_volume)}
+                  <Text style={styles.labelText}>Vol:</Text>{" "}
+                  <Text style={{ fontFamily: "monospace" }}>
+                    {formatCurrency(item.total_volume)}
+                  </Text>
                 </Text>
               </View>
               <View style={styles.gridCol3}>
                 <Text style={{ color: theme.text }}>
-                  <Text style={styles.labelText}>Cap:</Text> {formatCurrency(item.market_cap)}
+                  <Text style={styles.labelText}>Cap:</Text>{" "}
+                  <Text style={{ fontFamily: "monospace" }}>
+                    {formatCurrency(item.market_cap)}
+                  </Text>
                 </Text>
               </View>
             </View>

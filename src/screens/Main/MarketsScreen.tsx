@@ -12,22 +12,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import MarketList from "@/src/components/MarketList";
 import { Ionicons } from "@expo/vector-icons";
-import { RootStackParamList } from "@/src/navigation/types";
+import { RootStackParamList } from "@/src/types/types";
 import { useData } from "@/src/context/DataContext";
-
-type Ticker = {
-  id: string;
-  name: string;
-  symbol: string;
-  current_price: number;
-  price_change_percentage_24h: number;
-  high_24h: number;
-  low_24h: number;
-  total_volume: number;
-  market_cap: number;
-  image: string;
-  sparkline: { price: number[] };
-};
 
 export default function MarketsScreen() {
   const styles = createStyles();

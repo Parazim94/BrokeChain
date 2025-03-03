@@ -1,4 +1,7 @@
 export function formatCurrency(value: number): string {
+  if (value < 0.01) {
+    return value.toFixed(8) + " $";
+  }
   if (value >= 1e6 && value < 1e9) {
     return  (value / 1e6).toFixed(2) + "M"+" $" ;
   } 
@@ -8,5 +11,5 @@ export function formatCurrency(value: number): string {
   if (value >= 1e9) {
     return (value / 1e9).toFixed(2) + "B" + " $";
   } 
-  return   value.toLocaleString("de-DE") +"$";
+  return value.toLocaleString("de-DE") +"$";
 }
