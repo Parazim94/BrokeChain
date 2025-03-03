@@ -60,6 +60,7 @@
     "@babel/plugin-transform-private-methods": "^7.25.9",
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
     "@types/d3-scale": "^4.0.9",
+    "@types/d3-shape": "^3.1.7",
     "@types/jest": "^29.5.12",
     "@types/react": "~18.3.12",
     "@types/react-test-renderer": "^18.3.0",

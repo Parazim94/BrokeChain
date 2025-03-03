@@ -30,6 +30,22 @@ interface PortfolioPieChartProps {
   innerRadius?: number;
 }
 
+// Neue Helperfunktion zur Anpassung der Helligkeit einer Hex-Farbe
+function adjustColorBrightness(hex: string, factor: number): string {
+  // Entferne das '#' falls vorhanden
+  hex = hex.replace("#", "");
+  const num = parseInt(hex, 16);
+  let r = (num >> 16) & 0xFF;
+  let g = (num >> 8) & 0xFF;
+  let b = num & 0xFF;
+  
+  r = Math.round(Math.min(255, r * factor));
+  g = Math.round(Math.min(255, g * factor));
+  b = Math.round(Math.min(255, b * factor));
+  
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
 export default function PortfolioPieChart({
   portfolioPositions = [],
   totalValue = 0,
@@ -39,46 +55,33 @@ export default function PortfolioPieChart({
   innerRadius = outerRadius * 0.4, // für Donut-Stil
 }: PortfolioPieChartProps) {
   const { theme } = useContext(ThemeContext);
+  const accent = theme.accent; // Basis-Akzentfarbe
   const [selectedSegment, setSelectedSegment] = useState<PortfolioItem | null>(
     null
   );
 
-  // Create portfolio items with calculated values and percentages
+  // Angepasste Erstellung der Portfolio-Items mit Farbabstufungen
   const portfolioItems = React.useMemo(() => {
     if (!portfolioPositions || portfolioPositions.length === 0) return [];
-
-    // Farbskala für Diagramm-Segmente
-    const colorScale = d3Scale
-      .scaleOrdinal<string>()
-      .range([
-        "#4CAF50",
-        "#2196F3",
-        "#9C27B0",
-        "#FF9800",
-        "#F44336",
-        "#3F51B5",
-        "#009688",
-        "#FFC107",
-        "#795548",
-        "#607D8B",
-      ]);
-
-    return portfolioPositions
-      .filter((pos) => pos.marketInfo && pos.amount > 0)
+    const validPositions = portfolioPositions.filter((pos) => pos.marketInfo && pos.amount > 0);
+    const n = validPositions.length;
+    return validPositions
       .map((position, index) => {
         const value = position.amount * position.marketInfo.current_price;
         const percentage = totalValue > 0 ? (value / totalValue) * 100 : 0;
+        // Berechne einen Faktor von 1 (keine Änderung) bis ca. 0.6 für dunklere Abstufung
+        const factor = n > 1 ? 1 - (index / (n - 1)) * 0.4 : 1;
         return {
           symbol: position.marketInfo.symbol.toUpperCase(),
           amount: position.amount,
           value: value,
           percentage: percentage,
-          color: colorScale(position.marketInfo.symbol),
+          color: adjustColorBrightness(accent, factor),
         };
       })
-      .filter((item) => item.value > 0) // Only include items with value
-      .sort((a, b) => b.value - a.value); // Sort by value descending
-  }, [portfolioPositions, totalValue]);
+      .filter((item) => item.value > 0)
+      .sort((a, b) => b.value - a.value);
+  }, [portfolioPositions, totalValue, accent]);
 
   // No items or total value equals 0
   if (portfolioItems.length === 0 || totalValue === 0) {
