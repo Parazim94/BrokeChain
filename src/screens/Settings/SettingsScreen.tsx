@@ -28,7 +28,7 @@ export default function SettingsScreen() {
     const payload = updatedUserData;
     console.log(payload);
     try {
-      const response = await fetch("https://broke-end.vercel.app/settings", {
+      const response = await fetch("https://broke-end.vercel.app/user/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

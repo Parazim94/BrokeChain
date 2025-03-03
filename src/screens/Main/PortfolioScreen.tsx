@@ -11,15 +11,14 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/navigation/types";
 import { AuthContext } from "../../context/AuthContext";
 import { useData } from "@/src/context/DataContext";
-
+import { fetchPost } from "../../hooks/useFetch";
 const filterOptions = ["Holding", "Favorites", "New"];
-const historyOptions = ["7d", "30d", "360d"];
 
 export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = createStyles(theme);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { isLoggedIn, user } = useContext(AuthContext);
+  const { isLoggedIn, user, setUser } = useContext(AuthContext); 
   const { marketData } = useData();
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [sortedAscending, setSortedAscending] = useState(true);
@@ -37,6 +36,15 @@ export default function PortfolioScreen() {
       navigation.navigate("Login");
     }
   }, [isLoggedIn, navigation]);
+
+  // useEffect zum Abrufen des aktuellen Benutzers via POST mit Token
+  useEffect(() => {
+    if (user && user.token) {
+      fetchPost("user", { token: user.token })
+        .then((updatedUser) => setUser(updatedUser))
+        .catch((err) => console.error("Fehler beim Abrufen des Benutzers:", err));
+    }
+  }, []); // Wird einmalig beim Mount ausgeführt
 
   // Absicherung für neue Benutzer ohne positions
   const userPositionsArray = Object.entries(userData.positions || {}).map(
@@ -102,20 +110,7 @@ export default function PortfolioScreen() {
       )
   );
 
-  const getHistoryData = () => {
-    // Überprüfe, ob history existiert und ein Array ist
-    if (!userData.history || !Array.isArray(userData.history) || userData.history.length === 0) 
-      return [];
-    
-    // Bestimme basierend auf der Auswahl, wie viele Datenpunkte zurückgegeben werden sollen
-    let dataPoints = 7; // Standardwert für "7d"
-    
-
-    
-    // Holen Sie sich die letzten 'dataPoints' Einträge aus dem History-Array
-    // Nehmen Sie Rücksicht auf das neue Format {total: number, date: string}
-    return userData.history.slice(-dataPoints);
-  };
+ 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -140,7 +135,8 @@ export default function PortfolioScreen() {
       />
       {/* Absicherung mit || [] hinzugefügt, um "cannot read properties of undefined" zu vermeiden */}
       {(userData.positions || []).length === 0 ? (
-        <Text style={[styles.header, {marginLeft:12}]}>Login or Register first!</Text>
+        
+        <Text style={[styles.header, {marginLeft:12}]}>{user.userName !== "gast" ?"Login or Register first!":"buy some!"}</Text>
       ) : selectedFilter === "Favorites" ? (
         <Fav data={favoriteMarketData} theme={theme} />
       ) : selectedFilter === "New" ? (

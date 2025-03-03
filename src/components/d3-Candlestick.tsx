@@ -76,8 +76,8 @@ export default function D3CandlestickChart({
   // Configuration
   const CHART_HEIGHT = Math.round(height * 0.8);
   const VOLUME_HEIGHT = Math.round(height * 0.15);
-  const MARGIN = { top: 10, right: 10, bottom: 30, left: 50 };
-  const effectiveWidth = width * 0.90; // neu: effectiveWidth berechnen
+  const MARGIN = { top: 10, right: 10, bottom: 10, left: 10 };
+  const effectiveWidth = width *0.95;  // neu: effectiveWidth berechnen
   const INNER_WIDTH = effectiveWidth - MARGIN.left - MARGIN.right;
   const INNER_HEIGHT = CHART_HEIGHT - MARGIN.top - MARGIN.bottom;
 

@@ -32,7 +32,6 @@ export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
   const { user, setUser } = useContext(AuthContext);  // setUser hinzugefügt
   const styles = createStyles();
-  const navigation = useNavigation();
   const route = useRoute();
   const { marketData, executeTrade, getHistoricalData } = useData();
 
@@ -242,7 +241,7 @@ export default function TradeScreen() {
         </View>
 
         {chartType === "line" ? (
-          <View style={[styles.sparklineShadow, { padding: 16 }]}>
+          <View style={[styles.sparklineShadow, { padding: 6 }]}>
             <D3LineChart
               symbol={coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"}
               interval={timeIntervals[selectedRange]}
@@ -251,7 +250,7 @@ export default function TradeScreen() {
             />
           </View>
         ) : (
-          <View style={[styles.sparklineShadow, { padding: 8 }]}>
+          <View style={[styles.sparklineShadow, { padding: 2 }]}>
             <D3CandlestickChart
               symbol={
                 coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"
@@ -269,19 +268,19 @@ export default function TradeScreen() {
             justifyContent: "flex-start",
             alignItems: "center",
             marginTop: 16,
-            gap: 8,
+            gap: 4, 
           }}
         >
           <TouchableOpacity
             onPress={() => setTradeType(tradeType === "spot" ? "order" : "spot")}
-            style={styles.baseButton}
+            style={[styles.baseButton, { padding: 4, paddingHorizontal: 8 }]} 
           >
-            <Text style={styles.baseButtonText}>
-              {tradeType === "spot" ? "Spot" : "Order"}
+            <Text style={[styles.baseButtonText, { fontSize: 12 }]}> 
+              {tradeType === "spot" ? "Order" : "Spot"}
             </Text>
           </TouchableOpacity>
           <TextInput
-            style={[styles.input, { width: "35%" }]}
+            style={[styles.input, { width: "35%", padding: 2 }]}
             placeholder="Amount..."
             placeholderTextColor={styles.defaultText.color}
             value={quantity}
@@ -290,7 +289,7 @@ export default function TradeScreen() {
           />
           {tradeType === "order" && (
             <TextInput
-              style={[styles.input, { width: "35%" }]}
+              style={[styles.input, { width: "35%", padding: 2  }]}
               placeholder="Price Threshold..."
               placeholderTextColor={styles.defaultText.color}
               value={orderPrice}
@@ -298,20 +297,23 @@ export default function TradeScreen() {
               keyboardType="numeric"
             />
           )}
-          <TouchableOpacity onPress={handleMax} style={styles.baseButton}>
-            <Text style={styles.baseButtonText}>Max</Text>
+          <TouchableOpacity 
+            onPress={handleMax} 
+            style={[styles.baseButton, { padding: 4, paddingHorizontal: 6 }]} 
+          >
+            <Text style={[styles.baseButtonText, { fontSize: 12 }]}>Max</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleTrade("buy")}
-            style={styles.baseButton}
+            style={[styles.baseButton, { padding: 4, paddingHorizontal: 6 }]} 
           >
-            <Text style={styles.baseButtonText}>Buy</Text>
+            <Text style={[styles.baseButtonText, { fontSize: 12 }]}>Buy</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleTrade("sell")}
-            style={styles.baseButton}
+            style={[styles.baseButton, { padding: 4, paddingHorizontal: 6 }]} 
           >
-            <Text style={styles.baseButtonText}>Sell</Text>
+            <Text style={[styles.baseButtonText, { fontSize: 12 }]}>Sell</Text>
           </TouchableOpacity>
         </View>
       </View>
