@@ -47,7 +47,7 @@ export const createStyles = (theme: Theme) =>
       paddingHorizontal: 10,
       borderRadius: 4,
       marginRight: 8,
-      color: theme.text,	
+      color: theme.text,
     },
     selectedCategoryButton: { backgroundColor: theme.accent },
     categoryText: { color: theme.text, fontSize: 14 },
@@ -57,7 +57,7 @@ export const createStyles = (theme: Theme) =>
       paddingVertical: 6,
       paddingHorizontal: 10,
       borderRadius: 4,
-      marginLeft:"auto",
+      marginLeft: "auto",
     },
     amountSortText: { color: theme.text, fontSize: 14, fontWeight: "bold" },
     hr: {
@@ -94,8 +94,7 @@ export const createStyles = (theme: Theme) =>
       alignItems: "center",
       marginVertical: 4,
       width: "100%",
-      justifyContent:"space-between"
-
+      justifyContent: "space-between",
     },
     coinIcon: {
       width: 32,
@@ -162,7 +161,13 @@ export const createStyles = (theme: Theme) =>
       fontWeight: "bold",
     },
     sparklineContainer: {
-      // Beispiel: minimaler Abstand
       marginTop: 8,
-    }
+    },
+    chartContainer: {
+      width: "100%",
+      marginVertical: 16,
+      paddingHorizontal: 5,
+      alignItems: "center",
+      backgroundColor: theme.background,
+    },
   });
