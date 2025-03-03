@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  FlatList,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
@@ -15,6 +16,7 @@ import D3LineChart from "@/src/components/d3-LineChart";
 import { useData } from "@/src/context/DataContext";
 import D3CandlestickChart from "@/src/components/d3-Candlestick";
 import CashInfo from "@/src/components/CashInfo";
+import { Ionicons } from "@expo/vector-icons";
 
 const timeIntervals = {
   "1m": "1m",
@@ -51,6 +53,19 @@ export default function TradeScreen() {
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [tradeType, setTradeType] = useState<"spot" | "order">("spot");
   const [orderPrice, setOrderPrice] = useState("");
+  
+  // Neue Zustände für die Suchfunktion
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchActive, setIsSearchActive] = useState(false);
+
+  // Filtern der Coins basierend auf der Suchanfrage
+  const filteredCoins = useMemo(() => {
+    if (!searchQuery) return [];
+    return marketData.filter((item) => 
+      (item.name || "").toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (item.symbol || "").toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery, marketData]);
 
   useEffect(() => {
     if (routeCoin && routeCoin !== coin) setCoin(routeCoin);
@@ -186,6 +201,7 @@ export default function TradeScreen() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
           <View
@@ -193,6 +209,7 @@ export default function TradeScreen() {
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
+              flex: 1,
             }}
           >
             <Text
@@ -208,8 +225,82 @@ export default function TradeScreen() {
               </Text>
             )}
           </View>
-         
+          
+          {/* Suchbutton hinzufügen */}
+          <TouchableOpacity
+            onPress={() => setIsSearchActive(!isSearchActive)}
+            style={[
+              styles.baseButton,
+              {
+                padding: 8,
+                backgroundColor: isSearchActive
+                  ? theme.accent
+                  : theme.background,
+              },
+            ]}
+          >
+            <Ionicons name="search" size={20} color={theme.text} />
+          </TouchableOpacity>
         </View>
+        
+        {/* Suchfeld anzeigen, wenn Suche aktiv ist */}
+        {isSearchActive && (
+          <View style={{ marginVertical: 10 }}>
+            <TextInput
+              placeholder="Coin suchen..."
+              placeholderTextColor={styles.defaultText.color}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              style={[styles.input, { width: "100%" }]}
+              autoFocus
+            />
+            
+            {/* Suchergebnisse anzeigen */}
+            {searchQuery.length > 0 && (
+              <View style={{ 
+                maxHeight: 200, 
+                backgroundColor: theme.background,
+                borderRadius: 8,
+                marginTop: 4,
+                borderWidth: 1,
+                borderColor: theme.text
+              }}>
+                <FlatList
+                  data={filteredCoins}
+                  keyExtractor={(item) => item.id || item.symbol}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={{
+                        padding: 12,
+                        borderBottomWidth: 1,
+                        borderBottomColor: theme.text,
+                        flexDirection: "row",
+                        justifyContent: "space-between"
+                      }}
+                      onPress={() => {
+                        setCoin(item);
+                        setSearchQuery("");
+                        setIsSearchActive(false);
+                      }}
+                    >
+                      <Text style={[styles.defaultText, { fontWeight: "500" }]}>
+                        {item.name} ({item.symbol?.toUpperCase()})
+                      </Text>
+                      <Text style={[styles.defaultText, { color: theme.accent }]}>
+                        {formatCurrency(item.current_price)}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  ListEmptyComponent={
+                    <Text style={[styles.defaultText, { padding: 12, textAlign: "center" }]}>
+                      Keine Ergebnisse gefunden
+                    </Text>
+                  }
+                />
+              </View>
+            )}
+          </View>
+        )}
 
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 8 }}>
           <View style={{ flexDirection: "row", flexWrap: "wrap", flex: 1 }}>
