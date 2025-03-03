@@ -3,11 +3,11 @@ export const AccentColors = [
   "#d0bf00", // Gold
   "#ffc132", // Gelb
   "#ff8c00", // Orange
-  "#FF007F", // Pink
-  "#8A2BE2", // Lila
+  "#b9005d", // Pink
+  "#6200be", // Lila
   "#FF4500", // Orangerot
-  "#00FF00", // Grün
-  "#FFD700", // Goldgelb
+  "#00b700", // Grün
+  "#d8b800", // Goldgelb
   "#00CED1", // Türkis
   
 ];

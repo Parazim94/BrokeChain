@@ -54,11 +54,11 @@ export function createStyles() {
       height: 40,
       alignItems: "center",
     },
-    sparklineShadow: {
-      boxShadow: `0px 0px 1px ${theme.accent + "88"}`,
-      backgroundColor: "transparent",
-      borderRadius: 8,
-    },
+    // sparklineShadow: {
+    //   boxShadow: `0px 0px 1px ${theme.accent + "88"}`,
+    //   backgroundColor: "transparent",
+    //   borderRadius: 8,
+    // },
     hr: {
       height: 1,
       backgroundColor: "gray",

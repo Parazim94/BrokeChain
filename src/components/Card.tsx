@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { TouchableOpacity, StyleSheet, ViewStyle } from "react-native";
 import { ThemeContext } from "../context/ThemeContext";
-import { createStyles } from "../styles/style";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface CardProps {
@@ -26,8 +25,8 @@ export default function Card({ onPress, children, style }: CardProps) {
 
 function createCardStyles() {
   const { theme } = useContext(ThemeContext);
-  const gradientStart = theme.accent + "15";
-  const gradientEnd = theme.background + "52" ;
+  const gradientStart = theme.accent + "22";
+  const gradientEnd = theme.background;
 
   const gradientColors = [gradientStart, gradientEnd] as const;
 

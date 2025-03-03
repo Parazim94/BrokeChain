@@ -45,7 +45,7 @@ export default function UserInfo({
   
   return (
     <View
-      style={[
+      style={
         {
           maxWidth: 1024,
           margin: "auto",
@@ -53,35 +53,33 @@ export default function UserInfo({
           marginTop: 10,
           padding: 10,
           backgroundColor: theme.background,
-        },
-        globalStyles.sparklineShadow,
-      ]}
+        }}
     >
       <View style={styles.row}>
         <Text style={styles.header}>{userName}</Text>
       </View>
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, fontSize: 12 }}>Cash</Text>
+          <Text style={{ color: theme.text,}}>Cash</Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, fontSize: 12, textAlign: "right", fontFamily: "monospace" }}>
+          <Text style={{ color: theme.text, textAlign: "right", fontFamily: "monospace" }}>
             {formatCurrency(cash)}
           </Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, fontSize: 12 }}>Positions</Text>
+          <Text style={{ color: theme.text, }}>Positions</Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, fontSize: 12, textAlign: "right", fontFamily: "monospace" }}>
+          <Text style={{ color: theme.text, textAlign: "right", fontFamily: "monospace" }}>
             {formatCurrency(positionsValue)}
           </Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.accent, fontSize: 12 }}>Total</Text>
+          <Text style={{ color: theme.accent, }}>Total</Text>
         </View>
         <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.accent, fontSize: 12, textAlign: "right", fontFamily: "monospace" }}>
+          <Text style={{ color: theme.accent, textAlign: "right", fontFamily: "monospace" }}>
             {formatCurrency(combinedValue)}
           </Text>
         </View>

@@ -20,40 +20,40 @@ export default function Holding({ data, theme }: HoldingProps) {
   return (
     <Animated.FlatList
       data={data}
-      style={[styles.list, { width: '100%' }]}
+      style={[styles.list, { width: "100%" }]}
       contentContainerStyle={{ paddingHorizontal: 0 }}
       keyExtractor={(_, index) => index.toString()}
       renderItem={({ item, index }) => (
-        <Animated.View 
+        <Animated.View
           entering={FadeInUp.delay(index * 50)}
-          style={{ width: '100%' }}
+          style={{ width: "100%" }}
         >
           <Card
             onPress={() => {
               navigation.navigate("Trade", { coin: item.marketInfo });
             }}
-            style={{ ...styles.card, width: '95%', marginHorizontal: "auto" }}
+            style={{ ...styles.card, width: "95%", marginHorizontal: "auto" }}
           >
             {/* Neues Layout: Logo links, Inhalt rechts */}
-            <View style={{ flexDirection: 'row', width: '100%' }}>
+            <View style={{ flexDirection: "row", width: "100%" }}>
               {/* Logo links, über beide Zeilen */}
               {item.marketInfo && (
-                <View style={{ justifyContent: 'center', paddingRight: 10 }}>
+                <View style={{ justifyContent: "center", paddingRight: 10 }}>
                   <Image
                     source={{ uri: item.marketInfo.image }}
-                    style={{ 
-                      width: 50, 
-                      height: 50, 
-                      borderRadius: 25
+                    style={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 25,
                     }}
                   />
                 </View>
               )}
-              
+
               {/* Inhalt rechts */}
               <View style={{ flex: 1 }}>
                 {/* Erste Zeile: Name und Sparkline */}
-                <View style={[styles.row, { width: '100%' }]}>
+                <View style={[styles.row, { width: "100%" }]}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.marketName}>
                       {item.marketInfo?.name}{" "}
@@ -62,9 +62,22 @@ export default function Holding({ data, theme }: HoldingProps) {
                         : ""}
                     </Text>
                     {item.marketInfo && (
-                      <Text style={{ color: "grey", fontSize: 12, fontFamily: "monospace" }}>
-                        Market: {formatCurrency(item.marketInfo.current_price)}
+
+                    <View style={{ flexDirection: "row" }}>
+                      <Text
+                        style={{
+                          color: "grey",
+                          fontSize: 12,
+                          fontFamily: "monospace",
+                          textAlign: "left",
+                        }}
+                      >
+                        Market: {" "}
                       </Text>
+                      <Text style={{ color:theme.accent, fontSize: 12, fontFamily: "monospace" }}>                       
+                      {formatCurrency(item.marketInfo.current_price)}
+                    </Text>
+                    </View>
                     )}
                   </View>
                   {item.marketInfo && (
@@ -94,15 +107,22 @@ export default function Holding({ data, theme }: HoldingProps) {
                               item.marketInfo.price_change_percentage_24h < 0
                                 ? "red"
                                 : "green",
-                            fontFamily: "monospace"
+                            fontFamily: "monospace",
                           }}
                         >
-                          {item.marketInfo.price_change_percentage_24h.toFixed(2)}%
+                          {item.marketInfo.price_change_percentage_24h.toFixed(
+                            2
+                          )}
+                          %
                         </Text>
                       </View>
                       <View style={styles.gridCol3}>
-                        <Text style={[styles.value, { fontFamily: "monospace" }]}>
-                          {formatCurrency(item.amount * item.marketInfo.current_price)}
+                        <Text
+                          style={[styles.value, { fontFamily: "monospace" }]}
+                        >
+                          {formatCurrency(
+                            item.amount * item.marketInfo.current_price
+                          )}
                         </Text>
                       </View>
                     </>

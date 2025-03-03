@@ -332,7 +332,7 @@ export default function TradeScreen() {
         </View>
 
         {chartType === "line" ? (
-          <View style={[styles.sparklineShadow, { padding: 6 }]}>
+          <View style={{ padding: 6 }}>
             <D3LineChart
               symbol={coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"}
               interval={timeIntervals[selectedRange]}
@@ -341,7 +341,7 @@ export default function TradeScreen() {
             />
           </View>
         ) : (
-          <View style={[styles.sparklineShadow, { padding: 2 }]}>
+          <View style={{ padding: 2 }}>
             <D3CandlestickChart
               symbol={
                 coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"

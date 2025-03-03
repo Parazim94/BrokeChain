@@ -105,7 +105,7 @@ export default function MarketList({
                 <View style={localStyles.hr} />
                 {/* Zweite Zeile: Preis und prozentuale Veränderung */}
                 <View style={localStyles.row}>
-                  <Text style={[localStyles.labelText, localStyles.monoText, { fontSize: 16 }]}>
+                  <Text style={[localStyles.labelText, localStyles.monoText, { fontSize: 16, textDecorationLine: "underline", textDecorationColor: accentColor }]}>
                     {formatCurrency(item.current_price)}
                   </Text>
                   <Text>
