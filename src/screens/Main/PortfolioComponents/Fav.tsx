@@ -32,88 +32,118 @@ export default function Fav({ data, theme }: FavProps) {
             onPress={() => {
               navigation.navigate("Trade", { coin: item });
             }}
-            style={{ ...styles.card, width: '95%', marginHorizontal: "auto" }}
+            style={{ 
+              backgroundColor: theme.background,
+              maxWidth: "100%",
+              minWidth: 280,
+              marginHorizontal: "auto",
+              width: "95%",
+              marginTop: 8,
+            }}
           >
             {/* Erste Zeile: Icon, Name und Sparkline */}
-            <View style={[styles.row, { width: '100%' }]}>
-              <Image source={{ uri: item.image }} tintColor={theme.accent} style={styles.coinIcon} />
-              <View style={{ flex: 1, marginLeft: 8 }}>
-                <Text style={styles.labelText}>
-                  {item.name}
-                </Text>
-                <Text style={{ color: theme.text, fontSize: 14, fontFamily: "monospace" }}>
-                  {formatCurrency(item.current_price)}
-                </Text>
-              </View>
+            <View style={{ 
+              flexDirection: "row", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginVertical: 4 
+            }}>
+              <Image 
+                source={{ uri: item.image }} 
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  marginRight: 8,
+                }} 
+              />
+              <Text style={[styles.labelText, { flex: 1, marginLeft: 8 }]}>
+                {item.name}
+              </Text>
               <Sparkline
                 prices={item.sparkline.price}
                 width={100}
                 height={30}
                 stroke={theme.accent}
                 strokeWidth={2}
+                maxDataPoints={15}
               />
             </View>
-            {/** Separator */}
-            <View style={styles.hr} />
             
-            {/* Zweite Zeile: Preis und 24h-Änderung in Grid-Layout */}
-            <View style={styles.gridRow}>
-              <View style={styles.gridCol1}>
-                <Text style={{ fontFamily: "monospace", color: theme.text }}>
-                  {formatCurrency(item.current_price)}
+            {/* Trennlinie */}
+            <View style={{ height: 1, backgroundColor: "gray", marginVertical: 4 }} />
+            
+            {/* Zweite Zeile: Preis und 24h-Änderung */}
+            <View style={{ 
+              flexDirection: "row", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginVertical: 4 
+            }}>
+              <Text style={{ 
+                fontFamily: "monospace", 
+                fontWeight: "bold", 
+                color: theme.text,
+                fontSize: 16, 
+                textDecorationLine: "underline", 
+                textDecorationColor: theme.accent 
+              }}>
+                {formatCurrency(item.current_price)}
+              </Text>
+              <Text>
+                <Text style={{ fontWeight: "bold", color: theme.text, fontSize: 12 }}>
+                  24h:{" "}
                 </Text>
-              </View>
-              <View style={styles.gridCol3}>
-                <Text
-                  style={
-                    item.price_change_percentage_24h < 0
-                      ? { color: "red", fontFamily: "monospace" }
-                      : { color: "green", fontFamily: "monospace" }
-                  }
-                >
+                <Text style={{ 
+                  color: item.price_change_percentage_24h < 0 ? "red" : "green",
+                  fontFamily: "monospace",
+                  fontWeight: "bold" 
+                }}>
                   {item.price_change_percentage_24h.toFixed(2)}%
                 </Text>
-              </View>
+              </Text>
             </View>
             
-            {/* Dritte Zeile: High und Low im Grid-Layout */}
-            <View style={styles.gridRow}>
-              <View style={styles.gridCol1}>
-                <Text style={{ color: theme.text }}>
-                  <Text style={styles.labelText}>High:</Text>{" "}
-                  <Text style={{ fontFamily: "monospace" }}>
-                    {formatCurrency(item.high_24h)}
-                  </Text>
+            {/* Dritte Zeile: High und Low */}
+            <View style={{ 
+              flexDirection: "row", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginVertical: 4 
+            }}>
+              <Text style={{ color: theme.text }}>
+                <Text style={{ fontWeight: "bold", color: theme.text }}>High:</Text>
+                <Text style={{ fontFamily: "monospace", color: "grey" }}>
+                  {" "}{formatCurrency(item.high_24h)}
                 </Text>
-              </View>
-              <View style={styles.gridCol3}>
-                <Text style={{ color: theme.text }}>
-                  <Text style={styles.labelText}>Low:</Text>{" "}
-                  <Text style={{ fontFamily: "monospace" }}>
-                    {formatCurrency(item.low_24h)}
-                  </Text>
+              </Text>
+              <Text style={{ color: theme.text }}>
+                <Text style={{ fontWeight: "bold", color: theme.text }}>Low:</Text>
+                <Text style={{ fontFamily: "monospace", color: "grey" }}>
+                  {" "}{formatCurrency(item.low_24h)}
                 </Text>
-              </View>
+              </Text>
             </View>
             
-            {/* Vierte Zeile: Volumen und Marketcap im Grid-Layout */}
-            <View style={styles.gridRow}>
-              <View style={styles.gridCol1}>
-                <Text style={{ color: theme.text }}>
-                  <Text style={styles.labelText}>Vol:</Text>{" "}
-                  <Text style={{ fontFamily: "monospace" }}>
-                    {formatCurrency(item.total_volume)}
-                  </Text>
+            {/* Vierte Zeile: Volumen und Marketcap */}
+            <View style={{ 
+              flexDirection: "row", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginVertical: 4 
+            }}>
+              <Text style={{ color: theme.text }}>
+                <Text style={{ fontWeight: "bold", color: theme.text }}>Vol:</Text>
+                <Text style={{ fontFamily: "monospace", color: "grey" }}>
+                  {" "}{formatCurrency(item.total_volume)}
                 </Text>
-              </View>
-              <View style={styles.gridCol3}>
-                <Text style={{ color: theme.text }}>
-                  <Text style={styles.labelText}>Cap:</Text>{" "}
-                  <Text style={{ fontFamily: "monospace" }}>
-                    {formatCurrency(item.market_cap)}
-                  </Text>
+              </Text>
+              <Text style={{ color: theme.text }}>
+                <Text style={{ fontWeight: "bold", color: theme.text }}>Cap:</Text>
+                <Text style={{ fontFamily: "monospace", color: "grey" }}>
+                  {" "}{formatCurrency(item.market_cap)}
                 </Text>
-              </View>
+              </Text>
             </View>
           </Card>
         </Animated.View>

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import { SafeAreaView, View, Text, SectionList } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import { createStyles } from "./PortfolioComponents/portfolioStyles";
@@ -6,7 +6,7 @@ import UserInfo from "./PortfolioComponents/UserInfo";
 import Sorting from "./PortfolioComponents/Sorting";
 import Holding from "./PortfolioComponents/Holding";
 import Fav from "./PortfolioComponents/Fav";
-import New from "./PortfolioComponents/New";
+import TradeHistory from "./PortfolioComponents/TradeHistory";
 import Orders from "./PortfolioComponents/Orders";
 import PortfolioPieChart from "./PortfolioComponents/PortfolioPieChart";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
@@ -15,7 +15,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { useData } from "@/src/context/DataContext";
 import { fetchPost } from "../../hooks/useFetch";
 
-const filterOptions = ["Holding", "Favorites", "New", "Orders"]; // Orders hinzugefügt
+const filterOptions = ["Holding", "Favorites", "TradeHistory", "Orders"]; // "New" zu "TradeHistory" geändert
 
 export default function PortfolioScreen() {
   const { theme } = useContext(ThemeContext);
@@ -33,6 +33,7 @@ export default function PortfolioScreen() {
     history: [] as number[],
     favorites: [] as string[],
     orders: [] as { symbol: string; amount: number; threshold: number; user_id: string; }[], // Orders hinzugefügt
+    tradeHistory: [] as { symbol: string; price: number; amount: number; order: boolean; createdAt: string }[], // TradeHistory hinzugefügt
   };
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export default function PortfolioScreen() {
         return userData.favorites.some(
           (fav: string) => fav.toLowerCase() === coinIdLower
         );
-      if (selectedFilter === "New")
+      if (selectedFilter === "TradeHistory") // "New" zu "TradeHistory" geändert
         return !userData.favorites.some(
           (fav: string) => fav.toLowerCase() === coinIdLower
         );
@@ -122,12 +123,26 @@ export default function PortfolioScreen() {
     }
   );
 
-  const favoriteMarketData = marketData.filter(
-    (coin: { name: string; [key: string]: any }) =>
-      userData.favorites.some(
-        (fav: string) => fav.toLowerCase() === coin.name.toLowerCase()
+  const favoriteMarketData = useMemo(() => {
+    if (!user?.favorites || !Array.isArray(user.favorites) || !Array.isArray(marketData)) {
+      return [];
+    }
+    
+    // Filter marketData für alle Coins, deren Symbol in user.favorites ist
+    // Define interfaces for coin data types
+    interface MarketDataCoin {
+      symbol: string;
+      name: string;
+      current_price: number;
+      [key: string]: any;
+    }
+
+    return marketData.filter((coin: MarketDataCoin) => 
+      user.favorites.some((fav: string) => 
+      fav.toLowerCase() === coin.symbol.toLowerCase()
       )
-  );
+    );
+  }, [user?.favorites, marketData]);
 
   // Handle-Funktion zum Löschen einer Order
   const handleDeleteOrder = (orderId: string) => {
@@ -159,8 +174,9 @@ export default function PortfolioScreen() {
     case "Favorites":
       currentData = favoriteMarketData;
       break;
-    case "New":
-      currentData = sortedPositions;
+    case "TradeHistory": // "New" zu "TradeHistory" geändert
+      // Für "TradeHistory" setzen wir genau ein Element, damit die TradeHistory-Komponente nur einmal gerendert wird
+      currentData = ["trades_placeholder"];
       break;
     default:
       currentData = sortedPositions;
@@ -187,8 +203,9 @@ export default function PortfolioScreen() {
         return <Orders data={[item]} theme={theme} onDeleteOrder={handleDeleteOrder} />;
       case "favorites":
         return <Fav data={[item]} theme={theme} />;
-      case "new":
-        return <New data={[item]} theme={theme} />;
+      case "tradehistory": // "new" zu "tradehistory" geändert (kleingeschrieben für section.type)
+        // Der data-Prop wird nicht mehr verwendet, wir übergeben nur die tradeHistory
+        return <TradeHistory theme={theme} tradeHistory={userData.tradeHistory} />;
       default:
         return <Holding data={[item]} theme={theme} />;
     }

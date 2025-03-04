@@ -261,7 +261,7 @@ export default function TradeScreen() {
                 borderRadius: 8,
                 marginTop: 4,
                 borderWidth: 1,
-                borderColor: theme.text
+                borderColor: theme.accent // Hier: theme.text → theme.accent
               }}>
                 <FlatList
                   data={filteredCoins}
@@ -271,7 +271,7 @@ export default function TradeScreen() {
                       style={{
                         padding: 12,
                         borderBottomWidth: 1,
-                        borderBottomColor: theme.text,
+                        borderBottomColor: theme.accent + "40", // Hier: theme.text → theme.accent + Opacity
                         flexDirection: "row",
                         justifyContent: "space-between"
                       }}

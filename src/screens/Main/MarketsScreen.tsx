@@ -191,7 +191,14 @@ export default function MarketsScreen() {
           placeholderTextColor={styles.defaultText.color}
           value={searchQuery}
           onChangeText={(text) => setSearchQuery(text)}
-          style={[styles.input, { alignSelf: "center" }]}
+          style={[
+            styles.input, 
+            { 
+              alignSelf: "center",
+              borderColor: styles.accent.color, // Hinzugefügt: Akzentfarbe für Outline
+              borderWidth: 1
+            }
+          ]}
         />
       )}
       {/* Marktliste als Komponente: Jetzt mit gefilterter Liste */}
