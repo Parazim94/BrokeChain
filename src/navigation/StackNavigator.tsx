@@ -32,8 +32,12 @@ export default function StackNavigator() {
     <Stack.Navigator
       initialRouteName="LandingPage"
       screenOptions={{
-        headerStyle: { backgroundColor: theme.background },
+        headerStyle: {
+          backgroundColor: theme.background,
+          height: Platform.OS === "ios" ? 100 : undefined,
+        },
         headerTintColor: theme.text,
+        headerStatusBarHeight: Platform.OS === "ios" ? 50 : undefined,
       }}
     >
       <Stack.Screen
@@ -52,12 +56,9 @@ export default function StackNavigator() {
                 marginLeft: 15,
                 alignItems: "center",
                 justifyContent: "center",
+                marginTop: Platform.OS === "ios" ? 15 : 0,
               }}
             >
-              <StatusBar
-                barStyle="light-content"
-                backgroundColor={theme.background}
-              />
               <Image
                 source={require("../../assets/images/Brokechain3.png")}
                 tintColor={theme.accent}
