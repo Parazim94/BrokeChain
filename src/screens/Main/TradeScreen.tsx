@@ -17,6 +17,7 @@ import { useData } from "@/src/context/DataContext";
 import D3CandlestickChart from "@/src/components/d3-Candlestick";
 import CashInfo from "@/src/components/CashInfo";
 import { Ionicons } from "@expo/vector-icons";
+import Button from "@/src/components/Button"; // Neue Button-Komponente importieren
 
 const timeIntervals = {
   "1m": "1m",
@@ -226,21 +227,18 @@ export default function TradeScreen() {
             )}
           </View>
           
-          {/* Suchbutton hinzufügen */}
-          <TouchableOpacity
+          {/* Button durch neue Komponente ersetzen */}
+          <Button
             onPress={() => setIsSearchActive(!isSearchActive)}
-            style={[
-              styles.baseButton,
-              {
-                padding: 8,
-                backgroundColor: isSearchActive
-                  ? theme.accent
-                  : theme.background,
-              },
-            ]}
-          >
-            <Ionicons name="search" size={20} color={theme.text} />
-          </TouchableOpacity>
+            title=""
+            icon="search"
+            type="secondary"
+            size="small"
+            style={{
+              backgroundColor: isSearchActive ? theme.accent : theme.background,
+              padding: 8,
+            }}
+          />
         </View>
         
         {/* Suchfeld anzeigen, wenn Suche aktiv ist */}
@@ -305,30 +303,30 @@ export default function TradeScreen() {
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 8 }}>
           <View style={{ flexDirection: "row", flexWrap: "wrap", flex: 1 }}>
             {Object.keys(timeIntervals).map((range) => (
-              <TouchableOpacity
+              <Button
                 key={range}
+                onPress={() => setSelectedRange(range as keyof typeof timeIntervals)}
+                title={range}
+                type={selectedRange === range ? "primary" : "outline"}
+                size="small"
                 style={{
-                  paddingVertical: 2,
-                  paddingHorizontal: 4,
                   marginRight: 4,
                   marginBottom: 4,
-                  borderRadius: 4,
-                  backgroundColor: selectedRange === range ? theme.accent : theme.background,
+                  paddingVertical: 2,
+                  paddingHorizontal: 4,
                 }}
-                onPress={() => setSelectedRange(range as keyof typeof timeIntervals)}
-              >
-                <Text style={{ color: theme.text, fontSize: 10 }}>{range}</Text>
-              </TouchableOpacity>
+                textStyle={{ fontSize: 10 }}
+              />
             ))}
           </View>
-          <TouchableOpacity
+
+          <Button
             onPress={() => setChartType(chartType === "line" ? "d3-candlestick" : "line")}
-            style={[styles.baseButton, { paddingVertical: 4, paddingHorizontal: 8 }]}
-          >
-            <Text style={[styles.baseButtonText, { fontSize: 12 }]}>
-              {chartType === "line" ? "Candle" : "Line"}
-            </Text>
-          </TouchableOpacity>
+            title={chartType === "line" ? "Candle" : "Line"}
+            size="small"
+            style={{ paddingVertical: 4, paddingHorizontal: 8 }}
+            textStyle={{ fontSize: 12 }}
+          />
         </View>
 
         {chartType === "line" ? (
@@ -362,14 +360,13 @@ export default function TradeScreen() {
             gap: 4, 
           }}
         >
-          <TouchableOpacity
+          <Button
             onPress={() => setTradeType(tradeType === "spot" ? "order" : "spot")}
-            style={[styles.baseButton, { padding: 4, paddingHorizontal: 8 }]} 
-          >
-            <Text style={[styles.baseButtonText, { fontSize: 12 }]}> 
-              {tradeType === "spot" ? "Order" : "Spot"}
-            </Text>
-          </TouchableOpacity>
+            title={tradeType === "spot" ? "Order" : "Spot"}
+            size="small"
+            style={{ padding: 4, paddingHorizontal: 8 }}
+            textStyle={{ fontSize: 12 }}
+          />
           <TextInput
             style={[styles.input, { width: "35%", padding: 2, fontFamily: "monospace" }]}
             placeholder="Amount..."
@@ -388,24 +385,27 @@ export default function TradeScreen() {
               keyboardType="numeric"
             />
           )}
-          <TouchableOpacity 
-            onPress={handleMax} 
-            style={[styles.baseButton, { padding: 4, paddingHorizontal: 6 }]} 
-          >
-            <Text style={[styles.baseButtonText, { fontSize: 12 }]}>Max</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          <Button
+            onPress={handleMax}
+            title="Max"
+            size="small"
+            style={{ padding: 4, paddingHorizontal: 6 }}
+            textStyle={{ fontSize: 12 }}
+          />
+          <Button
             onPress={() => handleTrade("buy")}
-            style={[styles.baseButton, { padding: 4, paddingHorizontal: 6 }]} 
-          >
-            <Text style={[styles.baseButtonText, { fontSize: 12 }]}>Buy</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+            title="Buy"
+            size="small"
+            style={{ padding: 4, paddingHorizontal: 6 }}
+            textStyle={{ fontSize: 12 }}
+          />
+          <Button
             onPress={() => handleTrade("sell")}
-            style={[styles.baseButton, { padding: 4, paddingHorizontal: 6 }]} 
-          >
-            <Text style={[styles.baseButtonText, { fontSize: 12 }]}>Sell</Text>
-          </TouchableOpacity>
+            title="Sell"
+            size="small"
+            style={{ padding: 4, paddingHorizontal: 6 }}
+            textStyle={{ fontSize: 12 }}
+          />
         </View>
       </View>
     </SafeAreaView>

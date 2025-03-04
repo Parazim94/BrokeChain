@@ -1,41 +1,51 @@
-import React, { useContext } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useContext, useState } from "react";
+import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "./authStyles";
-import { AuthContext } from "../../context/AuthContext"; // neu
+import { AuthContext } from "../../context/AuthContext";
+import Button from "@/src/components/Button"; // Neue Button-Komponente importieren
 
 export default function AuthScreen() {
   const navigation = useNavigation();
   const styles = createStyles();
   const auth = authStyles();
-  const { isLoggedIn, user, setIsLoggedIn, setUser } = useContext(AuthContext); // neu
+  const { isLoggedIn, setIsLoggedIn, setUser } = useContext(AuthContext);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Neue Logout-Funktion
+  // Logout-Funktion
   const handleLogout = () => {
-    setUser(null);
-    setIsLoggedIn(false);
-    alert("Erfolgreich ausgeloggt!");
+    setIsLoggingOut(true);
+    setTimeout(() => {
+      setUser(null);
+      setIsLoggedIn(false);
+      setIsLoggingOut(false);
+      alert("Erfolgreich ausgeloggt!");
+    }, 500);
   };
 
   return (
     <View style={[styles.container, auth.center]}>
-      <TouchableOpacity
-        style={auth.button}
+      <Button
         onPress={() => navigation.navigate("Login" as never)}
-      >
-        <Text style={auth.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={auth.button}
+        title="Login"
+        fullWidth
+        style={{ marginBottom: 10 }}
+      />
+      <Button
         onPress={() => navigation.navigate("Register" as never)}
-      >
-        <Text style={auth.buttonText}>Registrieren</Text>
-      </TouchableOpacity>
+        title="Registrieren"
+        fullWidth
+        style={{ marginBottom: 10 }}
+      />
       {isLoggedIn && (
-        <TouchableOpacity style={auth.button} onPress={handleLogout}>
-          <Text style={auth.buttonText}>Logout</Text>
-        </TouchableOpacity>
+        <Button
+          onPress={handleLogout}
+          title="Logout"
+          type="danger"
+          loading={isLoggingOut}
+          fullWidth
+        />
       )}
     </View>
   );

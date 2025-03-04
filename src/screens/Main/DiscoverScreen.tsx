@@ -14,6 +14,7 @@ import * as Linking from "expo-linking";
 import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/Card";
+import Button from "@/src/components/Button"; // Neue Button-Komponente importieren
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
 
@@ -104,18 +105,13 @@ export default function CryptoNews() {
               {/* Button, um den Artikel zu öffnen */}
               {expandedNews === item.guid && (
                 <View style={{ marginTop: 8 }}>
-                  <TouchableOpacity
+                  <Button
                     onPress={() => Linking.openURL(item.link)}
-                    style={{
-                      backgroundColor: styles.accent.color,
-                      padding: 5,
-                      borderRadius: 5,
-                      width: 150,
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text style={{ color: "white" }}>Artikel öffnen</Text>
-                  </TouchableOpacity>
+                    title="Artikel öffnen"
+                    type="primary"
+                    size="medium"
+                    style={{ width: 150 }}
+                  />
                 </View>
               )}
             </Card>

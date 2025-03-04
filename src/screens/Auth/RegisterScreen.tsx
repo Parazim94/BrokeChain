@@ -1,22 +1,24 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "./authStyles";
+import Button from "@/src/components/Button"; // Neue Button-Komponente importieren
 
 export default function RegisterScreen() {
   const styles = createStyles();
   const auth = authStyles();
   const navigation = useNavigation();
 
-
   const [userName, setuserName] = useState("");
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Loading-State für Button
 
   const handleRegister = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch("https://broke-end.vercel.app/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -31,6 +33,8 @@ export default function RegisterScreen() {
       } else {
         alert("Unexpected error occurred");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -66,14 +70,20 @@ export default function RegisterScreen() {
         value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity onPress={handleRegister} style={auth.button}>
-        <Text style={auth.buttonText}>Registrieren</Text>
-      </TouchableOpacity>
+      <Button
+        onPress={handleRegister}
+        title="Registrieren"
+        loading={isLoading}
+        fullWidth
+      />
       <View style={auth.linkContainer}>
-        <Text style={auth.infoText}>allready got an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Login" as never)}>
-          <Text style={auth.linkText}>Login</Text>
-        </TouchableOpacity>
+        <Text style={auth.infoText}>Already got an account? </Text>
+        <Text 
+          style={auth.linkText}
+          onPress={() => navigation.navigate("Login" as never)}
+        >
+          Login
+        </Text>
       </View>
     </View>
   );

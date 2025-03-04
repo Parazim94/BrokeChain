@@ -1,11 +1,11 @@
 import React, { useContext, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
-import { Ionicons } from "@expo/vector-icons";
 import { AccentColors } from "../../constants/accentColors";
 import DropdownAccentPicker from "./SettingsComponents/DropdownAccentPicker";
+import Button from "@/src/components/Button"; // Neue Button-Komponente importieren
 
 export default function SettingsScreen() {
   const { colorTheme, setColorTheme, accent, setAccent, theme } = useContext(ThemeContext);
@@ -41,24 +41,20 @@ export default function SettingsScreen() {
       alert("Einstellungen gespeichert!");
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unerwarteter Fehler");
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
     <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
-      <TouchableOpacity
+      <Button
         onPress={toggleTheme}
-        style={styles.baseButton}
-      >
-        {colorTheme === "light" ? (
-          <Ionicons name="moon" size={24} color={"white"} />
-        ) : (
-          <Ionicons name="sunny" size={24} color={styles.defaultText.color} />
-        )}
-        <Text style={[styles.baseButtonText, { marginLeft: 8 }]}>
-          {colorTheme === "light" ? "Darkmode" : "Lightmode"}
-        </Text>
-      </TouchableOpacity>
+        title={colorTheme === "light" ? "Darkmode" : "Lightmode"}
+        icon={colorTheme === "light" ? "moon" : "sunny"}
+        iconPosition="left"
+        type="primary"
+      />
       
       {/* Neue Dropdown-Auswahl für Akzentfarbe */}
       <View style={{ marginTop: 20, alignItems: "center" }}>
@@ -73,14 +69,15 @@ export default function SettingsScreen() {
         />
       </View>
       
-      {/* Neuer Speichern-Button */}
+      {/* Speichern-Button mit der neuen Button-Komponente */}
       <View style={{ marginTop: 20, alignItems: "center" }}>
-        <TouchableOpacity
+        <Button
           onPress={handleSave}
-          style={styles.baseButton}
-        >
-          <Text style={styles.baseButtonText}>Speichern</Text>
-        </TouchableOpacity>
+          title="Speichern"
+          loading={isSaving}
+          type="success"
+          size="medium"
+        />
       </View>
     </View>
   );
