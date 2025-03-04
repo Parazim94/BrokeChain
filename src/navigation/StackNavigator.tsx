@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
@@ -46,7 +47,13 @@ export default function StackNavigator() {
         options={{
           headerTitle: () => null,
           headerLeft: () => (
-            <View style={{ marginLeft: 15 }}>
+            <View
+              style={{
+                marginLeft: 15,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <StatusBar
                 barStyle="light-content"
                 backgroundColor={theme.background}
@@ -57,36 +64,58 @@ export default function StackNavigator() {
                 style={{
                   width: 110,
                   height: 45,
-                  marginTop: 5,
+                  marginTop: Platform.OS === "ios" ? 0 : 5,
                 }}
                 resizeMode="contain"
               />
             </View>
           ),
           headerRight: () => (
-            <View style={{ flexDirection: "row", marginRight: 15 }}>
-               <View style={{ flexDirection: "row", marginRight: 15 }}>
-                      <CashInfo />
-                </View>
+            <View
+              style={{
+                flexDirection: "row",
+                marginRight: 15,
+                alignItems: "center",
+                height: Platform.OS === "ios" ? 44 : "auto",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginRight: 15,
+                  alignItems: "center",
+                }}
+              >
+                <CashInfo />
+              </View>
               {/* Burger-Button für Sidebar (nur bei großen Screens) */}
               {width >= 768 && (
                 <TouchableOpacity
                   onPress={() =>
                     navigation.dispatch(DrawerActions.toggleDrawer())
                   }
+                  style={{ alignItems: "center", justifyContent: "center" }}
                 >
                   <Ionicons name="menu" size={28} color={theme.accent} />
                 </TouchableOpacity>
               )}
               {/* Profil- und Einstellungen-Icons */}
               <TouchableOpacity
-                style={{ marginLeft: 15 }}
+                style={{
+                  marginLeft: 15,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
                 onPress={() => navigation.navigate("Auth" as never)}
               >
                 <Ionicons name="person-circle" size={28} color={theme.accent} />
               </TouchableOpacity>
               <TouchableOpacity
-                style={{ marginLeft: 15 }}
+                style={{
+                  marginLeft: 15,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
                 onPress={() => navigation.navigate("Settings" as never)}
               >
                 <Ionicons
