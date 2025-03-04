@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
-import { Text, View, TouchableOpacity, Modal, TextInput, StyleSheet } from "react-native";
+import { Text, View, TouchableOpacity, Modal, TextInput, StyleSheet, Image } from "react-native";
 import Card from "@/src/components/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { createStyles } from "@/src/screens/Main/PortfolioComponents/portfolioStyles";
@@ -144,78 +144,101 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                 }}
                 style={{ ...styles.card, width: '95%', marginHorizontal: "auto" }}
               >
-                {/* Zeile 1: Symbol und Typ der Order */}
-                <View style={[styles.row, { width: '100%' }]}>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text style={[styles.marketName, { marginRight: 8 }]}>
-                      {item.symbol.toUpperCase()}
-                    </Text>
-                    <View 
-                      style={{
-                        backgroundColor: item.amount > 0 ? "green" : "red",
-                        paddingHorizontal: 8,
-                        paddingVertical: 4,
-                        borderRadius: 4
-                      }}
-                    >
-                      <Text style={{ color: "white", fontWeight: "bold" }}>
-                        {item.amount > 0 ? "BUY" : "SELL"}
-                      </Text>
+                {/* Neues Layout mit Logo links */}
+                <View style={{ flexDirection: 'row', width: '100%' }}>
+                  {/* Logo links */}
+                  {coinData?.image && (
+                    <View style={{ justifyContent: 'center', paddingRight: 10 }}>
+                      <Image
+                        source={{ uri: coinData.image }}
+                        style={{ 
+                          width: 50, 
+                          height: 50, 
+                          borderRadius: 25
+                        }}
+                      />
                     </View>
-                  </View>
+                  )}
                   
-                  {/* Aktions-Buttons (Bearbeiten und Löschen) */}
-                  <View style={{ flexDirection: 'row' }}>
-                    {/* Edit Button */}
-                    <TouchableOpacity
-                      onPress={() => handleEditPress(item)}
-                      style={{ padding: 8 }}
-                    >
-                      <Ionicons name="create-outline" size={22} color={theme.accent} />
-                    </TouchableOpacity>
+                  {/* Inhalt rechts */}
+                  <View style={{ flex: 1 }}>
+                    {/* Zeile 1: Symbol und Typ der Order */}
+                    <View style={[styles.row, { width: '100%' }]}>
+                      <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <Text style={[styles.marketName, { marginRight: 8 }]}>
+                          {item.symbol.toUpperCase()}
+                        </Text>
+                        <View 
+                          style={{
+                            backgroundColor: item.amount > 0 ? "green" : "red",
+                            paddingHorizontal: 8,
+                            paddingVertical: 4,
+                            borderRadius: 4
+                          }}
+                        >
+                          <Text style={{ color: "white", fontWeight: "bold" }}>
+                            {item.amount > 0 ? "BUY" : "SELL"}
+                          </Text>
+                        </View>
+                      </View>
+                      
+                      {/* Aktions-Buttons (Bearbeiten und Löschen) */}
+                      <View style={{ flexDirection: 'row' }}>
+                        {/* Edit Button */}
+                        <TouchableOpacity
+                          onPress={() => handleEditPress(item)}
+                          style={{ padding: 8 }}
+                        >
+                          <Ionicons name="create-outline" size={22} color={theme.accent} />
+                        </TouchableOpacity>
+                        
+                        {/* Delete Button */}
+                        {onDeleteOrder && orderId && (
+                          <TouchableOpacity
+                            onPress={() => onDeleteOrder(orderId)}
+                            style={{ padding: 8 }}
+                          >
+                            <Ionicons name="close-circle" size={24} color={"red"}  />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
                     
-                    {/* Delete Button */}
-                    {onDeleteOrder && orderId && (
-                      <TouchableOpacity
-                        onPress={() => onDeleteOrder(orderId)}
-                        style={{ padding: 8 }}
-                      >
-                        <Ionicons name="close-circle" size={24} color={"red"}  />
-                      </TouchableOpacity>
+                    {/* Zeile 2: Menge und Preisschwelle */}
+                    <View style={styles.gridRow}>
+                      <View style={{width: '50%'}}>
+                        <Text style={{ color: theme.text }}>
+                          <Text style={styles.labelText}>Menge:</Text>{" "}
+                          <Text style={{ fontFamily: "monospace" }}>
+                            {Math.abs(item.amount)}
+                          </Text>
+                        </Text>
+                      </View>
+                      <View style={{width: '50%'}}>
+                        <Text style={{ color: theme.text, textAlign: 'right' }}>
+                          <Text style={styles.labelText}>Limit:</Text>{" "}
+                          <Text style={{ fontFamily: "monospace" }}>
+                            {formatCurrency(item.threshold)}
+                          </Text>
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    {/* Optionale Zeile 3: Aktuelle Marktdaten, falls verfügbar */}
+                    {coinData && (
+                      <View style={styles.gridRow}>
+                        <View style={{width: '100%'}}>
+                          <Text style={{ color: theme.text, fontSize: 12, textAlign: 'right' }}>
+                            <Text style={{ color: 'grey' }}>Market: </Text>
+                            <Text style={{ fontFamily: "monospace", color: theme.accent }}>
+                              {formatCurrency(coinData.current_price)}
+                            </Text>
+                          </Text>
+                        </View>
+                      </View>
                     )}
                   </View>
                 </View>
-                
-                {/* Zeile 2: Menge und Preisschwelle */}
-                <View style={styles.gridRow}>
-                  <View style={{width: '50%'}}>
-                    <Text style={{ color: theme.text }}>
-                      <Text style={styles.labelText}>Menge:</Text>{" "}
-                      <Text style={{ fontFamily: "monospace" }}>
-                        {Math.abs(item.amount)}
-                      </Text>
-                    </Text>
-                  </View>
-                  <View style={{width: '50%'}}>
-                    <Text style={{ color: theme.text, textAlign: 'right' }}>
-                      <Text style={styles.labelText}>Limit:</Text>{" "}
-                      <Text style={{ fontFamily: "monospace" }}>
-                        {formatCurrency(item.threshold)}
-                      </Text>
-                    </Text>
-                  </View>
-                </View>
-                
-                {/* Optional: Zeile 3 mit Datum oder weiteren Informationen */}
-                {/* {item.createdAt && (
-                  <View style={styles.gridRow}>
-                    <View style={styles.gridCol1}>
-                      <Text style={{ color: theme.text, fontSize: 12 }}>
-                        Erstellt am: {new Date(item.createdAt).toLocaleDateString()}
-                      </Text>
-                    </View>
-                  </View>
-                )} */}
               </Card>
             </Animated.View>
           );

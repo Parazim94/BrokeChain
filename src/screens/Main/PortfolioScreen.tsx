@@ -1,11 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import {
-  SafeAreaView,
-  View,
-  TouchableOpacity,
-  Text,
-  ScrollView,
-} from "react-native";
+import { SafeAreaView, View, Text, SectionList } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import { createStyles } from "./PortfolioComponents/portfolioStyles";
 import UserInfo from "./PortfolioComponents/UserInfo";
@@ -13,7 +7,7 @@ import Sorting from "./PortfolioComponents/Sorting";
 import Holding from "./PortfolioComponents/Holding";
 import Fav from "./PortfolioComponents/Fav";
 import New from "./PortfolioComponents/New";
-import Orders from "./PortfolioComponents/Orders"; // Neue Orders-Komponente importieren
+import Orders from "./PortfolioComponents/Orders";
 import PortfolioPieChart from "./PortfolioComponents/PortfolioPieChart";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
@@ -154,60 +148,95 @@ export default function PortfolioScreen() {
       .catch((err) => console.error("Fehler beim Löschen der Order:", err));
   };
 
+  // Bereite die Daten für SectionList vor.
+  let sectionData = [];
+  let currentData = [];
+  switch (selectedFilter) {
+    case "Orders":
+      currentData = userData.orders || [];
+      break;
+    case "Favorites":
+      currentData = favoriteMarketData;
+      break;
+    case "New":
+      currentData = sortedPositions;
+      break;
+    default:
+      currentData = sortedPositions;
+      break;
+  }
+  sectionData.push({
+    title: selectedFilter,
+    data: currentData.length ? currentData : [null],
+    type: selectedFilter.toLowerCase(),
+  });
+
+  const renderSectionItem = ({ item, index, section }: any) => {
+    if (!item) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text style={{ color: theme.text, textAlign: "center", marginTop: 20 }}>
+            {selectedFilter === "Orders" ? "Keine offenen Bestellungen vorhanden" : "Keine Daten verfügbar"}
+          </Text>
+        </View>
+      );
+    }
+    switch (section.type) {
+      case "orders":
+        return <Orders data={[item]} theme={theme} onDeleteOrder={handleDeleteOrder} />;
+      case "favorites":
+        return <Fav data={[item]} theme={theme} />;
+      case "new":
+        return <New data={[item]} theme={theme} />;
+      default:
+        return <Holding data={[item]} theme={theme} />;
+    }
+  };
+
+  const headerComponent = () => (
+    <>
+      <UserInfo
+        userName={userData.userName}
+        cash={userData.cash}
+        positionsValue={positionsValue}
+        combinedValue={combinedValue}
+        history={userData.history}
+        theme={theme}
+        styles={styles}
+      />
+      {hasValidPositions && (
+        <View style={styles.chartContainer}>
+          <PortfolioPieChart portfolioPositions={mergedPositions} totalValue={positionsValue} />
+        </View>
+      )}
+      <Sorting
+        selectedFilter={selectedFilter}
+        setSelectedFilter={setSelectedFilter}
+        sortedAscending={sortedAscending}
+        setSortedAscending={setSortedAscending}
+        filterOptions={filterOptions}
+        theme={theme}
+        styles={styles}
+      />
+      {(userData.positions || []).length === 0 && (
+        <Text style={[styles.header, { marginLeft: 12 }]}>
+          {user?.userName !== "gast"
+            ? "Login or Register first!"
+            : "buy some!"}
+        </Text>
+      )}
+    </>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={{ width: "100%" }}>
-        <UserInfo
-          userName={userData.userName}
-          cash={userData.cash}
-          positionsValue={positionsValue}
-          combinedValue={combinedValue}
-          history={userData.history}
-          theme={theme}
-          styles={styles}
-        />
-
-        {/* Portfolio Pie Chart - only show if user has valid positions */}
-        {hasValidPositions && (
-          <View style={styles.chartContainer}>
-            <PortfolioPieChart
-              portfolioPositions={mergedPositions}
-              totalValue={positionsValue}
-            />
-          </View>
-        )}
-
-        <Sorting
-          selectedFilter={selectedFilter}
-          setSelectedFilter={setSelectedFilter}
-          sortedAscending={sortedAscending}
-          setSortedAscending={setSortedAscending}
-          filterOptions={filterOptions}
-          theme={theme}
-          styles={styles}
-        />
-
-        {/* Absicherung mit || [] hinzugefügt, um "cannot read properties of undefined" zu vermeiden */}
-        {(userData.positions || []).length === 0 ? (
-          <Text style={[styles.header, { marginLeft: 12 }]}>
-            {user.userName !== "gast"
-              ? "Login or Register first!"
-              : "buy some!"}
-          </Text>
-        ) : selectedFilter === "Orders" ? (
-          <Orders 
-            data={userData.orders || []} 
-            theme={theme}
-            onDeleteOrder={handleDeleteOrder}
-          />
-        ) : selectedFilter === "Favorites" ? (
-          <Fav data={favoriteMarketData} theme={theme} />
-        ) : selectedFilter === "New" ? (
-          <New data={sortedPositions} theme={theme} />
-        ) : (
-          <Holding data={sortedPositions} theme={theme} />
-        )}
-      </ScrollView>
+      <SectionList
+        sections={sectionData}
+        keyExtractor={(item, index) => `${selectedFilter}-${index}`}
+        renderItem={renderSectionItem}
+        ListHeaderComponent={headerComponent}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      />
     </SafeAreaView>
   );
 }
