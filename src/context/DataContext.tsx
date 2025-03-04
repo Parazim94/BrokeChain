@@ -3,6 +3,7 @@ import React, {
   useContext,
   useCallback,
   ReactNode,
+  useEffect,
 } from "react";
 import { useFetch, fetchPost } from "../hooks/useFetch";
 import { AuthContext } from "./AuthContext";
@@ -60,9 +61,9 @@ export const DataContext = createContext<DataContextType | undefined>(
 export const DataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const { user, setUser } = useContext(AuthContext); // Erweiterung: Wir holen setUser
+  const { user, setUser } = useContext(AuthContext);
 
-  // Zentrale Marktdaten via useFetch – hier rufen wir alle Daten (inkl. Bilder & Sparkline) von unserem Backend ab
+  // Zentrale Marktdaten via useFetch
   const {
     data: marketData,
     loading: loadingMarketData,
@@ -74,16 +75,32 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     expectJson: true,
   });
 
-  // Positionen, abhängig vom Token
+  // Sicherstellen, dass wir nur einen gültigen Token für die Positionsabfrage verwenden
+  const positionsEndpoint = React.useMemo(() => {
+    if (user?.token) {
+      console.log("Erstelle Positions-Endpoint mit Token:", user.token.substring(0, 10) + "...");
+      return `positions?token=${user.token}`;
+    }
+    console.log("Kein Token vorhanden für Positions-Abfrage");
+    return null; // Verwende null statt leeren String
+  }, [user?.token]);
+
+  // Positionen nur abfragen, wenn ein Endpunkt existiert
   const {
     data: rawPositions,
     loading: loadingPositions,
     error: errorPositions,
     refetch: refreshPositions,
   } = useFetch<Record<string, number>>(
-    user?.token ? `positions?token=${user.token}` : "",
+    positionsEndpoint || "", // leerer String wird in useFetch abgefangen
     { expectJson: true }
   );
+
+  // Logging für Debugging-Zwecke
+  useEffect(() => {
+    console.log("Positions-Endpoint:", positionsEndpoint);
+    console.log("Raw Positions:", rawPositions);
+  }, [positionsEndpoint, rawPositions]);
 
   // Umwandlung in Positionen-Array
   const positions = React.useMemo(() => {
@@ -97,44 +114,56 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     });
   }, [rawPositions, marketData]);
 
-  // Aktualisierte executeTrade Funktion mit mode Parameter
+  // Aktualisierte executeTrade Funktion mit verbessertem Error-Handling
   const executeTrade = useCallback(
     async (trade: Trade, mode: "spot" | "order" = "spot") => {
-      // Versuche zuerst den Token aus dem Kontext zu bekommen
-      let token = user?.token;
-      
-      // Falls kein Token im Kontext, versuche ihn aus dem AsyncStorage zu laden
-      if (!token) {
-        try {
-          token = await AsyncStorage.getItem('userToken');
-          console.log("Token aus AsyncStorage geladen:", token ? token.substring(0, 15) + "..." : "nicht gefunden");
-        } catch (error) {
-          console.error("Fehler beim Laden des Tokens:", error);
+      try {
+        // Versuche zuerst den Token aus dem Kontext zu bekommen
+        let token = user?.token;
+        
+        // Falls kein Token im Kontext, versuche ihn aus dem AsyncStorage zu laden
+        if (!token) {
+          try {
+            token = await AsyncStorage.getItem('userToken');
+            if (!token) {
+              throw new Error("Benutzer ist nicht angemeldet - kein Token gefunden");
+            }
+            console.log("Token aus AsyncStorage geladen:", token.substring(0, 15) + "...");
+          } catch (error) {
+            console.error("Fehler beim Laden des Tokens:", error);
+            throw new Error("Fehler beim Laden des Auth-Tokens");
+          }
+        } else {
+          console.log("Token aus Context verwendet:", token.substring(0, 15) + "...");
         }
-      } else {
-        console.log("Token aus Context verwendet:", token.substring(0, 15) + "...");
+        
+        // Füge den Token hinzu, falls er nicht bereits im Payload ist
+        const payload = { ...trade, token };
+        
+        // Verwende die richtige Route basierend auf dem Modus
+        const endpoint = mode === "order" ? "trade/order" : "trade";
+        const result = await fetchPost(endpoint, payload);
+        
+        // Benutzeraktualisierung
+        if (result) {
+          console.log("Trade erfolgreich, aktualisiere Benutzer");
+          setUser(result);
+          
+          // Erst nach dem Setzen des Benutzers versuchen, Positionen neu zu laden
+          if (result.token) {
+            console.log("Lade Positionen neu mit neuem Token");
+            await new Promise(resolve => setTimeout(resolve, 500)); // Kurze Verzögerung
+            await refreshPositions();
+          } else {
+            console.warn("Kein Token in der Antwort gefunden!");
+          }
+        }
+        
+        return result;
+      } catch (error) {
+        console.error(`Fehler bei ${mode}-Trade:`, error);
+        throw error;
       }
-
-      if (!token) throw new Error("Benutzer ist nicht angemeldet");
-      
-      // Füge den Token hinzu, falls er nicht bereits im Payload ist
-      const payload = { ...trade };
-      if (!payload.token) {
-        payload.token = token;
-      }
-      
-      // Verwende die richtige Route basierend auf dem Modus
-      const endpoint = mode === "order" ? "trade/order" : "trade";
-      const result = await fetchPost(endpoint, payload);
-      
-      // Benutzeraktualisierung
-      if (result) {
-        setUser(result);
-      }
-      
-      // Nach erfolgreichem Trade werden Positionen neu geladen:
-      await refreshPositions();
-      return result;
     },
     [user, refreshPositions, setUser]
   );
@@ -197,7 +226,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
 
     executeTrade,
     getHistoricalData,
-    getHistoricalCandleData, // Neu hinzugefügt
+    getHistoricalCandleData,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

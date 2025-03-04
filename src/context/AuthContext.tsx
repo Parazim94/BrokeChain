@@ -29,19 +29,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const setUser = (userData: any) => {
     setUserState(userData);
     AsyncStorage.setItem("user", JSON.stringify(userData));
+    
+    // Speichere auch den Token separat im AsyncStorage für einfacheren Zugriff
+    if (userData && userData.token) {
+      console.log("Token im AsyncStorage gespeichert:", userData.token.substring(0, 15) + "...");
+      AsyncStorage.setItem("userToken", userData.token);
+    } else if (userData === null) {
+      // Wenn der Benutzer auf null gesetzt wird, auch Token entfernen
+      AsyncStorage.removeItem("userToken");
+    }
   };
 
   useEffect(() => {
     async function loadAuthState() {
-      const storedIsLoggedIn = await AsyncStorage.getItem("isLoggedIn");
-      const storedUser = await AsyncStorage.getItem("user");
-      if (storedIsLoggedIn !== null) {
-        setIsLoggedInState(JSON.parse(storedIsLoggedIn));
-      }
-      if (storedUser !== null) {
-        setUserState(JSON.parse(storedUser));
+      try {
+        const storedIsLoggedIn = await AsyncStorage.getItem("isLoggedIn");
+        const storedUser = await AsyncStorage.getItem("user");
+        
+        if (storedIsLoggedIn !== null) {
+          setIsLoggedInState(JSON.parse(storedIsLoggedIn));
+        }
+        
+        if (storedUser !== null) {
+          const parsedUser = JSON.parse(storedUser);
+          setUserState(parsedUser);
+          
+          // Stelle sicher, dass der Token auch separat gespeichert ist
+          if (parsedUser && parsedUser.token) {
+            AsyncStorage.setItem("userToken", parsedUser.token);
+          }
+        }
+      } catch (error) {
+        console.error("Fehler beim Laden des Auth-Status:", error);
       }
     }
+    
     loadAuthState();
   }, []);
 
@@ -51,10 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const token = await AsyncStorage.getItem('userToken');
         if (token) {
-          // Hier könnte man einen API-Aufruf machen, um die Benutzerdaten mit dem Token abzurufen
           console.log("Gespeicherter Token gefunden:", token.substring(0, 15) + "...");
-          // Wenn nötig, setze den Benutzer und den eingeloggten Status
-          // setIsLoggedIn(true);
         }
       } catch (error) {
         console.error("Fehler beim Wiederherstellen des Tokens:", error);
@@ -68,11 +87,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await AsyncStorage.removeItem('userToken');
+      await AsyncStorage.removeItem('user');
+      await AsyncStorage.setItem('isLoggedIn', JSON.stringify(false));
     } catch (error) {
-      console.error("Fehler beim Löschen des Tokens:", error);
+      console.error("Fehler beim Löschen der Benutzerdaten:", error);
     }
-    setUser(null);
-    setIsLoggedIn(false);
+    setUserState(null);
+    setIsLoggedInState(false);
   };
 
   return (
@@ -81,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user, 
       setIsLoggedIn, 
       setUser,
-      logout // Neue logout-Funktion
+      logout
     }}>
       {children}
     </AuthContext.Provider>

@@ -47,6 +47,7 @@ export default function PortfolioScreen() {
       if (user && user.token) {
         try {
           const updatedUser = await fetchPost("user", { token: user.token });
+          console.log("Benutzerdaten aktualisiert:", updatedUser); // Debugging-Ausgabe hinzufügen
           setUser(updatedUser);
         } catch (err) {
           console.error("Fehler beim Abrufen des Benutzers:", err);
@@ -54,7 +55,7 @@ export default function PortfolioScreen() {
       }
     };    
     fetchUserData();
-  }, []); // Wird einmalig beim Mount ausgeführt
+  }, [selectedFilter]); // Wird einmalig beim Mount ausgeführt
 
   // Absicherung für neue Benutzer ohne positions
   const userPositionsArray = Object.entries(userData.positions || {}).map(
