@@ -38,7 +38,7 @@ export function CashInfo() {
             height: 16,
           }}
         >
-          <Text style={[styles.defaultText, { fontSize: 10, lineHeight: 16 }]}>
+          <Text style={[styles.defaultText, { fontSize: 10, lineHeight: 16, marginRight: 4 }]}>
             Cash
           </Text>
           <Text
@@ -61,9 +61,10 @@ export function CashInfo() {
             justifyContent: "space-between",
             alignItems: "center",
             height: 16,
+            width: "100%",
           }}
         >
-          <Text style={[styles.defaultText, { fontSize: 10, lineHeight: 16 }]}>
+          <Text style={[styles.defaultText, { fontSize: 10, lineHeight: 16, marginRight: 4 }]}>
             Total
           </Text>
           <Text
@@ -71,7 +72,7 @@ export function CashInfo() {
               styles.defaultText,
               {
                 fontSize: 10,
-                lineHeight: 16,
+                lineHeight: 16,                
                 fontFamily: Platform.OS === "ios" ? undefined : "monospace",
                 fontWeight: Platform.OS === "ios" ? "600" : undefined,
               },

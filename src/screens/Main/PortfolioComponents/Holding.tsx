@@ -42,8 +42,8 @@ export default function Holding({ data, theme }: HoldingProps) {
                   <Image
                     source={{ uri: item.marketInfo.image }}
                     style={{
-                      width: 50,
-                      height: 50,
+                      width: 40,
+                      height: 40,
                       borderRadius: 25,
                     }}
                   />

@@ -109,7 +109,7 @@ export default function MarketList({
                     {formatCurrency(item.current_price)}
                   </Text>
                   <Text>
-                    <Text style={[localStyles.labelText, {fontSize:12}]}>24h:</Text>
+                    <Text style={[localStyles.labelText, {fontSize:12}]}>24h: {" "}</Text>
                     <Text style={[{ color: item.price_change_percentage_24h < 0 ? "red" : "green" }, localStyles.monoText]}>{item.price_change_percentage_24h.toFixed(2)}%</Text> 
                   </Text>
                 </View>
