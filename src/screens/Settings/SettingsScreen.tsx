@@ -84,11 +84,11 @@ export default function SettingsScreen() {
   return (
     <View style={[styles.container, { justifyContent: "flex-start", alignItems: "center", padding: 20 }]}>
       <View style={{ width: "100%", maxWidth: 600 }}>
-        <Text style={[styles.defaultText, { fontSize: 24, marginBottom: 20 }]}>Einstellungen</Text>
+        <Text style={[styles.defaultText, { fontSize: 24, marginBottom: 20 }]}>Settings</Text>
         
         {/* Themeeinstellungen */}
         <View style={{ marginBottom: 30 }}>
-          <Text style={[styles.defaultText, { fontSize: 18, marginBottom: 15 }]}>Thema</Text>
+          <Text style={[styles.defaultText, { fontSize: 18, marginBottom: 15 }]}>Theme</Text>
           <Button
             onPress={toggleTheme}
             title={colorTheme === "light" ? "Darkmode" : "Lightmode"}
@@ -113,7 +113,7 @@ export default function SettingsScreen() {
         {/* Favoritenverwaltung */}
         <View style={{ marginBottom: 30 }}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 15 }}>
-            <Text style={[styles.defaultText, { fontSize: 18 }]}>Favoriten</Text>
+            <Text style={[styles.defaultText, { fontSize: 18 }]}>Favorites</Text>
             <Button
               onPress={() => setIsSearchActive(!isSearchActive)}
               title=""
@@ -131,7 +131,7 @@ export default function SettingsScreen() {
           {isSearchActive && (
             <View style={{ marginBottom: 15 }}>
               <TextInput
-                placeholder="Coin suchen..."
+                placeholder="search coin..."
                 placeholderTextColor={styles.defaultText.color}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
@@ -170,7 +170,7 @@ export default function SettingsScreen() {
                     )}
                     ListEmptyComponent={
                       <Text style={[styles.defaultText, { padding: 12, textAlign: "center" }]}>
-                        Keine Ergebnisse gefunden
+                        nothing there
                       </Text>
                     }
                   />
@@ -209,13 +209,13 @@ export default function SettingsScreen() {
                 )}
                 ListEmptyComponent={
                   <Text style={[styles.defaultText, { textAlign: "center", padding: 10 }]}>
-                    Keine Favoriten hinzugefügt
+                    nothing there
                   </Text>
                 }
               />
             ) : (
               <Text style={[styles.defaultText, { textAlign: "center", padding: 10 }]}>
-                Keine Favoriten hinzugefügt
+                nothing there
               </Text>
             )}
           </View>
@@ -225,7 +225,7 @@ export default function SettingsScreen() {
         <View style={{ alignItems: "center", marginTop: 20 }}>
           <Button
             onPress={handleSave}
-            title="Speichern"
+            title="Save"
             loading={isSaving}
             type="success"
             size="medium"

@@ -60,14 +60,23 @@ export default function Fav({ data, theme }: FavProps) {
               <Text style={[styles.labelText, { flex: 1, marginLeft: 8 }]}>
                 {item.name}
               </Text>
-              <Sparkline
-                prices={item.sparkline.price}
-                width={100}
-                height={30}
-                stroke={theme.accent}
-                strokeWidth={2}
-                maxDataPoints={15}
-              />
+              <View style={{ 
+                width: 100, 
+                height: 40, 
+                overflow: "visible",
+                marginLeft: 8
+              }}>
+                <Sparkline
+                  prices={item.sparkline.price}
+                  width={100}
+                  height={32}
+                  stroke={theme.accent}
+                  strokeWidth={1.5}
+                  maxDataPoints={20}
+                  // Explizit den staticFlag auf false setzen, um Animation zu ermöglichen
+                  staticFlag={false}
+                />
+              </View>
             </View>
             
             {/* Trennlinie */}

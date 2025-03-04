@@ -187,18 +187,11 @@ export default function MarketsScreen() {
       {/* Falls Suchmodus aktiv, wird TextInput angezeigt */}
       {isSearchActive && (
         <TextInput
-          placeholder="Suche..."
+          placeholder="search coin..."
           placeholderTextColor={styles.defaultText.color}
           value={searchQuery}
           onChangeText={(text) => setSearchQuery(text)}
-          style={[
-            styles.input, 
-            { 
-              alignSelf: "center",
-              borderColor: styles.accent.color, // Hinzugefügt: Akzentfarbe für Outline
-              borderWidth: 1
-            }
-          ]}
+          style={[styles.input, { alignSelf: "center" }]}
         />
       )}
       {/* Marktliste als Komponente: Jetzt mit gefilterter Liste */}

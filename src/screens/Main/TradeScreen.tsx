@@ -245,7 +245,7 @@ export default function TradeScreen() {
         {isSearchActive && (
           <View style={{ marginVertical: 10 }}>
             <TextInput
-              placeholder="Coin suchen..."
+              placeholder="search coin..."
               placeholderTextColor={styles.defaultText.color}
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -261,7 +261,7 @@ export default function TradeScreen() {
                 borderRadius: 8,
                 marginTop: 4,
                 borderWidth: 1,
-                borderColor: theme.accent // Hier: theme.text → theme.accent
+                borderColor: theme.text
               }}>
                 <FlatList
                   data={filteredCoins}
@@ -271,7 +271,7 @@ export default function TradeScreen() {
                       style={{
                         padding: 12,
                         borderBottomWidth: 1,
-                        borderBottomColor: theme.accent + "40", // Hier: theme.text → theme.accent + Opacity
+                        borderBottomColor: theme.text,
                         flexDirection: "row",
                         justifyContent: "space-between"
                       }}
