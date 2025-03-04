@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import Svg, { Polyline, Defs, LinearGradient, Stop, Path } from "react-native-svg";
 import { Dimensions } from "react-native";
 import Animated, {
@@ -16,6 +16,7 @@ type SparklineProps = {
   stroke?: string;
   strokeWidth?: number;
   staticFlag?: boolean;
+  maxDataPoints?: number; // Neue Prop zur Begrenzung der Datenpunkte
 };
 
 function Sparkline({
@@ -25,23 +26,37 @@ function Sparkline({
   stroke = "black",
   strokeWidth = 2,
   staticFlag = true,
+  maxDataPoints = 30, 
 }: SparklineProps) {
   // Prüfe, ob das Array existiert und gültige Werte enthält
-  const validPrices = Array.isArray(prices) ? 
-    prices.filter(p => p !== undefined && p !== null && !isNaN(p)) : [];
+  const validPrices = useMemo(() => {
+    if (!Array.isArray(prices)) return [];
+    
+    const filtered = prices.filter(p => p !== undefined && p !== null && !isNaN(p));
+    
+    // Reduziere die Anzahl der Datenpunkte, wenn nötig
+    if (filtered.length > maxDataPoints) {
+      const step = Math.ceil(filtered.length / maxDataPoints);
+      return filtered.filter((_, i) => i % step === 0).slice(0, maxDataPoints);
+    }
+    
+    return filtered;
+  }, [prices, maxDataPoints]);
   
   // Wenn keine gültigen Preise vorhanden sind, zeige nichts an
   if (validPrices.length === 0) return null;
   
-  const effectiveWidth =
-    typeof width === "number" ? width : Dimensions.get("window").width;
+  const effectiveWidth = useMemo(() => 
+    typeof width === "number" ? width : Dimensions.get("window").width,
+  [width]);
   
   // Berechne min/max mit Sicherheitsüberprüfung
-  const min = Math.min(...validPrices);
-  const max = Math.max(...validPrices);
-  
-  // Verhindere Division durch Null und stelle sicher, dass wir keine NaN erhalten
-  const range = max - min || 1; // Wenn max === min, verwende 1 als Bereich
+  const { min, max, range } = useMemo(() => {
+    const min = Math.min(...validPrices);
+    const max = Math.max(...validPrices);
+    const range = max - min || 1; // Wenn max === min, verwende 1 als Bereich
+    return { min, max, range };
+  }, [validPrices]);
   
   const scaleY = (value: number) => {
     if (value === undefined || value === null || isNaN(value)) return height / 2;
@@ -49,29 +64,33 @@ function Sparkline({
   };
   
   // Erzeuge Punkte-String und Array für Längenberechnung
-  const pointsArray = validPrices.map((price, index) => {
-    const x = (index / Math.max(validPrices.length - 1, 1)) * effectiveWidth;
-    const y = scaleY(price);
-    return { x, y };
-  });
-  
-  const points = pointsArray.map(p => `${p.x},${p.y}`).join(" ");
+  const { points, pointsArray, fillPath, totalLength } = useMemo(() => {
+    const pointsArray = validPrices.map((price, index) => {
+      const x = (index / Math.max(validPrices.length - 1, 1)) * effectiveWidth;
+      const y = scaleY(price);
+      return { x, y };
+    });
+    
+    const points = pointsArray.map(p => `${p.x},${p.y}`).join(" ");
 
-  // Erzeuge fillPath: Beginne beim ersten x an der unteren Kante, folge dann den Punkten und schließe beim letzten Punkt an der unteren Kante
-  const fillPath = (() => {
+    // Erzeuge fillPath
     const first = pointsArray[0];
     const last = pointsArray[pointsArray.length - 1];
-    const linePath = pointsArray.map((p, idx) => (idx === 0 ? `L ${p.x} ${p.y}` : `${p.x} ${p.y}`)).join(" ");
-    return `M ${first.x} ${height} L ${first.x} ${first.y} ${linePath} L ${last.x} ${height} Z`;
-  })();
+    const linePath = pointsArray.map((p, idx) => 
+      (idx === 0 ? `L ${p.x} ${p.y}` : `${p.x} ${p.y}`)
+    ).join(" ");
+    const fillPath = `M ${first.x} ${height} L ${first.x} ${first.y} ${linePath} L ${last.x} ${height} Z`;
 
-  // Berechne die Gesamt-Linie
-  let totalLength = 0;
-  for (let i = 1; i < pointsArray.length; i++) {
-    const dx = pointsArray[i].x - pointsArray[i - 1].x;
-    const dy = pointsArray[i].y - pointsArray[i - 1].y;
-    totalLength += Math.sqrt(dx * dx + dy * dy);
-  }
+    // Berechne die Gesamt-Linie
+    let totalLength = 0;
+    for (let i = 1; i < pointsArray.length; i++) {
+      const dx = pointsArray[i].x - pointsArray[i - 1].x;
+      const dy = pointsArray[i].y - pointsArray[i - 1].y;
+      totalLength += Math.sqrt(dx * dx + dy * dy);
+    }
+
+    return { points, pointsArray, fillPath, totalLength };
+  }, [validPrices, effectiveWidth, height, min, range]);
 
   // Wenn nichts zu zeichnen ist, zeige nichts an
   if (totalLength <= 0) return null;
@@ -85,8 +104,8 @@ function Sparkline({
   }));
 
   useEffect(() => {
-    animatedDashOffset.value = withTiming(0, { duration: 1500 });
-  }, [animatedDashOffset, points]); // Reagiere auch auf Änderungen in den Punkten
+    animatedDashOffset.value = withTiming(0, { duration: 500 }); // Kürzere Animationsdauer
+  }, [animatedDashOffset, points]);
 
   return (
     <Svg width={width} height={height}>
@@ -106,7 +125,6 @@ function Sparkline({
         strokeWidth={strokeWidth}
         strokeDasharray={totalLength}
         animatedProps={animatedProps}
-        
       />
     </Svg>
   );

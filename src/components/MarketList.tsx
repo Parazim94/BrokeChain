@@ -1,9 +1,32 @@
 import React from "react";
-import Animated, { FadeInUp } from "react-native-reanimated";
-import { StyleSheet, View, Text, Image, RefreshControl } from "react-native";
+import Animated from "react-native-reanimated";
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  RefreshControl, 
+  Image, 
+  Platform, 
+  ImageStyle, 
+  StyleProp, 
+  ImageSourcePropType,
+  ImageResizeMode
+} from "react-native";
 import Card from "@/src/components/Card";
 import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
+
+// Typdefinition für die PlatformImage-Props
+interface PlatformImageProps {
+  source: ImageSourcePropType;
+  style: StyleProp<ImageStyle>;
+  resizeMode?: ImageResizeMode;
+}
+
+
+const PlatformImage: React.FC<PlatformImageProps> = ({ source, style, resizeMode }) => {
+  return <Image source={source} style={style} resizeMode={resizeMode} />;
+};
 
 export interface Ticker {
   id: string;
@@ -25,7 +48,7 @@ interface MarketListProps {
   accentColor: string;
   defaultTextColor: string;
   containerBackground: string;
-  onRefresh?: () => Promise<any>; // Neu hinzugefügt
+  onRefresh?: () => Promise<any>;
 }
 
 export default function MarketList({
@@ -85,6 +108,10 @@ export default function MarketList({
       <Animated.FlatList
         data={tickers}
         keyExtractor={(item) => item.id}
+        initialNumToRender={8} // Reduzieren der initial gerenderten Elemente
+        maxToRenderPerBatch={5} // Reduzieren der Batch-Größe
+        windowSize={10} // Kleineres Fenster für bessere Performance
+        removeClippedSubviews={Platform.OS !== 'web'} // Auf Web kann dies Probleme verursachen
         renderItem={({ item }) => {
          
           return (
@@ -92,15 +119,21 @@ export default function MarketList({
               <Card onPress={() => onPressItem(item)} style={localStyles.cardStyle}>
                 {/* Erste Zeile: Icon, Name und Sparkline */}
                 <View style={[localStyles.row, localStyles.rowCenter]}>
-                  <Image 
+                  <PlatformImage
                     source={{ uri: item.image }} 
                     style={localStyles.coinIcon} 
-                    resizeMode="cover" 
+                    resizeMode="cover"
                   />
                   <Text style={[localStyles.labelText, localStyles.flexText]}>
                     {item.name}
                   </Text>
-                  <Sparkline prices={item.sparkline.price} width={100} height={30} stroke={accentColor} />
+                  <Sparkline 
+                    prices={item.sparkline.price} 
+                    width={100} 
+                    height={30} 
+                    stroke={accentColor} 
+                    maxDataPoints={15} // Auf 15 Datenpunkte reduzieren für bessere Performance
+                  />
                 </View>
                 <View style={localStyles.hr} />
                 {/* Zweite Zeile: Preis und prozentuale Veränderung */}

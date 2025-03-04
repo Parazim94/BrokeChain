@@ -166,7 +166,7 @@ export default function PortfolioPieChart({
               fill={theme.text}
               textAnchor="middle"
               alignmentBaseline="middle"
-              fontFamily="monospace"
+              fontFamily="monospace"                            
             >
               {formatCurrency(totalValue)}
             </SvgText>

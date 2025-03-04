@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Speichere auch den Token separat im AsyncStorage für einfacheren Zugriff
     if (userData && userData.token) {
-      console.log("Token im AsyncStorage gespeichert:", userData.token.substring(0, 15) + "...");
+      console.log("Token im AsyncStorage gespeichert:", userData.token);
       AsyncStorage.setItem("userToken", userData.token);
     } else if (userData === null) {
       // Wenn der Benutzer auf null gesetzt wird, auch Token entfernen
