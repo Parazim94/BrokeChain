@@ -150,7 +150,7 @@ export default function PortfolioScreen() {
     
     console.log("Lösche Order mit ID:", orderId);
     
-    fetchPost("deleteorder", { 
+    fetchPost("trade/deleteorder", { 
       token: user.token, 
       order: { _id: orderId } // Korrekte Struktur für das Backend
     })

@@ -93,7 +93,7 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
     };
     
     // Korrekter Endpunkt und Payload-Struktur
-    fetchPost("editorder", {
+    fetchPost("trade/editorder", {
       token: user.token,
       order: orderData // Korrekte Struktur für das Backend
     })
