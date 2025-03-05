@@ -56,7 +56,7 @@ export default function PortfolioScreen() {
       }
     };    
     fetchUserData();
-  }, [Orders]); // Wird einmalig beim Mount ausgeführt
+  }, []); // Optionale Verkettung hinzugefügt
 
   // Absicherung für neue Benutzer ohne positions
   const userPositionsArray = Object.entries(userData.positions || {}).map(
@@ -204,7 +204,7 @@ export default function PortfolioScreen() {
       case "favorites":
         return <Fav data={[item]} theme={theme} />;
       case "tradehistory": 
-        return <TradeHistory theme={theme} tradeHistory={userData.tradeHistory} />;
+        return <TradeHistory theme={theme} tradeHistory={userData.tradeHistory} isLoggedIn={isLoggedIn} />;
       default:
         return <Holding data={[item]} theme={theme} />;
     }

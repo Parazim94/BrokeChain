@@ -12,16 +12,17 @@ interface TradeHistoryItem {
   price: number;
   amount: number;
   order: boolean;
-  createdAt: string;
+  date: string;
   updatedAt: string;
 }
 
 interface TradeHistoryProps {
   theme: any;
   tradeHistory?: TradeHistoryItem[];
+  isLoggedIn?: boolean;
 }
 
-export default function TradeHistory({ theme, tradeHistory = [] }: TradeHistoryProps) {
+export default function TradeHistory({ theme, tradeHistory = [], isLoggedIn = false }: TradeHistoryProps) {
   const styles = createStyles(theme);
   
   // Entferne etwaige Duplikate basierend auf _id
@@ -29,7 +30,7 @@ export default function TradeHistory({ theme, tradeHistory = [] }: TradeHistoryP
     const seen = new Set();
     return tradeHistory.filter(item => {
       // Wenn keine _id vorhanden ist, verwende einen zusammengesetzten Schlüssel
-      const key = item._id || `${item.symbol}-${item.price}-${item.amount}-${item.createdAt}`;
+      const key = item._id || `${item.symbol}-${item.price}-${item.amount}-${item.date}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
@@ -39,11 +40,17 @@ export default function TradeHistory({ theme, tradeHistory = [] }: TradeHistoryP
   // Sortiere nach Datum (neueste zuerst) und begrenze auf 10 Einträge
   const sortedTrades = React.useMemo(() => {
     return [...uniqueTrades]
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 10);
   }, [uniqueTrades]);
 
-
+  if (!isLoggedIn) {
+    return (
+      <View style={{ padding: 20, alignItems: 'center' }}>
+        <Text style={{ color: theme.text }}>Bitte melden Sie sich an, um Ihre Handelsgeschichte zu sehen.</Text>
+      </View>
+    );
+  }
 
   if (sortedTrades.length === 0) {
     return (
@@ -58,7 +65,7 @@ export default function TradeHistory({ theme, tradeHistory = [] }: TradeHistoryP
       data={sortedTrades}
       style={[styles.list, { width: '100%' }]}
       contentContainerStyle={{ paddingHorizontal: 0 }}
-      keyExtractor={(item) => item._id || `${item.symbol}-${item.price}-${item.amount}-${item.createdAt}`}
+      keyExtractor={(item) => item._id || `${item.symbol}-${item.price}-${item.amount}-${item.date}`}
       renderItem={({ item, index }) => (
         <Animated.View 
           entering={FadeInUp.delay(index * 50)}
@@ -110,7 +117,7 @@ export default function TradeHistory({ theme, tradeHistory = [] }: TradeHistoryP
               paddingTop: 8
             }}>
               <Text style={{ color: theme.text, fontSize: 12 }}>
-                {new Date(item.createdAt).toLocaleString()}
+                {new Date(item.date).toLocaleString()}
               </Text>
               <Text style={{ 
                 fontFamily: "monospace", 
