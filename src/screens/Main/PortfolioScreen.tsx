@@ -144,21 +144,22 @@ export default function PortfolioScreen() {
     );
   }, [user?.favorites, marketData]);
 
-  // Handle-Funktion zum Löschen einer Order
+  // Handle-Funktion zum Löschen einer Order korrigiert für die Backend-Route
   const handleDeleteOrder = (orderId: string) => {
     if (!user || !user.token) return;
     
-    console.log("Lösche Order mit ID:", orderId); // Debugging-Ausgabe hinzufügen
+    console.log("Lösche Order mit ID:", orderId);
     
-    fetchPost("deleteOrder", { token: user.token, orderId })
-      .then((response) => {
-        if (response.success) {
-          // Aktualisieren des Benutzers nach Löschung
-          fetchPost("user", { token: user.token })
-            .then((updatedUser) => setUser(updatedUser))
-            .catch((err) => console.error("Fehler beim Aktualisieren:", err));
+    fetchPost("deleteorder", { 
+      token: user.token, 
+      order: { _id: orderId } // Korrekte Struktur für das Backend
+    })
+      .then((updatedUser) => {
+        if (updatedUser) {
+          // Wenn das Backend direkt den aktualisierten Benutzer zurückgibt
+          setUser(updatedUser);
         } else {
-          console.error("Fehler beim Löschen:", response.message || "Unbekannter Fehler");
+          console.error("Unerwartete Antwort vom Server");
         }
       })
       .catch((err) => console.error("Fehler beim Löschen der Order:", err));

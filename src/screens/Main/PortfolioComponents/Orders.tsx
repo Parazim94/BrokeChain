@@ -75,7 +75,7 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
     setModalVisible(true);
   };
   
-  // Funktion zum Speichern der bearbeiteten Order
+  // Funktion zum Speichern der bearbeiteten Order angepasst an Backend-Route
   const handleSaveEdit = () => {
     if (!editData || !user?.token) return;
     
@@ -83,24 +83,26 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
     const amountWithSign = editData.amount > 0 
       ? parseFloat(newAmount) // kaufen: positiv
       : -parseFloat(newAmount); // verkaufen: negativ
-    
-    fetchPost("orderEdit", {
-      token: user.token,
-      orderId: editData.id,
+      
+    // Erstelle das Order-Objekt mit den korrekten Werten
+    const orderData = {
+      _id: editData.id,
+      symbol: editData.symbol,
       amount: amountWithSign,
       threshold: parseFloat(newThreshold)
+    };
+    
+    // Korrekter Endpunkt und Payload-Struktur
+    fetchPost("editorder", {
+      token: user.token,
+      order: orderData // Korrekte Struktur für das Backend
     })
-      .then((response) => {
-        if (response.success) {
-          // Benutzer aktualisieren nach erfolgreicher Bearbeitung
-          fetchPost("user", { token: user.token })
-            .then((updatedUser) => {
-              setUser(updatedUser);
-              setModalVisible(false);
-            })
-            .catch(err => console.error("Fehler beim Aktualisieren:", err));
+      .then((updatedUser) => {
+        if (updatedUser) {
+          setUser(updatedUser);
+          setModalVisible(false);
         } else {
-          console.error("Fehler beim Bearbeiten:", response.message || "Unbekannter Fehler");
+          console.error("Unerwartete Antwort vom Server");
         }
       })
       .catch(err => console.error("Fehler beim Bearbeiten der Order:", err));
