@@ -6,10 +6,14 @@ import {
   SafeAreaView,
   TextInput,
   FlatList,
+  Keyboard,
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
-import { AuthContext } from "@/src/context/AuthContext";  // setUser hinzugefügt
+import { AuthContext } from "@/src/context/AuthContext";
 import { createStyles } from "@/src/styles/style";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import D3LineChart from "@/src/components/d3-LineChart";
@@ -17,7 +21,7 @@ import { useData } from "@/src/context/DataContext";
 import D3CandlestickChart from "@/src/components/d3-Candlestick";
 import CashInfo from "@/src/components/CashInfo";
 import { Ionicons } from "@expo/vector-icons";
-import Button from "@/src/components/Button"; // Neue Button-Komponente importieren
+import Button from "@/src/components/Button";
 
 const timeIntervals = {
   "1m": "1m",
@@ -28,12 +32,11 @@ const timeIntervals = {
   "3d": "3d",
   "1w": "1w",
   "1M": "1M",
-  
 };
 
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
-  const { user, setUser } = useContext(AuthContext);  // setUser hinzugefügt
+  const { user, setUser } = useContext(AuthContext);
   const styles = createStyles();
   const route = useRoute();
   const { marketData, executeTrade, getHistoricalData } = useData();
@@ -48,23 +51,22 @@ export default function TradeScreen() {
     { label: string; value: number }[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [chartType, setChartType] = useState<
-    "line" | "d3-candlestick"
-  >("line");
+  const [chartType, setChartType] = useState<"line" | "d3-candlestick">("line");
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [tradeType, setTradeType] = useState<"spot" | "order">("spot");
   const [orderPrice, setOrderPrice] = useState("");
-  
-  // Neue Zustände für die Suchfunktion
+
+  // Zustände für die Suchfunktion
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
 
   // Filtern der Coins basierend auf der Suchanfrage
   const filteredCoins = useMemo(() => {
     if (!searchQuery) return [];
-    return marketData.filter((item) => 
-      (item.name || "").toLowerCase().includes(searchQuery.toLowerCase()) || 
-      (item.symbol || "").toLowerCase().includes(searchQuery.toLowerCase())
+    return marketData.filter(
+      (item) =>
+        (item.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.symbol || "").toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [searchQuery, marketData]);
 
@@ -120,42 +122,45 @@ export default function TradeScreen() {
       alert("Ungültige Menge");
       return;
     }
-    
+
     try {
       setIsLoading(true);
       const amount = type === "sell" ? -Math.abs(quantityInput) : quantityInput;
-      
+
       if (tradeType === "order") {
-        // Für Orders: Neues Payload-Format und Route "trade/order"
         const threshold = parseFloat(orderPrice);
         if (isNaN(threshold)) {
           alert("Ungültiger Order-Preis");
           return;
         }
-        
-        const orderPayload = { 
+        const orderPayload = {
           token: user.token,
-          symbol: coin.symbol, 
-          amount: amount, 
-          threshold: threshold 
+          symbol: coin.symbol,
+          amount: amount,
+          threshold: threshold,
         };
         const result = await executeTrade(orderPayload, "order");
         if (result) {
           setUser(result);
         }
-        alert(`${type === "buy" ? "Kaufauftrag" : "Verkaufsauftrag"} erfolgreich platziert!`);
+        alert(
+          `${
+            type === "buy" ? "Kaufauftrag" : "Verkaufsauftrag"
+          } erfolgreich platziert!`
+        );
       } else {
-        // Für Spot-Trades: Bisheriges Format beibehalten
         const spotPayload = { symbol: coin.symbol, value: amount };
         const result = await executeTrade(spotPayload, "spot");
         if (result) {
           setUser(result);
         }
-        alert(`${type === "buy" ? "Kaufvorgang" : "Verkaufsvorgang"} erfolgreich!`);
+        alert(
+          `${type === "buy" ? "Kaufvorgang" : "Verkaufsvorgang"} erfolgreich!`
+        );
       }
-      
+
       setQuantity("");
-      if(tradeType === "order") setOrderPrice("");
+      if (tradeType === "order") setOrderPrice("");
     } catch (error) {
       alert(error instanceof Error ? error.message : "Unerwarteter Fehler");
     } finally {
@@ -184,7 +189,38 @@ export default function TradeScreen() {
     }
   };
 
-  return (
+  const chartComponent = useMemo(() => {
+    if (chartType === "line") {
+      return (
+        <View style={{ padding: 6 }}>
+          <D3LineChart
+            symbol={
+              coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"
+            }
+            interval={timeIntervals[selectedRange]}
+            width={containerWidth ? containerWidth * 0.9666 : 300}
+            height={300}
+          />
+        </View>
+      );
+    } else {
+      return (
+        <View style={{ padding: 2 }}>
+          <D3CandlestickChart
+            symbol={
+              coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"
+            }
+            interval={timeIntervals[selectedRange]}
+            width={containerWidth ? containerWidth * 0.91 : 300}
+            height={300}
+          />
+        </View>
+      );
+    }
+  }, [chartType, coin, selectedRange, containerWidth]);
+
+  // Gemeinsamer Inhalt
+  const content = (
     <SafeAreaView style={styles.container}>
       <View
         style={{
@@ -214,19 +250,26 @@ export default function TradeScreen() {
             }}
           >
             <Text
-              style={[styles.defaultText, { fontSize: 20, marginBottom: 12}]}
+              style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}
             >
               {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
             </Text>
             {marketPrice !== null && (
               <Text
-                style={[styles.defaultText, { fontSize: 14, color: theme.accent, fontFamily: "monospace" } ]}
+                style={[
+                  styles.defaultText,
+                  {
+                    fontSize: 14,
+                    color: theme.accent,
+                    fontFamily: "monospace",
+                  },
+                ]}
               >
                 Market: {formatCurrency(marketPrice)}
               </Text>
             )}
           </View>
-          
+
           <Button
             onPress={() => setIsSearchActive(!isSearchActive)}
             title=""
@@ -239,8 +282,7 @@ export default function TradeScreen() {
             }}
           />
         </View>
-        
-        {/* Suchfeld anzeigen, wenn Suche aktiv ist */}
+
         {isSearchActive && (
           <View style={{ marginVertical: 10 }}>
             <TextInput
@@ -251,17 +293,18 @@ export default function TradeScreen() {
               style={[styles.input, { width: "100%" }]}
               autoFocus
             />
-            
-            {/* Suchergebnisse anzeigen */}
+
             {searchQuery.length > 0 && (
-              <View style={{ 
-                maxHeight: 200, 
-                backgroundColor: theme.background,
-                borderRadius: 8,
-                marginTop: 4,
-                borderWidth: 1,
-                borderColor: theme.text
-              }}>
+              <View
+                style={{
+                  maxHeight: 200,
+                  backgroundColor: theme.background,
+                  borderRadius: 8,
+                  marginTop: 4,
+                  borderWidth: 1,
+                  borderColor: theme.text,
+                }}
+              >
                 <FlatList
                   data={filteredCoins}
                   keyExtractor={(item) => item.id || item.symbol}
@@ -272,7 +315,7 @@ export default function TradeScreen() {
                         borderBottomWidth: 1,
                         borderBottomColor: theme.text,
                         flexDirection: "row",
-                        justifyContent: "space-between"
+                        justifyContent: "space-between",
                       }}
                       onPress={() => {
                         setCoin(item);
@@ -283,13 +326,20 @@ export default function TradeScreen() {
                       <Text style={[styles.defaultText, { fontWeight: "500" }]}>
                         {item.name} ({item.symbol?.toUpperCase()})
                       </Text>
-                      <Text style={[styles.defaultText, { color: theme.accent }]}>
+                      <Text
+                        style={[styles.defaultText, { color: theme.accent }]}
+                      >
                         {formatCurrency(item.current_price)}
                       </Text>
                     </TouchableOpacity>
                   )}
                   ListEmptyComponent={
-                    <Text style={[styles.defaultText, { padding: 12, textAlign: "center" }]}>
+                    <Text
+                      style={[
+                        styles.defaultText,
+                        { padding: 12, textAlign: "center" },
+                      ]}
+                    >
                       Keine Ergebnisse gefunden
                     </Text>
                   }
@@ -299,12 +349,21 @@ export default function TradeScreen() {
           </View>
         )}
 
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 8 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginVertical: 8,
+          }}
+        >
           <View style={{ flexDirection: "row", flexWrap: "wrap", flex: 1 }}>
             {Object.keys(timeIntervals).map((range) => (
               <Button
                 key={range}
-                onPress={() => setSelectedRange(range as keyof typeof timeIntervals)}
+                onPress={() =>
+                  setSelectedRange(range as keyof typeof timeIntervals)
+                }
                 title={range}
                 type={selectedRange === range ? "primary" : "outline"}
                 size="small"
@@ -320,7 +379,9 @@ export default function TradeScreen() {
           </View>
 
           <Button
-            onPress={() => setChartType(chartType === "line" ? "d3-candlestick" : "line")}
+            onPress={() =>
+              setChartType(chartType === "line" ? "d3-candlestick" : "line")
+            }
             title={chartType === "line" ? "Candle" : "Line"}
             size="small"
             style={{ paddingVertical: 4, paddingHorizontal: 8 }}
@@ -328,27 +389,7 @@ export default function TradeScreen() {
           />
         </View>
 
-        {chartType === "line" ? (
-          <View style={{ padding: 6 }}>
-            <D3LineChart
-              symbol={coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"}
-              interval={timeIntervals[selectedRange]}
-              width={containerWidth ? containerWidth*0.9666 : 300}
-              height={300}
-            />
-          </View>
-        ) : (
-          <View style={{ padding: 2 }}>
-            <D3CandlestickChart
-              symbol={
-                coin?.symbol ? `${coin.symbol.toUpperCase()}USDT` : "BTCUSDT"
-              }
-              interval={timeIntervals[selectedRange]}
-              width={containerWidth ? containerWidth * 0.91 : 300}
-              height={300}
-            />
-          </View>
-        )}
+        {chartComponent}
 
         <View
           style={{
@@ -356,18 +397,23 @@ export default function TradeScreen() {
             justifyContent: "flex-start",
             alignItems: "center",
             marginTop: 16,
-            gap: 4, 
+            gap: 4,
           }}
         >
           <Button
-            onPress={() => setTradeType(tradeType === "spot" ? "order" : "spot")}
+            onPress={() =>
+              setTradeType(tradeType === "spot" ? "order" : "spot")
+            }
             title={tradeType === "spot" ? "Order" : "Spot"}
             size="small"
             style={{ padding: 4, paddingHorizontal: 8 }}
             textStyle={{ fontSize: 12 }}
           />
           <TextInput
-            style={[styles.input, { width: "25%", padding: 4, fontFamily: "monospace" }]}
+            style={[
+              styles.input,
+              { width: "25%", padding: 4, fontFamily: "monospace" },
+            ]}
             placeholder="Amount..."
             placeholderTextColor={styles.defaultText.color}
             value={quantity}
@@ -376,7 +422,10 @@ export default function TradeScreen() {
           />
           {tradeType === "order" && (
             <TextInput
-              style={[styles.input, { width: "25%", padding: 4, fontFamily: "monospace" }]}
+              style={[
+                styles.input,
+                { width: "25%", padding: 4, fontFamily: "monospace" },
+              ]}
               placeholder="Price..."
               placeholderTextColor={styles.defaultText.color}
               value={orderPrice}
@@ -409,4 +458,18 @@ export default function TradeScreen() {
       </View>
     </SafeAreaView>
   );
+
+  // Nur auf iOS wird mit KeyboardAvoidingView und TouchableWithoutFeedback gearbeitet
+  if (Platform.OS === "ios") {
+    return (
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          {content}
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    );
+  }
+
+  // Auf Android und Web einfach den Inhalt rendern
+  return content;
 }
