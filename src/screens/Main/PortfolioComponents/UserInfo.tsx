@@ -1,17 +1,25 @@
-import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import React, { useMemo } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { createStyles as createGlobalStyles } from "@/src/styles/style";
 
 interface UserInfoProps {
-  userName: string;  // jetzt als Prop definiert
+  userName: string;
   cash: number;
   positionsValue: number;
   combinedValue: number;
   history: { total: number; date: string }[];
   theme: any;
   styles: any;
+  positions?: any[]; // Optional positions for diversity chart
 }
 
 export default function UserInfo({
@@ -21,14 +29,16 @@ export default function UserInfo({
   combinedValue,
   history,
   theme,
-  styles,
+  styles: propStyles,
+  positions = [],
 }: UserInfoProps) {
   const globalStyles = createGlobalStyles();
-  
-  // Interne History-Auswahl, initial "360d"
+
+  // Internal state
   const [localHistory, setLocalHistory] = React.useState("7d");
   const historyOptions = ["7d", "30d", "360d"];
-  
+
+  // Calculate history data points based on selected timeframe
   let dataPoints = 7;
   switch (localHistory) {
     case "30d":
@@ -40,76 +50,310 @@ export default function UserInfo({
     default:
       dataPoints = 7;
   }
+
+  // Prepare chart data
   const historyData = history.slice(-dataPoints);
-  const historyValues = historyData.map(item => item.total);
-  
+  const historyValues = historyData.map((item) => item.total);
+
+  // Calculate performance metrics
+  const performanceMetrics = useMemo(() => {
+    if (historyValues.length < 2)
+      return { change: 0, percentage: 0, isPositive: true };
+
+    const oldestValue = historyValues[0] || 0;
+    const newestValue = historyValues[historyValues.length - 1] || 0;
+    const change = newestValue - oldestValue;
+    const percentage = oldestValue > 0 ? (change / oldestValue) * 100 : 0;
+
+    return {
+      change,
+      percentage,
+      isPositive: percentage >= 0,
+    };
+  }, [historyValues]);
+
+  // Calculate portfolio composition percentages
+  const portfolioComposition = useMemo(() => {
+    const total = cash + positionsValue;
+    if (total <= 0) return { cash: 50, positions: 50 }; // Default equal split if no data
+
+    return {
+      cash: (cash / total) * 100,
+      positions: (positionsValue / total) * 100,
+    };
+  }, [cash, positionsValue]);
+
+  // Local styles
+  const styles = StyleSheet.create({
+    container: {
+      maxWidth: 1024,
+      marginHorizontal: "auto",
+      width: "95%",
+      marginTop: 10,
+      marginBottom: 20,
+      padding: 16,
+      backgroundColor: theme.background,
+      borderRadius: 12,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    headerRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: `${theme.text}20`,
+      paddingBottom: 10,
+    },
+    userName: {
+      fontSize: 20,
+      fontWeight: "700",
+      color: theme.accent,
+    },
+    performanceContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    performanceText: {
+      fontWeight: "bold",
+      fontSize: 14,
+      color: performanceMetrics.isPositive ? "#4CAF50" : "#F44336",
+    },
+    performanceIcon: {
+      marginRight: 4,
+    },
+    metricsContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 16,
+      flexWrap: "wrap",
+    },
+    metricBox: {
+      width: "30%",
+      backgroundColor: `${theme.accent}10`,
+      borderRadius: 8,
+      padding: 10,
+      alignItems: "center",
+      marginBottom: 8,
+    },
+    metricLabel: {
+      color: theme.text,
+      fontSize: 12,
+      marginBottom: 4,
+    },
+    metricValue: {
+      color: theme.accent,
+      fontSize: 16,
+      fontWeight: "bold",
+      fontFamily: Platform.OS === "ios" ? undefined : "monospace",
+    },
+    compositionContainer: {
+      marginVertical: 16,
+    },
+    compositionBar: {
+      height: 8,
+      borderRadius: 4,
+      flexDirection: "row",
+      marginTop: 8,
+      overflow: "hidden",
+    },
+    cashPortion: {
+      height: "100%",
+      backgroundColor: theme.accent,
+      width: `${portfolioComposition.cash}%`,
+    },
+    positionsPortion: {
+      height: "100%",
+      backgroundColor: `${theme.text}80`,
+      width: `${portfolioComposition.positions}%`,
+    },
+    legendContainer: {
+      flexDirection: "row",
+      justifyContent: "flex-start",
+      marginTop: 8,
+    },
+    legendItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginRight: 16,
+    },
+    legendColor: {
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+      marginRight: 6,
+    },
+    legendText: {
+      color: theme.text,
+      fontSize: 12,
+    },
+    historyContainer: {
+      marginTop: 16,
+    },
+    historyHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 10,
+    },
+    historyTitle: {
+      color: theme.text,
+      fontSize: 16,
+      fontWeight: "600",
+    },
+    historyTabsContainer: {
+      flexDirection: "row",
+    },
+    historyTab: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      marginLeft: 4,
+      borderRadius: 16,
+      backgroundColor: `${theme.text}20`,
+    },
+    historyTabActive: {
+      backgroundColor: `${theme.accent}40`,
+    },
+    historyTabText: {
+      color: theme.text,
+      fontSize: 12,
+    },
+    historyTabTextActive: {
+      color: theme.accent,
+      fontWeight: "600",
+      fontSize: 12,
+    },
+    sparklineContainer: {
+      marginTop: 10,
+      height: 80,
+      width: "100%",
+    },
+  });
+
   return (
-    <View
-      style={
-        {
-          maxWidth: 1024,
-          margin: "auto",
-          width: "95%",
-          marginTop: 10,
-          padding: 10,
-          backgroundColor: theme.background,
-        }}
-    >
-      <View style={styles.row}>
-        <Text style={styles.header}>{userName}</Text>
-      </View>
-      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-        <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text,}}>Cash</Text>
-        </View>
-        <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, textAlign: "right", fontFamily: "monospace" }}>
-            {formatCurrency(cash)}
+    <View style={styles.container}>
+      {/* Header with name and performance */}
+      <View style={styles.headerRow}>
+        <Text style={styles.userName}>{userName}</Text>
+        <View style={styles.performanceContainer}>
+          <Ionicons
+            name={
+              performanceMetrics.isPositive ? "trending-up" : "trending-down"
+            }
+            size={18}
+            color={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
+            style={styles.performanceIcon}
+          />
+          <Text style={styles.performanceText}>
+            {performanceMetrics.isPositive ? "+" : ""}
+            {performanceMetrics.percentage.toFixed(2)}%
           </Text>
         </View>
-        <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, }}>Positions</Text>
+      </View>
+
+      {/* Key metrics in boxes */}
+      <View style={styles.metricsContainer}>
+        <View style={styles.metricBox}>
+          <Text style={styles.metricLabel}>Cash</Text>
+          <Text style={styles.metricValue}>{formatCurrency(cash)}</Text>
         </View>
-        <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.text, textAlign: "right", fontFamily: "monospace" }}>
+
+        <View style={styles.metricBox}>
+          <Text style={styles.metricLabel}>Positions</Text>
+          <Text style={styles.metricValue}>
             {formatCurrency(positionsValue)}
           </Text>
         </View>
-        <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.accent, }}>Total</Text>
-        </View>
-        <View style={{ width: "50%", padding: 4 }}>
-          <Text style={{ color: theme.accent, textAlign: "right", fontFamily: "monospace" }}>
+
+        <View
+          style={[styles.metricBox, { backgroundColor: `${theme.accent}20` }]}
+        >
+          <Text style={styles.metricLabel}>Total Value</Text>
+          <Text style={styles.metricValue}>
             {formatCurrency(combinedValue)}
           </Text>
         </View>
       </View>
-      {/* Neuer horizontaler History-Switch (intern) */}
-      <View style={{ flexDirection: "row", justifyContent: "flex-start", marginVertical: 8 }}>
-        {historyOptions.map((opt) => (
-          <TouchableOpacity
-            key={opt}
-            onPress={() => setLocalHistory(opt)}
-            style={[
-              styles.intervalButton,
-              { marginHorizontal: 4 },
-              localHistory === opt && styles.intervalButtonActive,
-            ]}
-          >
-            <Text style={localHistory === opt ? styles.intervalTextActive : styles.intervalText}>
-              {opt}
+
+      {/* Portfolio composition */}
+      <View style={styles.compositionContainer}>
+        <Text style={styles.historyTitle}>Portfolio Composition</Text>
+
+        <View style={styles.compositionBar}>
+          <View style={styles.cashPortion} />
+          <View style={styles.positionsPortion} />
+        </View>
+
+        <View style={styles.legendContainer}>
+          <View style={styles.legendItem}>
+            <View
+              style={[styles.legendColor, { backgroundColor: theme.accent }]}
+            />
+            <Text style={styles.legendText}>
+              Cash ({portfolioComposition.cash.toFixed(0)}%)
             </Text>
-          </TouchableOpacity>
-        ))}
+          </View>
+
+          <View style={styles.legendItem}>
+            <View
+              style={[
+                styles.legendColor,
+                { backgroundColor: `${theme.text}80` },
+              ]}
+            />
+            <Text style={styles.legendText}>
+              Positions ({portfolioComposition.positions.toFixed(0)}%)
+            </Text>
+          </View>
+        </View>
       </View>
-      <View style={styles.sparklineContainer}>
-        <Sparkline
-          prices={historyValues}
-          width="100%"
-          height={80}
-          stroke={theme.accent}
-          strokeWidth={2}          
-        />
+
+      {/* Value history chart */}
+      <View style={styles.historyContainer}>
+        <View style={styles.historyHeader}>
+          <Text style={styles.historyTitle}>Value History</Text>
+
+          <View style={styles.historyTabsContainer}>
+            {historyOptions.map((opt) => (
+              <TouchableOpacity
+                key={opt}
+                onPress={() => setLocalHistory(opt)}
+                style={[
+                  styles.historyTab,
+                  localHistory === opt && styles.historyTabActive,
+                ]}
+              >
+                <Text
+                  style={
+                    localHistory === opt
+                      ? styles.historyTabTextActive
+                      : styles.historyTabText
+                  }
+                >
+                  {opt}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.sparklineContainer}>
+          <Sparkline
+            prices={historyValues}
+            width="100%"
+            height={80}
+            stroke={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
+            strokeWidth={2}
+            fillOpacity={0.2}
+            fill={`${
+              performanceMetrics.isPositive ? "#4CAF5020" : "#F4433620"
+            }`}
+          />
+        </View>
       </View>
     </View>
   );
