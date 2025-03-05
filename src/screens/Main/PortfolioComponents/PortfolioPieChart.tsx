@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -57,9 +57,9 @@ export default function PortfolioPieChart({
 }: PortfolioPieChartProps) {
   const { theme } = useContext(ThemeContext);
   const accent = theme.accent; // Basis-Akzentfarbe
-  const [selectedSegment, setSelectedSegment] = useState<PortfolioItem | null>(
-    null
-  );
+  const [selectedSegment, setSelectedSegment] = useState<PortfolioItem | null>(null);
+  const isWeb = Platform.OS === 'web';
+  const svgRef = useRef(null);
 
   // Angepasste Erstellung der Portfolio-Items mit Farbabstufungen
   const portfolioItems = React.useMemo(() => {
@@ -131,84 +131,95 @@ export default function PortfolioPieChart({
         Portfolio-Verteilung
       </Text>
 
-      <Svg width={width} height={height}>
-        <G transform={`translate(${center.x}, ${center.y})`}>
-          {/* Draw circle segments */}
-          {pieData.map((d, i) => {
-            const isSelected =
-              selectedSegment && selectedSegment.symbol === d.data.symbol;
-            const shift = isSelected ? 10 : 0; // highlight selected segment
+      <View style={styles.chartContainer}>
+        <Svg width={width} height={height} ref={svgRef}>
+          <G transform={`translate(${center.x}, ${center.y})`}>
+            {/* Draw circle segments */}
+            {pieData.map((d, i) => {
+              const isSelected =
+                selectedSegment && selectedSegment.symbol === d.data.symbol;
+              const shift = isSelected ? 10 : 0; // highlight selected segment
 
-            // Calculate new position for shifted segment
-            const centroid = arc.centroid(d);
-            const x = shift ? centroid[0] * 0.1 : 0;
-            const y = shift ? centroid[1] * 0.1 : 0;
+              // Calculate new position for shifted segment
+              const centroid = arc.centroid(d);
+              const x = shift ? centroid[0] * 0.1 : 0;
+              const y = shift ? centroid[1] * 0.1 : 0;
 
-            return (
-              <Path
-                key={`arc-${i}`}
-                d={arc(d) || ""}
-                fill={d.data.color}
-                opacity={selectedSegment ? (isSelected ? 1 : 0.5) : 1}
-                transform={`translate(${x}, ${y})`}
-                onPress={() => handleSegmentPress(d.data)}
-              />
-            );
-          })}
+              // For web, we use regular SVG path without onPress
+              // For native, onPress works correctly
+              const pathProps = isWeb ? {
+                // No onPress for web - we'll handle clicks differently
+                onClick: () => handleSegmentPress(d.data),
+              } : {
+                onPress: () => handleSegmentPress(d.data),
+              };
 
-          {/* Display total value when no segment selected */}
-          {!selectedSegment && (
-            <SvgText
-              x={0}
-              y={0}
-              fontSize={18}
-              fontWeight="bold"
-              fill={theme.text}
-              textAnchor="middle"
-              alignmentBaseline="middle"
-              fontFamily="monospace"                            
-            >
-              {formatCurrency(totalValue)}
-            </SvgText>
-          )}
+              return (
+                <Path
+                  key={`arc-${i}`}
+                  d={arc(d) || ""}
+                  fill={d.data.color}
+                  opacity={selectedSegment ? (isSelected ? 1 : 0.5) : 1}
+                  transform={`translate(${x}, ${y})`}
+                  {...pathProps}
+                />
+              );
+            })}
 
-          {/* Display info for selected segment */}
-          {selectedSegment && (
-            <G>
+            {/* Display total value when no segment selected */}
+            {!selectedSegment && (
               <SvgText
                 x={0}
-                y={-15}
+                y={0}
                 fontSize={18}
                 fontWeight="bold"
-                fill={selectedSegment.color}
-                textAnchor="middle"
-              >
-                {selectedSegment.symbol}
-              </SvgText>
-              <SvgText
-                x={0}
-                y={15}
-                fontSize={16}
                 fill={theme.text}
                 textAnchor="middle"
-                fontFamily="monospace"
+                alignmentBaseline="middle"
+                fontFamily="monospace"                            
               >
-                {formatCurrency(selectedSegment.value)}
+                {formatCurrency(totalValue)}
               </SvgText>
-              <SvgText
-                x={0}
-                y={40}
-                fontSize={14}
-                fill={theme.text}
-                textAnchor="middle"
-                fontFamily="monospace"
-              >
-                {selectedSegment.percentage.toFixed(2)}%
-              </SvgText>
-            </G>
-          )}
-        </G>
-      </Svg>
+            )}
+
+            {/* Display info for selected segment */}
+            {selectedSegment && (
+              <G>
+                <SvgText
+                  x={0}
+                  y={-15}
+                  fontSize={18}
+                  fontWeight="bold"
+                  fill={selectedSegment.color}
+                  textAnchor="middle"
+                >
+                  {selectedSegment.symbol}
+                </SvgText>
+                <SvgText
+                  x={0}
+                  y={15}
+                  fontSize={16}
+                  fill={theme.text}
+                  textAnchor="middle"
+                  fontFamily="monospace"
+                >
+                  {formatCurrency(selectedSegment.value)}
+                </SvgText>
+                <SvgText
+                  x={0}
+                  y={40}
+                  fontSize={14}
+                  fill={theme.text}
+                  textAnchor="middle"
+                  fontFamily="monospace"
+                >
+                  {selectedSegment.percentage.toFixed(2)}%
+                </SvgText>
+              </G>
+            )}
+          </G>
+        </Svg>
+      </View>
 
       {/* Legend below chart */}
       <View style={styles.legendContainer}>
@@ -241,6 +252,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
+  },
+  chartContainer: {
+    position: "relative",
   },
   legendContainer: {
     flexDirection: "row",

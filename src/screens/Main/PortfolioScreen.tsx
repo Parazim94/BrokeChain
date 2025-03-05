@@ -56,7 +56,7 @@ export default function PortfolioScreen() {
       }
     };    
     fetchUserData();
-  }, []); // Wird einmalig beim Mount ausgeführt
+  }, [Orders]); // Wird einmalig beim Mount ausgeführt
 
   // Absicherung für neue Benutzer ohne positions
   const userPositionsArray = Object.entries(userData.positions || {}).map(
