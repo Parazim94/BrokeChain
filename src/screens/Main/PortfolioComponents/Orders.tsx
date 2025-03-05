@@ -135,7 +135,6 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
               <Card
                 onPress={() => {
                   // Navigiere zur Trade-Ansicht mit dem korrekten coin-Objekt
-                  // Falls keine Münze gefunden wurde, navigiere nicht
                   if (coinData) {
                     navigation.navigate("Trade", { coin: coinData });
                   } else {
@@ -143,10 +142,8 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                   }
                 }}
                 style={{ ...styles.card, width: '95%', marginHorizontal: "auto" }}
-              >
-                {/* Neues Layout mit Logo links */}
-                <View style={{ flexDirection: 'row', width: '100%' }}>
-                  {/* Logo links */}
+              >                
+                <View style={{ flexDirection: 'row', width: '100%' }}>                
                   {coinData?.image && (
                     <View style={{ justifyContent: 'center', paddingRight: 10 }}>
                       <Image

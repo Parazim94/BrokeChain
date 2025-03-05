@@ -26,8 +26,7 @@ export default function Sorting({
         maxWidth: 1024,
         margin: "auto",
         width: "100%",
-        paddingLeft: 16,
-        paddingRight: 8,
+        paddingLeft: 10,
         backgroundColor: styles.background,
       }}
     >

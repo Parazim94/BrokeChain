@@ -35,7 +35,7 @@ export default function D3LineChart({
   height = 300,
 }: D3LineChartProps) {
   const { theme } = useContext(ThemeContext);
-  const { getHistoricalData } = useData(); // Neu: Daten aus dem DataContext beziehen
+  const { getHistoricalData } = useData(); 
   const [lineData, setLineData] = useState<LineData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [tooltip, setTooltip] = useState<{ index: number; x: number; y: number; isVisible: boolean } | null>(null);

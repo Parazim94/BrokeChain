@@ -56,7 +56,7 @@ export default function PortfolioScreen() {
       }
     };    
     fetchUserData();
-  }, [selectedFilter]); // Wird einmalig beim Mount ausgeführt
+  }, []); // Wird einmalig beim Mount ausgeführt
 
   // Absicherung für neue Benutzer ohne positions
   const userPositionsArray = Object.entries(userData.positions || {}).map(
@@ -174,8 +174,7 @@ export default function PortfolioScreen() {
     case "Favorites":
       currentData = favoriteMarketData;
       break;
-    case "TradeHistory": // "New" zu "TradeHistory" geändert
-      // Für "TradeHistory" setzen wir genau ein Element, damit die TradeHistory-Komponente nur einmal gerendert wird
+    case "TradeHistory": 
       currentData = ["trades_placeholder"];
       break;
     default:
@@ -203,8 +202,7 @@ export default function PortfolioScreen() {
         return <Orders data={[item]} theme={theme} onDeleteOrder={handleDeleteOrder} />;
       case "favorites":
         return <Fav data={[item]} theme={theme} />;
-      case "tradehistory": // "new" zu "tradehistory" geändert (kleingeschrieben für section.type)
-        // Der data-Prop wird nicht mehr verwendet, wir übergeben nur die tradeHistory
+      case "tradehistory": 
         return <TradeHistory theme={theme} tradeHistory={userData.tradeHistory} />;
       default:
         return <Holding data={[item]} theme={theme} />;

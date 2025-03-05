@@ -108,7 +108,7 @@ export default function UserInfo({
           width="100%"
           height={80}
           stroke={theme.accent}
-          strokeWidth={2}
+          strokeWidth={2}          
         />
       </View>
     </View>

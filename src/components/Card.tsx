@@ -35,7 +35,7 @@ function createCardStyles() {
       card: {
         padding: 12,
         margin: 4,
-        width: "96%",
+        width: "100%",
         borderRadius: 8,       
       },
     }),

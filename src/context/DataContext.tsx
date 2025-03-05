@@ -82,7 +82,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
       return `positions?token=${user.token}`;
     }
     console.log("Kein Token vorhanden für Positions-Abfrage");
-    return null; // Verwende null statt leeren String
+    return null; 
   }, [user?.token]);
 
   // Positionen nur abfragen, wenn ein Endpunkt existiert
@@ -96,11 +96,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     { expectJson: true }
   );
 
-  // Logging für Debugging-Zwecke
-  useEffect(() => {
-    console.log("Positions-Endpoint:", positionsEndpoint);
-    console.log("Raw Positions:", rawPositions);
-  }, [positionsEndpoint, rawPositions]);
+  
 
   // Umwandlung in Positionen-Array
   const positions = React.useMemo(() => {

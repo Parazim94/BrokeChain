@@ -227,7 +227,6 @@ export default function TradeScreen() {
             )}
           </View>
           
-          {/* Button durch neue Komponente ersetzen */}
           <Button
             onPress={() => setIsSearchActive(!isSearchActive)}
             title=""
@@ -368,7 +367,7 @@ export default function TradeScreen() {
             textStyle={{ fontSize: 12 }}
           />
           <TextInput
-            style={[styles.input, { width: "35%", padding: 2, fontFamily: "monospace" }]}
+            style={[styles.input, { width: "25%", padding: 4, fontFamily: "monospace" }]}
             placeholder="Amount..."
             placeholderTextColor={styles.defaultText.color}
             value={quantity}
@@ -377,8 +376,8 @@ export default function TradeScreen() {
           />
           {tradeType === "order" && (
             <TextInput
-              style={[styles.input, { width: "35%", padding: 2, fontFamily: "monospace" }]}
-              placeholder="Price Threshold..."
+              style={[styles.input, { width: "25%", padding: 4, fontFamily: "monospace" }]}
+              placeholder="Price..."
               placeholderTextColor={styles.defaultText.color}
               value={orderPrice}
               onChangeText={setOrderPrice}

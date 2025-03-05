@@ -66,7 +66,7 @@ export default function TradeHistory({ theme, tradeHistory = [] }: TradeHistoryP
         >
           <Card
             onPress={() => {}}
-            style={{ ...styles.card, width: '95%', marginHorizontal: "auto" }}
+            style={{ ...styles.card, width: '95%', marginHorizontal: "auto", }}
           >
             {/* Rest des Codes bleibt gleich */}
             <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>

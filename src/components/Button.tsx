@@ -8,7 +8,7 @@ interface ButtonProps {
   title: string;
   type?: "primary" | "secondary" | "danger" | "success" | "outline";
   size?: "small" | "medium" | "large";
-  icon?: string; // Ionicons name
+  icon?: string; 
   iconPosition?: "left" | "right";
   disabled?: boolean;
   loading?: boolean;
