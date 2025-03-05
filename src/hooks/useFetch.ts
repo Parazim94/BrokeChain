@@ -19,7 +19,7 @@ export function useFetch<T>(endpoint: string, options: UseFetchOptions = {}) {
 		
 		try {
 			setLoading(true);
-			const url = `https://broke-end.vercel.app/${endpoint}`;
+			const url = `https://cb-web.dev/${endpoint}`;
 			console.log(`[GET] Fetching from: ${url}`);
 			
 			const response = await fetch(url);
@@ -53,7 +53,7 @@ export function useFetch<T>(endpoint: string, options: UseFetchOptions = {}) {
 }
 
 export async function fetchPost(endpoint: string, body: any) {
-	const url = `https://broke-end.vercel.app/${endpoint}`;
+	const url = `https://cb-web.dev/${endpoint}`;
 	console.log(`[POST] Sending to: ${url}`);
 	console.log(`[POST] Request body:`, JSON.stringify(body, null, 2));
 	

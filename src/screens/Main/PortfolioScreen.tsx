@@ -56,7 +56,7 @@ export default function PortfolioScreen() {
       }
     };    
     fetchUserData();
-  }, []); // Optionale Verkettung hinzugefügt
+  }, [Orders]); // Optionale Verkettung hinzugefügt
 
   // Absicherung für neue Benutzer ohne positions
   const userPositionsArray = Object.entries(userData.positions || {}).map(
