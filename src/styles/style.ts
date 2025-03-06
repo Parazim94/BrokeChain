@@ -16,6 +16,7 @@ export function createStyles() {
     },
     input: {
       width: "100%",
+      minWidth: 200,
       maxWidth: 300,
       padding: 7,
       marginVertical: 8,

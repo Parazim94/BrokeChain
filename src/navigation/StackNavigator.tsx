@@ -10,10 +10,11 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
+import { AuthContext } from "../context/AuthContext";
 import { useNavigation, DrawerActions } from "@react-navigation/native";
 import ResponsiveNavigator from "./ResponsiveNavigator";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
-import AuthScreen from "../screens/Auth/AuthScreen";
+// import AuthScreen from "../screens/Auth/AuthScreen";
 import LoginScreen from "../components/AuthComponents/LoginScreen";
 import RegisterScreen from "../components/AuthComponents/RegisterScreen";
 import CashInfo from "../components/CashInfo";
@@ -25,6 +26,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 export default function StackNavigator() {
   const { width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
+  const { isLoggedIn } = useContext(AuthContext);
   const navigation = useNavigation();
 
   return (
@@ -99,14 +101,20 @@ export default function StackNavigator() {
                   <Ionicons name="menu" size={28} color={theme.accent} />
                 </TouchableOpacity>
               )}
-              {/* Profil- und Einstellungen-Icons */}
+              {/* Benutzer-Icon: Navigiert zu Portfolio, wenn angemeldet, sonst zu Login */}
               <TouchableOpacity
                 style={{
                   marginLeft: 15,
                   alignItems: "center",
                   justifyContent: "center",
                 }}
-                onPress={() => navigation.navigate("Auth" as never)}
+                onPress={() => {
+                  if (isLoggedIn) {
+                    navigation.navigate( "Portfolio" as never);
+                  } else {
+                    navigation.navigate("Login" as never);
+                  }
+                }}
               >
                 <Ionicons name="person-circle" size={28} color={theme.accent} />
               </TouchableOpacity>
@@ -132,11 +140,6 @@ export default function StackNavigator() {
         name="Settings"
         component={SettingsScreen}
         options={{ title: "Einstellungen" }}
-      />
-      <Stack.Screen
-        name="Auth"
-        component={AuthScreen}
-        options={{ title: "Profil" }}
       />
       <Stack.Screen
         name="Login"

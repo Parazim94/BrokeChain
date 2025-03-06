@@ -282,31 +282,29 @@ export default function UserInfo({
         <View style={styles.userNameContainer}>
           <Ionicons name="person-circle" size={30} style={styles.profileIcon} />
           <Text style={styles.userName}>{userName}</Text>
-        </View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View style={styles.performanceContainer}>
-            <Ionicons
-              name={
-                performanceMetrics.isPositive ? "trending-up" : "trending-down"
-              }
-              size={18}
-              color={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
-              style={styles.performanceIcon}
-            />
-            <Text style={styles.performanceText}>
-              {performanceMetrics.isPositive ? "+" : ""}
-              {performanceMetrics.percentage.toFixed(2)}%
-            </Text>
+          <View style={[styles.performanceContainer, { marginLeft: 10 }]}>
+        <Ionicons
+          name={
+            performanceMetrics.isPositive ? "trending-up" : "trending-down"
+          }
+          size={18}
+          color={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
+          style={styles.performanceIcon}
+        />
+        <Text style={styles.performanceText}>
+          {performanceMetrics.isPositive ? "+" : ""}
+          {performanceMetrics.percentage.toFixed(2)}%
+        </Text>
           </View>
-          <Button
-            onPress={handleLogout}
-            title="Logout"
-            loading={isLoggingOut}
-            style={{ marginLeft: 10 }}
-            size="small"
-            type="danger"
-          />
         </View>
+        <Button
+          onPress={handleLogout}
+          title="Logout"
+          loading={isLoggingOut}
+          style={{ marginLeft: 10 }}
+          size="small"
+          type="danger"
+        />
       </View>
 
       {/* Key metrics in boxes */}

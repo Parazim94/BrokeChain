@@ -225,6 +225,8 @@ export default function MarketList({
                     </View>
                   </View>
                 ) : (
+
+                  // mobile view1
                   <View style={localStyles.cardContent}>
                     {/* Logo Container */}
                     <View style={localStyles.logoContainer}>
@@ -261,7 +263,7 @@ export default function MarketList({
                             {formatCurrency(item.current_price)}
                           </Text>
                         </View>
-                        <View style={[localStyles.col2, { width: "50%" }]}>
+                        <View style={[localStyles.col2, { width: "50%",alignItems:"flex-end"  } ]}>
                           <Text>
                             <Text style={[localStyles.labelText, {fontSize:12}]}>24h: </Text>
                             <Text style={[{ color: item.price_change_percentage_24h < 0 ? "red" : "green" }, localStyles.monoText]}>{item.price_change_percentage_24h.toFixed(2)}%</Text> 
@@ -269,7 +271,7 @@ export default function MarketList({
                         </View>
                       </View>
                       <View style={localStyles.gridRow}>
-                        <View style={[localStyles.col1, { width: "50%" }]}>
+                        <View style={[localStyles.col1, { width: "50%", }]}>
                           <Text style={{ color: defaultTextColor }}>
                             <Text style={localStyles.labelText}>High: </Text>
                             <Text style={[localStyles.monoText, { color: "grey" }]}>
@@ -277,7 +279,7 @@ export default function MarketList({
                             </Text>
                           </Text>
                         </View>
-                        <View style={[localStyles.col2, { width: "50%" }]}>
+                        <View style={[localStyles.col2, { width: "50%",alignItems:"flex-end" }]}>
                           <Text style={{ color: defaultTextColor }}>
                             <Text style={localStyles.labelText}>Low: </Text>
                             <Text style={[localStyles.monoText, { color: "grey"}]}>
@@ -296,7 +298,7 @@ export default function MarketList({
                           </Text>
                         </View>
                         <View style={{ width: "50%", alignItems: "flex-end" }}>
-                          <Text style={{ color: defaultTextColor, textAlign: "right" }}>
+                          <Text style={{ color: defaultTextColor, textAlign: "left" }}>
                             <Text style={localStyles.labelText}>Cap: </Text>
                             <Text style={[localStyles.monoText, { color:"grey" }]}>
                               {formatCurrency(item.market_cap)}

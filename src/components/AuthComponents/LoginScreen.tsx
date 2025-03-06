@@ -20,6 +20,8 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false); 
   const cardPadding = Platform.OS === "web" ? 32 : 16;
+  
+  const isMobile = Platform.OS !== "web"; // Mobile-Check
 
   const handleLogin = async () => {
     try {
@@ -59,14 +61,14 @@ export default function LoginScreen() {
 
   return (
     <View style={[styles.container, auth.center]}>
-      <Card onPress={() => {}} style={{ padding: cardPadding, margin: 20 }}>
+      <Card onPress={() => {}} style={{ padding: cardPadding  }}>
         <Text style={auth.headerText}>Login</Text>
         <TextInput
           placeholder="E-Mail"
           placeholderTextColor={styles.defaultText.color}
           value={email}
           onChangeText={setEmail}
-          style={styles.input}
+          style={[styles.input, isMobile && { width: "100%", textAlign: "left" }]}
         />
         <TextInput
           placeholder="Passwort"
@@ -81,6 +83,10 @@ export default function LoginScreen() {
           title="Login"
           loading={isLoading}
           fullWidth
+          style={{ 
+            marginTop: 12, 
+            ...(isMobile ? { width: "100%", alignItems: "center" } : {})
+          }}
         />
         <View style={auth.linkContainer}>
           <Text style={auth.infoText}>New here? </Text>

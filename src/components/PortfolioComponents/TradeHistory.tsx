@@ -75,7 +75,7 @@ export default function TradeHistory({ theme, tradeHistory = [], isLoggedIn = fa
             onPress={() => {}}
             style={{ 
               ...styles.card, 
-              width: Platform.OS === "web" ? "100%" : "95%", 
+              width: Platform.OS === "web" ? "100%" : "95%", // mobile width 95%
               marginHorizontal: Platform.OS === "web" ? 0 : "auto", 
             }}
           >

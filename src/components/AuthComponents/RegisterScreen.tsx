@@ -55,21 +55,21 @@ export default function RegisterScreen() {
         <TextInput
           placeholder="Name"
           placeholderTextColor={styles.defaultText.color}
-          style={styles.input}
+          style={[styles.input, { width: "100%", textAlign: "left" }]}  
           value={userName}
           onChangeText={setuserName}
         />
         <TextInput
           placeholder="E-Mail"
           placeholderTextColor={styles.defaultText.color}
-          style={styles.input}
+          style={[styles.input, { width: "100%", textAlign: "left" }]}  
           value={email}
           onChangeText={setEmail}
         />
         <TextInput
           placeholder="age"
           placeholderTextColor={styles.defaultText.color}
-          style={styles.input}
+          style={[styles.input, { width: "100%", textAlign: "left" }]}  
           value={age}
           onChangeText={setAge}
         />
@@ -77,7 +77,7 @@ export default function RegisterScreen() {
           placeholder="Passwort"
           placeholderTextColor={styles.defaultText.color}
           secureTextEntry
-          style={styles.input}
+          style={[styles.input, { width: "100%", textAlign: "left" }]}  
           value={password}
           onChangeText={setPassword}
         />
@@ -86,6 +86,7 @@ export default function RegisterScreen() {
           title="Registrieren"
           loading={isLoading}
           fullWidth
+          textStyle={{ textAlign: "center" }}  
         />
         <View style={auth.linkContainer}>
           <Text style={auth.infoText}>Already got an account? </Text>
