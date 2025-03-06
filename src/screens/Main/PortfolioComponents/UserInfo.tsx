@@ -100,11 +100,15 @@ export default function UserInfo({
       padding: 16,
       backgroundColor: theme.background,
       borderRadius: 12,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 8,
-      elevation: 4,
+      // More subtle themed shadow
+      shadowColor: theme.accent,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: theme.isDark ? 0.5 : 0.25,
+      shadowRadius: 15,
+      elevation: 10,
+      // More subtle themed border
+      borderWidth: 1.5,
+      borderColor: theme.accent,
     },
     headerRow: {
       flexDirection: "row",
@@ -114,6 +118,14 @@ export default function UserInfo({
       borderBottomWidth: 1,
       borderBottomColor: `${theme.text}20`,
       paddingBottom: 10,
+    },
+    userNameContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    profileIcon: {
+      marginRight: 8,
+      color: theme.accent,
     },
     userName: {
       fontSize: 20,
@@ -245,7 +257,10 @@ export default function UserInfo({
     <View style={styles.container}>
       {/* Header with name and performance */}
       <View style={styles.headerRow}>
-        <Text style={styles.userName}>{userName}</Text>
+        <View style={styles.userNameContainer}>
+          <Ionicons name="person-circle" size={30} style={styles.profileIcon} />
+          <Text style={styles.userName}>{userName}</Text>
+        </View>
         <View style={styles.performanceContainer}>
           <Ionicons
             name={
