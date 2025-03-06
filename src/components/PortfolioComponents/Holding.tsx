@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
-import { Image, Text, View } from "react-native";
+import { Image, Text, View, Platform } from "react-native";
 import Card from "@/src/components/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import Sparkline from "@/src/components/Sparkline";
@@ -32,7 +32,11 @@ export default function Holding({ data, theme }: HoldingProps) {
             onPress={() => {
               navigation.navigate("Trade", { coin: item.marketInfo });
             }}
-            style={{ ...styles.card, width: "95%", marginHorizontal: "auto" }}
+            style={{
+              ...styles.card,
+              width: Platform.OS === "web" ? "100%" : "95%",
+              marginHorizontal: Platform.OS === "web" ? 0 : "auto",
+            }}
           >
             {/* Neues Layout: Logo links, Inhalt rechts */}
             <View style={{ flexDirection: "row", width: "100%" }}>

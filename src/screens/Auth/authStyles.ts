@@ -6,7 +6,7 @@ export const authStyles = () => {
   return StyleSheet.create({
     center: {
       flex: 1,
-      justifyContent: "flex-start",
+      justifyContent: "center",
       alignItems: "center",
       paddingTop: 20,
     },

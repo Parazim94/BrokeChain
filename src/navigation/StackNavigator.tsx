@@ -11,8 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { useNavigation, DrawerActions } from "@react-navigation/native";
-import TabNavigator from "./TabNavigator";
-import DrawerNavigator from "./DrawerNavigator";
+import ResponsiveNavigator from "./ResponsiveNavigator";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
 import AuthScreen from "../screens/Auth/AuthScreen";
 import LoginScreen from "../components/AuthComponents/LoginScreen";
@@ -47,7 +46,7 @@ export default function StackNavigator() {
       />
       <Stack.Screen
         name="Main"
-        component={width >= 768 ? DrawerNavigator : TabNavigator}
+        component={ResponsiveNavigator}
         options={{
           headerTitle: () => null,
           headerLeft: () => (
@@ -89,8 +88,8 @@ export default function StackNavigator() {
               >
                 <CashInfo />
               </View>
-              {/* Burger-Button für Sidebar (nur bei großen Screens) */}
-              {width >= 768 && (
+              {/* Burger-Button nur anzeigen, wenn Bildschirmbreite zwischen 768 und 1024 */}
+              {width >= 768 && width < 1024 && (
                 <TouchableOpacity
                   onPress={() =>
                     navigation.dispatch(DrawerActions.toggleDrawer())

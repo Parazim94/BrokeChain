@@ -15,13 +15,17 @@ export default function DrawerNavigator() {
   const { theme } = useContext(ThemeContext);
   const { width } = useWindowDimensions();
 
+  // Typ des Drawers basierend auf der Bildschirmgröße festlegen
+  const drawerType = width >= 1024 ? "permanent" : "front";
+  
   return (
     <Drawer.Navigator
       screenOptions={{
+        drawerType: drawerType,
         drawerPosition: "right",
         drawerStyle: {
           backgroundColor: theme.background,
-          width: width >= 768 ? 250 : 0,
+          width: 250,
         },
         drawerLabelStyle: {
           color: theme.text,

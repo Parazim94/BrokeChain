@@ -1,6 +1,6 @@
 import React from "react";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import { Text, View } from "react-native";
+import { Text, View, Platform } from "react-native";
 import Card from "@/src/components/Card";
 import { createStyles } from "@/src/components/PortfolioComponents/portfolioStyles";
 import { formatCurrency } from "@/src/utils/formatCurrency";
@@ -73,7 +73,11 @@ export default function TradeHistory({ theme, tradeHistory = [], isLoggedIn = fa
         >
           <Card
             onPress={() => {}}
-            style={{ ...styles.card, width: '95%', marginHorizontal: "auto", }}
+            style={{ 
+              ...styles.card, 
+              width: Platform.OS === "web" ? "100%" : "95%", 
+              marginHorizontal: Platform.OS === "web" ? 0 : "auto", 
+            }}
           >
             {/* Rest des Codes bleibt gleich */}
             <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>

@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
-import { Text, View, TouchableOpacity, Modal, TextInput, StyleSheet, Image } from "react-native";
+import { Text, View, TouchableOpacity, Modal, TextInput, StyleSheet, Image, Platform } from "react-native";
 import Card from "@/src/components/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { createStyles } from "@/src/components/PortfolioComponents/portfolioStyles";
@@ -143,7 +143,11 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                     console.warn(`Keine Münzdaten für Symbol ${item.symbol} gefunden`);
                   }
                 }}
-                style={{ ...styles.card, width: '95%', marginHorizontal: "auto" }}
+                style={{ 
+                  ...styles.card, 
+                  width: Platform.OS === "web" ? "100%" : "95%", 
+                  marginHorizontal: Platform.OS === "web" ? 0 : "auto" 
+                }}
               >                
                 <View style={{ flexDirection: 'row', width: '100%' }}>                
                   {coinData?.image && (

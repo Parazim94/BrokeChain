@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import * as Linking from "expo-linking";
 import { createStyles } from "../../styles/style";
@@ -17,6 +18,7 @@ import Card from "@/src/components/Card";
 import Button from "@/src/components/Button"; // Neue Button-Komponente importieren
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
+import { useResponsiveColumns } from "@/src/hooks/useResponsiveColumns";
 
 interface NewsItem {
   guid: string;
@@ -35,6 +37,8 @@ export default function CryptoNews() {
   const styles = createStyles();
   const newsStyles = createNewsStyles();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const columns = useResponsiveColumns();
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -60,12 +64,21 @@ export default function CryptoNews() {
       ) : (
         <FlatList
           data={news}
-          style={{ padding: 5 }}
-          contentContainerStyle={{ alignItems: "center" }}
+          style={{ width: "100%" }}
+          contentContainerStyle={{ 
+            padding: 8,
+            alignItems: columns > 1 ? "flex-start" : "center" 
+          }}
+          numColumns={columns}
+          key={columns} // Force re-render when columns change
           keyExtractor={(item) => item.guid}
           renderItem={({ item }) => (
             <Card
-              style={{ minWidth: "98%", marginTop: 16, maxWidth: 350 }}
+              style={{
+                margin: 8,
+                maxWidth: columns > 1 ? (width / columns) - 24 : 350,
+                flex: 1,
+              }}
               onPress={() =>
                 setExpandedNews(expandedNews === item.guid ? null : item.guid)
               }

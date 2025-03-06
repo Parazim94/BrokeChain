@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "../../screens/Auth/authStyles";
 import Button from "@/src/components/Button"; 
 import { useAlert } from "@/src/context/AlertContext"; 
+import Card from "@/src/components/Card";
 
 export default function RegisterScreen() {
   const styles = createStyles();
@@ -17,6 +18,8 @@ export default function RegisterScreen() {
   const [age, setAge] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Loading-State für Button
+
+  const cardPadding = Platform.OS === "web" ? 32 : 16;
 
   const handleRegister = async () => {
     try {
@@ -47,51 +50,53 @@ export default function RegisterScreen() {
 
   return (
     <View style={[styles.container, auth.center]}>
-      <Text style={auth.headerText}>Register</Text>
-      <TextInput
-        placeholder="Name"
-        placeholderTextColor={styles.defaultText.color}
-        style={styles.input}
-        value={userName}
-        onChangeText={setuserName}
-      />
-      <TextInput
-        placeholder="E-Mail"
-        placeholderTextColor={styles.defaultText.color}
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        placeholder="age"
-        placeholderTextColor={styles.defaultText.color}
-        style={styles.input}
-        value={age}
-        onChangeText={setAge}
-      />
-      <TextInput
-        placeholder="Passwort"
-        placeholderTextColor={styles.defaultText.color}
-        secureTextEntry
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-      />
-      <Button
-        onPress={handleRegister}
-        title="Registrieren"
-        loading={isLoading}
-        fullWidth
-      />
-      <View style={auth.linkContainer}>
-        <Text style={auth.infoText}>Already got an account? </Text>
-        <Text 
-          style={auth.linkText}
-          onPress={() => navigation.navigate("Login" as never)}
-        >
-          Login
-        </Text>
-      </View>
+      <Card onPress={() => {}} style={{ padding: cardPadding, margin: 20 }}>
+        <Text style={auth.headerText}>Register</Text>
+        <TextInput
+          placeholder="Name"
+          placeholderTextColor={styles.defaultText.color}
+          style={styles.input}
+          value={userName}
+          onChangeText={setuserName}
+        />
+        <TextInput
+          placeholder="E-Mail"
+          placeholderTextColor={styles.defaultText.color}
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          placeholder="age"
+          placeholderTextColor={styles.defaultText.color}
+          style={styles.input}
+          value={age}
+          onChangeText={setAge}
+        />
+        <TextInput
+          placeholder="Passwort"
+          placeholderTextColor={styles.defaultText.color}
+          secureTextEntry
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <Button
+          onPress={handleRegister}
+          title="Registrieren"
+          loading={isLoading}
+          fullWidth
+        />
+        <View style={auth.linkContainer}>
+          <Text style={auth.infoText}>Already got an account? </Text>
+          <Text 
+            style={auth.linkText}
+            onPress={() => navigation.navigate("Login" as never)}
+          >
+            Login
+          </Text>
+        </View>
+      </Card>
     </View>
   );
 }

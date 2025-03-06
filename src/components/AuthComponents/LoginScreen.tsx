@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput, Platform } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { StackParamList } from "@/src/types/types";
 import { AuthContext } from "../../context/AuthContext";
@@ -8,6 +8,7 @@ import { authStyles } from "../../screens/Auth/authStyles";
 import Button from "@/src/components/Button"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAlert } from "@/src/context/AlertContext";
+import Card from "@/src/components/Card";
 
 export default function LoginScreen() {
   const styles = createStyles();
@@ -18,6 +19,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false); 
+  const cardPadding = Platform.OS === "web" ? 32 : 16;
 
   const handleLogin = async () => {
     try {
@@ -57,37 +59,39 @@ export default function LoginScreen() {
 
   return (
     <View style={[styles.container, auth.center]}>
-      <Text style={auth.headerText}>Login</Text>
-      <TextInput
-        placeholder="E-Mail"
-        placeholderTextColor={styles.defaultText.color}
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Passwort"
-        placeholderTextColor={styles.defaultText.color}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-      />
-      <Button
-        onPress={handleLogin}
-        title="Login"
-        loading={isLoading}
-        fullWidth
-      />
-      <View style={auth.linkContainer}>
-        <Text style={auth.infoText}>New here? </Text>
-        <Text 
-          style={auth.linkText} 
-          onPress={() => navigation.navigate("Register" as never)}
-        >
-          Register
-        </Text>
-      </View>
+      <Card onPress={() => {}} style={{ padding: cardPadding, margin: 20 }}>
+        <Text style={auth.headerText}>Login</Text>
+        <TextInput
+          placeholder="E-Mail"
+          placeholderTextColor={styles.defaultText.color}
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Passwort"
+          placeholderTextColor={styles.defaultText.color}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          style={styles.input}
+        />
+        <Button
+          onPress={handleLogin}
+          title="Login"
+          loading={isLoading}
+          fullWidth
+        />
+        <View style={auth.linkContainer}>
+          <Text style={auth.infoText}>New here? </Text>
+          <Text 
+            style={auth.linkText} 
+            onPress={() => navigation.navigate("Register" as never)}
+          >
+            Register
+          </Text>
+        </View>
+      </Card>
     </View>
   );
 }

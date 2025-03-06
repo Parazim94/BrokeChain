@@ -355,7 +355,7 @@ export default function SettingsScreen() {
             right: 0,
             bottom: 0,
             height: Platform.OS === "web" ? "100%" : "auto",
-            overflow: Platform.OS === "web" ? "scroll" : undefined,
+            // overflowVerticaly: Platform.OS === "web" ? "scroll" : undefined,
           },
         ]}
         contentContainerStyle={{

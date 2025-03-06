@@ -9,12 +9,14 @@ import {
   TouchableOpacity,
   StyleSheet,
   Share,
+  useWindowDimensions,
 } from "react-native";
 import * as Linking from "expo-linking";
 import { Ionicons } from "@expo/vector-icons";
 import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/Card";
+import { useResponsiveColumns } from "@/src/hooks/useResponsiveColumns";
 
 interface Post {
   id: string;
@@ -34,6 +36,8 @@ export default function ShareScreen() {
   const [likedPosts, setLikedPosts] = useState<Record<string, number>>({});
   const styles = createStyles();
   const shareStyles = createShareStyles();
+  const columns = useResponsiveColumns();
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -81,11 +85,18 @@ export default function ShareScreen() {
           contentContainerStyle={{
             alignItems: "center",
             justifyContent: "center",
+            padding: 8,
           }}
+          numColumns={columns}
+          key={columns} // Force re-render when columns change
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Card
-              style={{ marginTop: 16, maxWidth: 350 }}
+              style={{
+                margin: 8,
+                maxWidth: columns > 1 ? (width / columns) - 24 : 350,
+                flex: 1,
+              }}
               onPress={() =>
                 setExpandedPost(expandedPost === item.id ? null : item.id)
               }
