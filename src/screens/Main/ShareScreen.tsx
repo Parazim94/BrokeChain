@@ -10,6 +10,9 @@ import {
   StyleSheet,
   Share,
   useWindowDimensions,
+  Platform,
+  Modal,
+  ScrollView,
 } from "react-native";
 import * as Linking from "expo-linking";
 import { Ionicons } from "@expo/vector-icons";
@@ -76,104 +79,115 @@ export default function ShareScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color={styles.defaultText.color} />
-      ) : (
-        <FlatList
-          data={posts}
-          style={{ width: "100%" }}
-          contentContainerStyle={{
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 8,
-          }}
-          numColumns={columns}
-          key={columns} // Force re-render when columns change
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <Card
-              style={{
-                margin: 8,
-                maxWidth: columns > 1 ? (width / columns) - 24 : 350,
-                flex: 1,
-              }}
-              onPress={() =>
-                setExpandedPost(expandedPost === item.id ? null : item.id)
-              }
-            >
-              {/* Header: User-Avatar, Username & Zeitstempel */}
-              <View style={shareStyles.postHeaderRow}>
-                <Image
-                  source={{ uri: item.account.avatar }}
-                  style={shareStyles.userAvatar}
-                />
-                <View style={shareStyles.userInfo}>
-                  <Text style={shareStyles.username}>
-                    @{item.account.username}
-                  </Text>
-                  <Text style={shareStyles.postDate}>
-                    {new Date(item.created_at).toLocaleString()}
-                  </Text>
+      <View style={Platform.OS === "web" ? shareStyles.webContainer : { flex: 1, width: "100%" }}>
+        {loading ? (
+          <ActivityIndicator size="large" color={styles.defaultText.color} />
+        ) : (
+          <FlatList
+            data={posts}
+            style={{ width: "100%" }}
+            contentContainerStyle={{
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 8,
+            }}
+            numColumns={columns}
+            key={columns} // Force re-render when columns change
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <Card
+                style={[
+                  {
+                    margin: 8,
+                    maxWidth: columns > 1 ? (width / columns) - 154 : '95%',
+                    flex: 1,
+                  },
+                  Platform.OS !== "web" ? shareStyles.compactCard : {}
+                ]}
+                onPress={() =>
+                  setExpandedPost(expandedPost === item.id ? null : item.id)
+                }
+              >
+                {/* Header: User-Avatar, Username & Zeitstempel */}
+                <View style={shareStyles.postHeaderRow}>
+                  <Image
+                    source={{ uri: item.account.avatar }}
+                    style={shareStyles.userAvatar}
+                  />
+                  <View style={shareStyles.userInfo}>
+                    <Text style={shareStyles.username}>
+                      @{item.account.username}
+                    </Text>
+                    <Text style={shareStyles.postDate}>
+                      {new Date(item.created_at).toLocaleString()}
+                    </Text>
+                  </View>
                 </View>
-              </View>
 
-              {/* Inhalt des Posts */}
-              <View style={shareStyles.postContent}>
-                <Text
-                  style={shareStyles.postText}
-                  numberOfLines={expandedPost === item.id ? undefined : 5}
+                {/* Inhalt des Posts, scrollbar wenn expandiert */}
+                <ScrollView 
+                  style={shareStyles.postContentScrollView}
+                  showsVerticalScrollIndicator={true}
+                  nestedScrollEnabled={true}
                 >
-                  {item.content.replace(/<[^>]+>/g, "")}
-                </Text>
-              </View>
+                  <View style={shareStyles.postContent}>
+                    <Text
+                      style={shareStyles.postText}
+                      numberOfLines={expandedPost === item.id ? undefined : 3}
+                    >
+                      {item.content.replace(/<[^>]+>/g, "")}
+                    </Text>
+                  </View>
 
-              {/* "Post öffnen"-Button linksbündig, wenn Post aufgeklappt ist */}
-              {expandedPost === item.id && (
-                <View style={shareStyles.openPostContainer}>
+                  {/* "Post öffnen"-Button innerhalb des ScrollView, wenn Post aufgeklappt ist */}
+                  {expandedPost === item.id && (
+                    <View style={shareStyles.openPostContainer}>
+                      <TouchableOpacity
+                        onPress={() => Linking.openURL(item.url)}
+                        style={shareStyles.openPostButton}
+                      >
+                        <Text style={shareStyles.openPostButtonText}>
+                          Post öffnen
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </ScrollView>
+
+                {/* Interaktionsleiste fixiert am unteren Rand */}
+                <View style={shareStyles.actionRow}>
+                  <TouchableOpacity style={shareStyles.iconButton}>
+                    <Ionicons name="chatbubble-outline" size={20} color="gray" />
+                    <Text style={shareStyles.iconText}>214</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={shareStyles.iconButton}>
+                    <Ionicons name="repeat" size={20} color="gray" />
+                    <Text style={shareStyles.iconText}>178</Text>
+                  </TouchableOpacity>
+
                   <TouchableOpacity
-                    onPress={() => Linking.openURL(item.url)}
-                    style={shareStyles.openPostButton}
+                    onPress={() => handleLike(item.id)}
+                    style={shareStyles.iconButton}
                   >
-                    <Text style={shareStyles.openPostButtonText}>
-                      Post öffnen
+                    <Ionicons name="heart-outline" size={20} color="red" />
+                    <Text style={shareStyles.iconText}>
+                      {likedPosts[item.id] || 0}
                     </Text>
                   </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => handleShare(item.url)}
+                    style={shareStyles.iconButton}
+                  >
+                    <Ionicons name="share-outline" size={20} color="gray" />
+                  </TouchableOpacity>
                 </View>
-              )}
-
-              {/* Interaktionsleiste */}
-              <View style={shareStyles.actionRow}>
-                <TouchableOpacity style={shareStyles.iconButton}>
-                  <Ionicons name="chatbubble-outline" size={20} color="gray" />
-                  <Text style={shareStyles.iconText}>214</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={shareStyles.iconButton}>
-                  <Ionicons name="repeat" size={20} color="gray" />
-                  <Text style={shareStyles.iconText}>178</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => handleLike(item.id)}
-                  style={shareStyles.iconButton}
-                >
-                  <Ionicons name="heart-outline" size={20} color="red" />
-                  <Text style={shareStyles.iconText}>
-                    {likedPosts[item.id] || 0}
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => handleShare(item.url)}
-                  style={shareStyles.iconButton}
-                >
-                  <Ionicons name="share-outline" size={20} color="gray" />
-                </TouchableOpacity>
-              </View>
-            </Card>
-          )}
-        />
-      )}
+              </Card>
+            )}
+          />
+        )}
+      </View>
     </SafeAreaView>
   );
 }
@@ -250,6 +264,15 @@ function createShareStyles() {
       color: "white",
       fontSize: 14,
       fontWeight: "bold",
+    },
+    compactCard: {
+      height: 'auto',
+      maxHeight: 350, // Begrenze die Gesamthöhe der Card
+      overflow: 'hidden',
+    },
+    postContentScrollView: {
+      maxHeight: 200,  // Begrenze die Höhe des Scroll-Bereichs
+      marginBottom: 10,
     },
   });
 }

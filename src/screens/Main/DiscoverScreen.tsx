@@ -10,6 +10,8 @@ import {
   StyleSheet,
   ScrollView,
   useWindowDimensions,
+  Platform,
+  Modal,
 } from "react-native";
 import * as Linking from "expo-linking";
 import { createStyles } from "../../styles/style";
@@ -59,78 +61,86 @@ export default function CryptoNews() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color={styles.defaultText.color} />
-      ) : (
-        <FlatList
-          data={news}
-          style={{ width: "100%" }}
-          contentContainerStyle={{ 
-            padding: 8,
-            alignItems: columns > 1 ? "flex-start" : "center" 
-          }}
-          numColumns={columns}
-          key={columns} // Force re-render when columns change
-          keyExtractor={(item) => item.guid}
-          renderItem={({ item }) => (
-            <Card
-              style={{
-                margin: 8,
-                maxWidth: columns > 1 ? (width / columns) - 24 : 350,
-                flex: 1,
-              }}
-              onPress={() =>
-                setExpandedNews(expandedNews === item.guid ? null : item.guid)
-              }
-            >
-              {/* Obere Zeile: Bild und Header */}
-              <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
-                {item.enclosure?.link ? (
-                  <Image
-                    source={{ uri: item.enclosure.link }}
-                    style={newsStyles.newsImage}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <View style={newsStyles.newsImage}>
-                    <Text style={newsStyles.newsDate}>Kein Bild</Text>
+      <View style={Platform.OS === "web" ? newsStyles.webContainer : { flex: 1, width: "100%" }}>
+        {loading ? (
+          <ActivityIndicator size="large" color={styles.defaultText.color} />
+        ) : (
+          <FlatList
+            data={news}
+            style={{ width: "100%" }}
+            contentContainerStyle={{ 
+              padding: 8,
+              alignItems: columns > 1 ? "flex-start" : "center" 
+            }}
+            numColumns={columns}
+            key={columns} // Force re-render when columns change
+            keyExtractor={(item) => item.guid}
+            renderItem={({ item }) => (
+              <Card
+                style={[
+                  {
+                    margin: 8,
+                    maxWidth: columns > 1 ? (width / columns) - 154 : '95%',
+                    flex: 1,
+                  },
+                  Platform.OS !== "web" ? newsStyles.compactCard : {}
+                ]}
+                onPress={() =>
+                  setExpandedNews(expandedNews === item.guid ? null : item.guid)
+                }
+              >
+                {/* Obere Zeile: Bild und Header */}
+                <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
+                  {item.enclosure?.link ? (
+                    <Image
+                      source={{ uri: item.enclosure.link }}
+                      style={newsStyles.newsImage}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View style={newsStyles.newsImage}>
+                      <Text style={newsStyles.newsDate}>Kein Bild</Text>
+                    </View>
+                  )}
+                  <View style={newsStyles.newsHeader}>
+                    <Text style={newsStyles.newsTitle}>{item.title}</Text>
+                    <Text style={newsStyles.newsDate}>{item.pubDate}</Text>
                   </View>
-                )}
-                <View style={newsStyles.newsHeader}>
-                  <Text style={newsStyles.newsTitle}>{item.title}</Text>
-                  <Text style={newsStyles.newsDate}>{item.pubDate}</Text>
                 </View>
-              </View>
-              {/* Content unterhalb */}
-              <View style={newsStyles.newsContent}>
-                {expandedNews === item.guid ? (
-                  <ScrollView style={{ maxHeight: 400 }} scrollEnabled={true}>
-                    <Text style={newsStyles.newsDescription}>
+                
+                {/* Content unterhalb mit ScrollView */}
+                <ScrollView 
+                  style={newsStyles.contentScrollView}
+                  showsVerticalScrollIndicator={true}
+                  nestedScrollEnabled={true}
+                >
+                  <View style={newsStyles.newsContent}>
+                    <Text 
+                      style={newsStyles.newsDescription}
+                      numberOfLines={expandedNews === item.guid ? undefined : 3}
+                    >
                       {item.content.replace(/<[^>]+>/g, "")}
                     </Text>
-                  </ScrollView>
-                ) : (
-                  <Text style={newsStyles.newsDescription} numberOfLines={5}>
-                    {item.content.replace(/<[^>]+>/g, "")}
-                  </Text>
-                )}
-              </View>
-              {/* Button, um den Artikel zu öffnen */}
-              {expandedNews === item.guid && (
-                <View style={{ marginTop: 8 }}>
-                  <Button
-                    onPress={() => Linking.openURL(item.link)}
-                    title="Artikel öffnen"
-                    type="primary"
-                    size="medium"
-                    style={{ width: 150 }}
-                  />
-                </View>
-              )}
-            </Card>
-          )}
-        />
-      )}
+                  </View>
+                  
+                  {/* Button, um den Artikel zu öffnen */}
+                  {expandedNews === item.guid && (
+                    <View style={{ marginTop: 8, marginBottom: 10 }}>
+                      <Button
+                        onPress={() => Linking.openURL(item.link)}
+                        title="Artikel öffnen"
+                        type="primary"
+                        size="medium"
+                        style={{ width: 150 }}
+                      />
+                    </View>
+                  )}
+                </ScrollView>
+              </Card>
+            )}
+          />
+        )}
+      </View>
     </SafeAreaView>
   );
 }
@@ -169,6 +179,15 @@ function createNewsStyles() {
     newsDescription: {
       fontSize: 14,
       color: theme.text,
+    },
+    compactCard: {
+      height: 'auto',
+      maxHeight: 350, // Begrenze die Gesamthöhe der Card
+      overflow: 'hidden',
+    },
+    contentScrollView: {
+      maxHeight: 200, // Begrenze die Höhe des Scroll-Bereichs
+      marginBottom: 8,
     },
   });
 }
