@@ -32,8 +32,19 @@ export default function PortfolioScreen() {
     positions: [] as { coinId: string; amount: number; [key: string]: any }[],
     history: [] as number[],
     favorites: [] as string[],
-    orders: [] as { symbol: string; amount: number; threshold: number; user_id: string; }[], // Orders hinzugefügt
-    tradeHistory: [] as { symbol: string; price: number; amount: number; order: boolean; createdAt: string }[], // TradeHistory hinzugefügt
+    orders: [] as {
+      symbol: string;
+      amount: number;
+      threshold: number;
+      user_id: string;
+    }[], // Orders hinzugefügt
+    tradeHistory: [] as {
+      symbol: string;
+      price: number;
+      amount: number;
+      order: boolean;
+      createdAt: string;
+    }[], // TradeHistory hinzugefügt
   };
 
   useEffect(() => {
@@ -54,7 +65,7 @@ export default function PortfolioScreen() {
           console.error("Fehler beim Abrufen des Benutzers:", err);
         }
       }
-    };    
+    };
     fetchUserData();
   }, [Orders]); // Optionale Verkettung hinzugefügt
 
@@ -104,7 +115,8 @@ export default function PortfolioScreen() {
         return userData.favorites.some(
           (fav: string) => fav.toLowerCase() === coinIdLower
         );
-      if (selectedFilter === "TradeHistory") // "New" zu "TradeHistory" geändert
+      if (selectedFilter === "TradeHistory")
+        // "New" zu "TradeHistory" geändert
         return !userData.favorites.some(
           (fav: string) => fav.toLowerCase() === coinIdLower
         );
@@ -124,10 +136,14 @@ export default function PortfolioScreen() {
   );
 
   const favoriteMarketData = useMemo(() => {
-    if (!user?.favorites || !Array.isArray(user.favorites) || !Array.isArray(marketData)) {
+    if (
+      !user?.favorites ||
+      !Array.isArray(user.favorites) ||
+      !Array.isArray(marketData)
+    ) {
       return [];
     }
-    
+
     // Filter marketData für alle Coins, deren Symbol in user.favorites ist
     // Define interfaces for coin data types
     interface MarketDataCoin {
@@ -137,9 +153,9 @@ export default function PortfolioScreen() {
       [key: string]: any;
     }
 
-    return marketData.filter((coin: MarketDataCoin) => 
-      user.favorites.some((fav: string) => 
-      fav.toLowerCase() === coin.symbol.toLowerCase()
+    return marketData.filter((coin: MarketDataCoin) =>
+      user.favorites.some(
+        (fav: string) => fav.toLowerCase() === coin.symbol.toLowerCase()
       )
     );
   }, [user?.favorites, marketData]);
@@ -147,12 +163,12 @@ export default function PortfolioScreen() {
   // Handle-Funktion zum Löschen einer Order korrigiert für die Backend-Route
   const handleDeleteOrder = (orderId: string) => {
     if (!user || !user.token) return;
-    
+
     console.log("Lösche Order mit ID:", orderId);
-    
-    fetchPost("trade/deleteorder", { 
-      token: user.token, 
-      order: { _id: orderId } // Korrekte Struktur für das Backend
+
+    fetchPost("trade/deleteorder", {
+      token: user.token,
+      order: { _id: orderId }, // Korrekte Struktur für das Backend
     })
       .then((updatedUser) => {
         if (updatedUser) {
@@ -175,7 +191,7 @@ export default function PortfolioScreen() {
     case "Favorites":
       currentData = favoriteMarketData;
       break;
-    case "TradeHistory": 
+    case "TradeHistory":
       currentData = ["trades_placeholder"];
       break;
     default:
@@ -192,19 +208,35 @@ export default function PortfolioScreen() {
     if (!item) {
       return (
         <View style={styles.emptyContainer}>
-          <Text style={{ color: theme.text, textAlign: "center", marginTop: 20 }}>
-            {selectedFilter === "Orders" ? "Keine offenen Bestellungen vorhanden" : "Keine Daten verfügbar"}
+          <Text
+            style={{ color: theme.text, textAlign: "center", marginTop: 20 }}
+          >
+            {selectedFilter === "Orders"
+              ? "Keine offenen Bestellungen vorhanden"
+              : "Keine Daten verfügbar"}
           </Text>
         </View>
       );
     }
     switch (section.type) {
       case "orders":
-        return <Orders data={[item]} theme={theme} onDeleteOrder={handleDeleteOrder} />;
+        return (
+          <Orders
+            data={[item]}
+            theme={theme}
+            onDeleteOrder={handleDeleteOrder}
+          />
+        );
       case "favorites":
         return <Fav data={[item]} theme={theme} />;
-      case "tradehistory": 
-        return <TradeHistory theme={theme} tradeHistory={userData.tradeHistory} isLoggedIn={isLoggedIn} />;
+      case "tradehistory":
+        return (
+          <TradeHistory
+            theme={theme}
+            tradeHistory={userData.tradeHistory}
+            isLoggedIn={isLoggedIn}
+          />
+        );
       default:
         return <Holding data={[item]} theme={theme} />;
     }
@@ -220,12 +252,8 @@ export default function PortfolioScreen() {
         history={userData.history}
         theme={theme}
         styles={styles}
+        positions={mergedPositions} // Pass positions to UserInfo for the pie chart
       />
-      {hasValidPositions && (
-        <View style={styles.chartContainer}>
-          <PortfolioPieChart portfolioPositions={mergedPositions} totalValue={positionsValue} />
-        </View>
-      )}
       <Sorting
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
@@ -237,9 +265,7 @@ export default function PortfolioScreen() {
       />
       {(userData.positions || []).length === 0 && (
         <Text style={[styles.header, { marginLeft: 12 }]}>
-          {user?.userName !== "gast"
-            ? "Login or Register first!"
-            : "buy some!"}
+          {user?.userName !== "gast" ? "Login or Register first!" : "buy some!"}
         </Text>
       )}
     </>
