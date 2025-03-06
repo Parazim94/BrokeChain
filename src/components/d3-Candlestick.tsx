@@ -9,8 +9,9 @@ import {
   ActivityIndicator,
   ScrollView,
   TouchableOpacity,
+  Platform,
 } from "react-native";
-import Svg, { Rect, Line, Text as SvgText, G } from "react-native-svg";
+import Svg, { Rect, Line, Text as SvgText, G, Circle } from "react-native-svg";
 import * as d3Scale from "d3-scale";
 import { format } from "date-fns";
 import { ThemeContext } from "@/src/context/ThemeContext";
@@ -72,6 +73,11 @@ export default function D3CandlestickChart({
   const [showMA, setShowMA] = useState<boolean>(true);
   // Neuer State: Verwendung von Theme-Farben
   const [useThemeColors, setUseThemeColors] = useState<boolean>(false);
+  
+  // Neuer State für die ausgewählte Candle
+  const [selectedCandle, setSelectedCandle] = useState<CandleData | null>(null);
+  // Neuer State für den Index der ausgewählten Candle (für Markierung)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // Configuration
   const CHART_HEIGHT = Math.round(height * 0.8);
@@ -86,6 +92,9 @@ export default function D3CandlestickChart({
   useEffect(() => {
     const fetchCandles = async () => {
       setLoading(true);
+      // Bei Änderung des Symbols oder Intervalls die Auswahl zurücksetzen
+      setSelectedCandle(null);
+      setSelectedIndex(null);
       try {
         const data = await getHistoricalCandleData(symbol, interval);
         setCandles(data);
@@ -187,23 +196,8 @@ export default function D3CandlestickChart({
     .map((_, i) => i)
     .filter((i) => i % Math.ceil(candles.length / 6) === 0);
 
-  // PanResponder for tooltip
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: handleTouch,
-    onPanResponderMove: handleTouch,
-    onPanResponderRelease: () => {
-      if (tooltip) {
-        // Keep tooltip visible, but mark it as "sticky"
-        setTooltip({ ...tooltip, isVisible: false });
-        setTimeout(() => setTooltip(null), 2000);
-      }
-    },
-  });
-
-  // Handle touch events to show tooltip
-  function handleTouch(event: GestureResponderEvent) {
+  // Geänderte handleTouch-Funktion, um zwischen Touch und Klick zu unterscheiden
+  function handleTouch(event: GestureResponderEvent, isPersistent = false) {
     const { locationX } = event.nativeEvent;
 
     // Find nearest candle to touch position
@@ -216,248 +210,363 @@ export default function D3CandlestickChart({
       const x = xScale(approxIndex.toString())! + xScale.bandwidth() / 2;
       const y = yScale(candle.close);
       setTooltip({ index: approxIndex, x, y, isVisible: true });
+      
+      // Beim Klicken (isPersistent=true) die ausgewählte Candle setzen
+      if (isPersistent) {
+        setSelectedCandle(candle);
+        setSelectedIndex(approxIndex);
+      }
     }
   }
 
-  return (
-    <ScrollView horizontal={true} contentContainerStyle={{ minWidth: width, margin: "auto", marginTop: 10 }}>
-      <View style={styles.container} {...panResponder.panHandlers}>
-        <Svg width={width} height={height}>
-          {/* Grid lines */}
-          {yTicks.map((tick) => (
-            <Line
-              key={`grid-${tick}`}
-              x1={MARGIN.left}
-              y1={yScale(tick)}
-              x2={width - MARGIN.right}
-              y2={yScale(tick)}
-              stroke={`${theme.text}20`}
-              strokeWidth={0.5}
-              strokeDasharray="3,3"
-            />
-          ))}
+  // PanResponder für temporären Tooltip und Auswahl bei Klick
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderGrant: (evt) => handleTouch(evt),
+    onPanResponderMove: (evt) => handleTouch(evt),
+    onPanResponderRelease: (evt) => {
+      // Bei Release als Klick behandeln und ausgewählte Candle setzen
+      handleTouch(evt, true);
+      // Tooltip temporär ausblenden
+      if (tooltip) {
+        setTooltip({ ...tooltip, isVisible: false });
+        setTimeout(() => setTooltip(null), 500);
+      }
+    },
+  });
 
-          {/* Y-axis labels */}
-          {yTicks.map((tick) => (
+  return (
+    <View style={{  margin: "auto", marginTop: 10 }}>
+      <ScrollView horizontal={true} contentContainerStyle={{ minWidth: width }}>
+        <View style={styles.container} {...panResponder.panHandlers}>
+          <Svg width={width} height={height}>
+            {/* Grid lines */}
+            {yTicks.map((tick) => (
+              <Line
+                key={`grid-${tick}`}
+                x1={MARGIN.left}
+                y1={yScale(tick)}
+                x2={width - MARGIN.right}
+                y2={yScale(tick)}
+                stroke={`${theme.text}20`}
+                strokeWidth={0.5}
+                strokeDasharray="3,3"
+              />
+            ))}
+
+            {/* Y-axis labels */}
+            {yTicks.map((tick) => (
+              <SvgText
+                key={`label-${tick}`}
+                x={MARGIN.left - 5}
+                y={yScale(tick)}
+                fontSize="10"
+                textAnchor="end"
+                alignmentBaseline="middle"
+                fill={theme.text}
+              >
+                {formatCurrency(tick)}
+              </SvgText>
+            ))}
+
+            {/* X-axis labels */}
+            {xLabels.map((i) => (
+              <SvgText
+                key={`date-${i}`}
+                x={xScale(i.toString())! + xScale.bandwidth() / 2}
+                y={CHART_HEIGHT - MARGIN.bottom + 20}
+                fontSize="9"
+                textAnchor="middle"
+                alignmentBaseline="middle"
+                fill={theme.text}
+              >
+                {getDateLabel(i)}
+              </SvgText>
+            ))}
+
+            {/* Volume bars */}
+            {candles.map((candle, i) => {
+              const x = xScale(i.toString())!;
+              const isBullish = candle.close >= candle.open;
+              const volumeColor = isBullish
+                ? `${bullColor}40` // Semi-transparent green for bullish
+                : `${bearColor}40`; // Semi-transparent red for bearish
+
+              return (
+                <Rect
+                  key={`vol-${i}`}
+                  x={x}
+                  y={yVolumeScale(candle.volume)}
+                  width={xScale.bandwidth()}
+                  height={yVolumeScale(0) - yVolumeScale(candle.volume)}
+                  fill={volumeColor}
+                />
+              );
+            })}
+
+            {/* Candlesticks */}
+            {candles.map((candle, i) => {
+              const x = xScale(i.toString())!;
+              const isBullish = candle.close >= candle.open;
+              const candleColor = isBullish ? bullColor : bearColor;
+              
+              // Verstärkte Markierung für ausgewählte Candle
+              const isSelected = selectedIndex === i;
+              const strokeWidth = isSelected ? 2 : 1;
+              const extraProps = isSelected 
+                ? { strokeWidth: 2, stroke: "black" } 
+                : {};
+
+              return (
+                <G key={`candle-${i}`}>
+                  {/* Wick */}
+                  <Line
+                    x1={x + xScale.bandwidth() / 2}
+                    x2={x + xScale.bandwidth() / 2}
+                    y1={yScale(candle.high)}
+                    y2={yScale(candle.low)}
+                    stroke={candleColor}
+                    strokeWidth={strokeWidth}
+                    {...extraProps}
+                  />
+
+                  {/* Body */}
+                  <Rect
+                    x={x}
+                    y={yScale(Math.max(candle.open, candle.close))}
+                    width={xScale.bandwidth()}
+                    height={Math.max(
+                      1,
+                      Math.abs(yScale(candle.open) - yScale(candle.close))
+                    )}
+                    fill={candleColor}
+                    stroke={candleColor}
+                    strokeWidth={strokeWidth}
+                    {...extraProps}
+                  />
+                  
+                  {/* Markierung für ausgewählte Candle */}
+                  {isSelected && (
+                    <Circle
+                      cx={x + xScale.bandwidth() / 2}
+                      cy={yScale(candle.close)}
+                      r={4}
+                      fill={theme.accent}
+                      stroke="white"
+                      strokeWidth={1}
+                    />
+                  )}
+                </G>
+              );
+            })}
+
+            {/* Moving Average Line */}
+            {showMA && movingAverages.length > 0 && (
+              <G>
+                {movingAverages.map((point, i) => {
+                  if (i === 0) return null;
+                  const prevPoint = movingAverages[i - 1];
+                  return (
+                    <Line
+                      key={`ma-${i}`}
+                      x1={
+                        xScale(prevPoint.index.toString())! +
+                        xScale.bandwidth() / 2
+                      }
+                      y1={yScale(prevPoint.value)}
+                      x2={
+                        xScale(point.index.toString())! + xScale.bandwidth() / 2
+                      }
+                      y2={yScale(point.value)}
+                      stroke={theme.accent} // Orange color for MA line
+                      strokeWidth={2}
+                    />
+                  );
+                })}
+              </G>
+            )}
+
+            {/* Horizontal separator between price chart and volume chart */}
+            <Line
+              x1={MARGIN.left}
+              y1={CHART_HEIGHT}
+              x2={width - MARGIN.right}
+              y2={CHART_HEIGHT}
+              stroke={`${theme.text}40`}
+              strokeWidth={0.5}
+            />
+
+            {/* Volume label */}
             <SvgText
-              key={`label-${tick}`}
               x={MARGIN.left - 5}
-              y={yScale(tick)}
-              fontSize="10"
+              y={CHART_HEIGHT + (height - CHART_HEIGHT) / 2}
+              fontSize="8"
               textAnchor="end"
               alignmentBaseline="middle"
               fill={theme.text}
             >
-              {formatCurrency(tick)}
+              VOLUME
             </SvgText>
-          ))}
+          </Svg>
 
-          {/* X-axis labels */}
-          {xLabels.map((i) => (
-            <SvgText
-              key={`date-${i}`}
-              x={xScale(i.toString())! + xScale.bandwidth() / 2}
-              y={CHART_HEIGHT - MARGIN.bottom + 20}
-              fontSize="9"
-              textAnchor="middle"
-              alignmentBaseline="middle"
-              fill={theme.text}
+          {/* Enhanced Tooltip */}
+          {tooltip && tooltip.isVisible && (
+            <View
+              style={[
+                styles.enhancedTooltip,
+                {
+                  left: Math.min(tooltip.x - 75, width - 150),
+                  top: Math.min(tooltip.y - 70, CHART_HEIGHT - 140),
+                },
+              ]}
             >
-              {getDateLabel(i)}
-            </SvgText>
-          ))}
-
-          {/* Volume bars */}
-          {candles.map((candle, i) => {
-            const x = xScale(i.toString())!;
-            const isBullish = candle.close >= candle.open;
-            const volumeColor = isBullish
-              ? `${bullColor}40` // Semi-transparent green for bullish
-              : `${bearColor}40`; // Semi-transparent red for bearish
-
-            return (
-              <Rect
-                key={`vol-${i}`}
-                x={x}
-                y={yVolumeScale(candle.volume)}
-                width={xScale.bandwidth()}
-                height={yVolumeScale(0) - yVolumeScale(candle.volume)}
-                fill={volumeColor}
-              />
-            );
-          })}
-
-          {/* Candlesticks */}
-          {candles.map((candle, i) => {
-            const x = xScale(i.toString())!;
-            const isBullish = candle.close >= candle.open;
-            const candleColor = isBullish ? bullColor : bearColor;
-
-            return (
-              <G key={`candle-${i}`}>
-                {/* Wick */}
-                <Line
-                  x1={x + xScale.bandwidth() / 2}
-                  x2={x + xScale.bandwidth() / 2}
-                  y1={yScale(candle.high)}
-                  y2={yScale(candle.low)}
-                  stroke={candleColor}
-                  strokeWidth={1}
-                />
-
-                {/* Body */}
-                <Rect
-                  x={x}
-                  y={yScale(Math.max(candle.open, candle.close))}
-                  width={xScale.bandwidth()}
-                  height={Math.max(
-                    1,
-                    Math.abs(yScale(candle.open) - yScale(candle.close))
+              <View style={styles.tooltipHeader}>
+                <Text style={styles.tooltipTitle}>
+                  {format(
+                    new Date(candles[tooltip.index].timestamp),
+                    "MMM d, yyyy HH:mm"
                   )}
-                  fill={candleColor}
-                  stroke={candleColor}
-                  strokeWidth={1}
-                />
-              </G>
-            );
-          })}
-
-          {/* Moving Average Line */}
-          {showMA && movingAverages.length > 0 && (
-            <G>
-              {movingAverages.map((point, i) => {
-                if (i === 0) return null;
-                const prevPoint = movingAverages[i - 1];
-                return (
-                  <Line
-                    key={`ma-${i}`}
-                    x1={
-                      xScale(prevPoint.index.toString())! +
-                      xScale.bandwidth() / 2
-                    }
-                    y1={yScale(prevPoint.value)}
-                    x2={
-                      xScale(point.index.toString())! + xScale.bandwidth() / 2
-                    }
-                    y2={yScale(point.value)}
-                    stroke={theme.accent} // Orange color for MA line
-                    strokeWidth={2}
-                  />
-                );
-              })}
-            </G>
+                </Text>
+              </View>
+              <View style={styles.tooltipRow}>
+                <Text style={styles.tooltipLabel}>Open:</Text>
+                <Text style={styles.tooltipValue}>
+                  {formatCurrency(candles[tooltip.index].open)}
+                </Text>
+              </View>
+              <View style={styles.tooltipRow}>
+                <Text style={styles.tooltipLabel}>High:</Text>
+                <Text style={styles.tooltipValue}>
+                  {formatCurrency(candles[tooltip.index].high)}
+                </Text>
+              </View>
+              <View style={styles.tooltipRow}>
+                <Text style={styles.tooltipLabel}>Low:</Text>
+                <Text style={styles.tooltipValue}>
+                  {formatCurrency(candles[tooltip.index].low)}
+                </Text>
+              </View>
+              <View style={styles.tooltipRow}>
+                <Text style={styles.tooltipLabel}>Close:</Text>
+                <Text
+                  style={[
+                    styles.tooltipValue,
+                    {
+                      color:
+                        candles[tooltip.index].close >=
+                        candles[tooltip.index].open
+                          ? bullColor
+                          : bearColor,
+                    },
+                  ]}
+                >
+                  {formatCurrency(candles[tooltip.index].close)}
+                </Text>
+              </View>
+              <View style={styles.tooltipRow}>
+                <Text style={styles.tooltipLabel}>Volume:</Text>
+                <Text style={styles.tooltipValue}>
+                  {Number(candles[tooltip.index].volume).toLocaleString()}
+                </Text>
+              </View>
+            </View>
           )}
 
-          {/* Horizontal separator between price chart and volume chart */}
-          <Line
-            x1={MARGIN.left}
-            y1={CHART_HEIGHT}
-            x2={width - MARGIN.right}
-            y2={CHART_HEIGHT}
-            stroke={`${theme.text}40`}
-            strokeWidth={0.5}
-          />
-
-          {/* Volume label */}
-          <SvgText
-            x={MARGIN.left - 5}
-            y={CHART_HEIGHT + (height - CHART_HEIGHT) / 2}
-            fontSize="8"
-            textAnchor="end"
-            alignmentBaseline="middle"
-            fill={theme.text}
-          >
-            VOLUME
-          </SvgText>
-        </Svg>
-
-        {/* Enhanced Tooltip */}
-        {tooltip && tooltip.isVisible && (
-          <View
-            style={[
-              styles.enhancedTooltip,
-              {
-                left: Math.min(tooltip.x - 75, width - 150),
-                top: Math.min(tooltip.y - 70, CHART_HEIGHT - 140),
-              },
-            ]}
-          >
-            <View style={styles.tooltipHeader}>
-              <Text style={styles.tooltipTitle}>
-                {format(
-                  new Date(candles[tooltip.index].timestamp),
-                  "MMM d, yyyy HH:mm"
-                )}
+          {/* Legend/Controls */}
+          <View style={styles.legend}>
+            <TouchableOpacity
+              style={[styles.legendItem, showMA ? styles.legendItemActive : {}]}
+              onPress={() => setShowMA(!showMA)}
+            >
+              <View
+                style={[styles.legendColor, { backgroundColor: theme.accent }]}
+              />
+              <Text style={{ color: theme.text, fontSize: 10 }}>
+                MA({MA_PERIOD})
+              </Text>
+            </TouchableOpacity>
+            {/* Neuer Button: Toggle für Theme-Farben */}
+            <TouchableOpacity
+              style={[styles.legendItem, useThemeColors ? styles.legendItemActive : {}]}
+              onPress={() => setUseThemeColors(!useThemeColors)}
+            >
+              <View style={[styles.legendColor, { backgroundColor: theme.accent }]} />
+              <Text style={{ color: theme.text, fontSize: 10 }}>Theme Colors</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+      
+      {/* Persistente Datenanzeige unter dem Chart */}
+      {selectedCandle && (
+        <View style={[styles.dataDisplay, { 
+          backgroundColor: `${theme.accent}15`, 
+          borderColor: `${theme.accent}40`,
+          marginHorizontal: 10,
+          marginTop: 8
+        }]}>
+          <View style={styles.dataHeader}>
+            <Text style={[styles.dataTitle, { color: theme.accent }]}>
+              Ausgewählte Candle
+            </Text>
+            <Text style={[styles.dataSubtitle, { color: theme.text }]}>
+              {format(new Date(selectedCandle.timestamp), "dd.MM.yyyy HH:mm")}
+            </Text>
+          </View>
+          
+          <View style={styles.dataGrid}>
+            <View style={styles.dataGridItem}>
+              <Text style={[styles.dataLabel, { color: theme.text }]}>Open</Text>
+              <Text style={[styles.dataValue, { color: theme.text }]}>
+                {formatCurrency(selectedCandle.open)}
               </Text>
             </View>
-            <View style={styles.tooltipRow}>
-              <Text style={styles.tooltipLabel}>Open:</Text>
-              <Text style={styles.tooltipValue}>
-                {formatCurrency(candles[tooltip.index].open)}
+            
+            <View style={styles.dataGridItem}>
+              <Text style={[styles.dataLabel, { color: theme.text }]}>High</Text>
+              <Text style={[styles.dataValue, { color: bullColor }]}>
+                {formatCurrency(selectedCandle.high)}
               </Text>
             </View>
-            <View style={styles.tooltipRow}>
-              <Text style={styles.tooltipLabel}>High:</Text>
-              <Text style={styles.tooltipValue}>
-                {formatCurrency(candles[tooltip.index].high)}
+            
+            <View style={styles.dataGridItem}>
+              <Text style={[styles.dataLabel, { color: theme.text }]}>Low</Text>
+              <Text style={[styles.dataValue, { color: bearColor }]}>
+                {formatCurrency(selectedCandle.low)}
               </Text>
             </View>
-            <View style={styles.tooltipRow}>
-              <Text style={styles.tooltipLabel}>Low:</Text>
-              <Text style={styles.tooltipValue}>
-                {formatCurrency(candles[tooltip.index].low)}
-              </Text>
-            </View>
-            <View style={styles.tooltipRow}>
-              <Text style={styles.tooltipLabel}>Close:</Text>
-              <Text
-                style={[
-                  styles.tooltipValue,
-                  {
-                    color:
-                      candles[tooltip.index].close >=
-                      candles[tooltip.index].open
-                        ? bullColor
-                        : bearColor,
-                  },
-                ]}
-              >
-                {formatCurrency(candles[tooltip.index].close)}
-              </Text>
-            </View>
-            <View style={styles.tooltipRow}>
-              <Text style={styles.tooltipLabel}>Volume:</Text>
-              <Text style={styles.tooltipValue}>
-                {Number(candles[tooltip.index].volume).toLocaleString()}
+            
+            <View style={styles.dataGridItem}>
+              <Text style={[styles.dataLabel, { color: theme.text }]}>Close</Text>
+              <Text style={[styles.dataValue, { 
+                color: selectedCandle.close >= selectedCandle.open ? bullColor : bearColor,
+                fontWeight: "bold"
+              }]}>
+                {formatCurrency(selectedCandle.close)}
               </Text>
             </View>
           </View>
-        )}
-
-        {/* Legend/Controls */}
-        <View style={styles.legend}>
-          <TouchableOpacity
-            style={[styles.legendItem, showMA ? styles.legendItemActive : {}]}
-            onPress={() => setShowMA(!showMA)}
-          >
-            <View
-              style={[styles.legendColor, { backgroundColor: theme.accent }]}
-            />
-            <Text style={{ color: theme.text, fontSize: 10 }}>
-              MA({MA_PERIOD})
+          
+          <View style={styles.dataRow}>
+            <Text style={[styles.dataLabel, { color: theme.text }]}>Change</Text>
+            <Text style={[styles.dataValue, { 
+              color: selectedCandle.close >= selectedCandle.open ? bullColor : bearColor
+            }]}>
+              {formatCurrency(selectedCandle.close - selectedCandle.open)} 
+              ({((selectedCandle.close - selectedCandle.open) / selectedCandle.open * 100).toFixed(2)}%)
             </Text>
-          </TouchableOpacity>
-          {/* Neuer Button: Toggle für Theme-Farben */}
-          <TouchableOpacity
-            style={[styles.legendItem, useThemeColors ? styles.legendItemActive : {}]}
-            onPress={() => setUseThemeColors(!useThemeColors)}
-          >
-            <View style={[styles.legendColor, { backgroundColor: theme.accent }]} />
-            <Text style={{ color: theme.text, fontSize: 10 }}>Theme Colors</Text>
-          </TouchableOpacity>
+          </View>
+          
+          <View style={styles.dataRow}>
+            <Text style={[styles.dataLabel, { color: theme.text }]}>Volumen</Text>
+            <Text style={[styles.dataValue, { color: theme.text }]}>
+              {selectedCandle.volume.toLocaleString()}
+            </Text>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      )}
+    </View>
   );
 }
 
@@ -536,6 +645,54 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     marginRight: 4,
+  },
+  // Neue Stile für die persistente Datenanzeige
+  dataDisplay: {
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 10,
+    borderWidth: 1,
+  },
+  dataHeader: {
+    marginBottom: 10,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(128,128,128,0.2)",
+  },
+  dataTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  dataSubtitle: {
+    fontSize: 14,
+    marginTop: 4,
+  },
+  dataGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  dataGridItem: {
+    width: "48%",
+    padding: 8,
+    marginBottom: 8,
+    backgroundColor: "rgba(128,128,128,0.1)",
+    borderRadius: 4,
+  },
+  dataRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 6,
+    alignItems: "center",
+  },
+  dataLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  dataValue: {
+    fontSize: 14,
+    fontFamily: Platform.OS === "ios" ? undefined : "monospace",
   },
 });
 

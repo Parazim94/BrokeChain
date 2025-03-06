@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
@@ -242,240 +243,251 @@ export default function TradeScreen() {
   // Gemeinsamer Inhalt
   const content = (
     <SafeAreaView style={styles.container}>
-      <View
-        style={{
-          padding: 16,
-          maxWidth: 1024,
-          width: "100%",
-          marginHorizontal: "auto",
-        }}
-        onLayout={(event) => {
-          setContainerWidth(event.nativeEvent.layout.width);
-        }}
-      >
+      <ScrollView>
         <View
           style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
+            padding: 16,
+            maxWidth: 1024,
+            width: "100%",
+            marginHorizontal: "auto",
+          }}
+          onLayout={(event) => {
+            setContainerWidth(event.nativeEvent.layout.width);
           }}
         >
           <View
             style={{
               display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginLeft: 4,
             }}
           >
-            <Text
-              style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                flex: 1,
+              }}
             >
-              {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
-            </Text>
-            {marketPrice !== null && (
               <Text
-                style={[
-                  styles.defaultText,
-                  {
-                    fontSize: 14,
-                    color: theme.accent,
-                    fontFamily: "monospace",
-                  },
-                ]}
+                style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}
               >
-                Market: {formatCurrency(marketPrice)}
+                {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
               </Text>
-            )}
-          </View>
+              {marketPrice !== null && (
+                <Text
+                  style={[
+                    styles.defaultText,
+                    {
+                      fontSize: 14,
+                      color: theme.accent,
+                      fontFamily: "monospace",
+                    },
+                  ]}
+                >
+                  Market: {formatCurrency(marketPrice)}
+                </Text>
+              )}
+            </View>
 
-          <Button
-            onPress={() => setIsSearchActive(!isSearchActive)}
-            title=""
-            icon="search"
-            type="secondary"
-            size="small"
-            style={{
-              backgroundColor: isSearchActive ? theme.accent : theme.background,
-              padding: 8,
-            }}
-          />
-        </View>
-
-        {isSearchActive && (
-          <View style={{ marginVertical: 10 }}>
-            <TextInput
-              placeholder="search coin..."
-              placeholderTextColor={styles.defaultText.color}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              style={[styles.input, { width: "100%" }]}
-              autoFocus
+            <Button
+              onPress={() => setIsSearchActive(!isSearchActive)}
+              title=""
+              icon="search"
+              type="secondary"
+              size="small"
+              style={{
+                backgroundColor: isSearchActive ? theme.accent : theme.background,
+                padding: 8,
+              }}
             />
-
-            {searchQuery.length > 0 && (
-              <View
-                style={{
-                  maxHeight: 200,
-                  backgroundColor: theme.background,
-                  borderRadius: 8,
-                  marginTop: 4,
-                  borderWidth: 1,
-                  borderColor: theme.text,
-                }}
-              >
-                <FlatList
-                  data={filteredCoins}
-                  keyExtractor={(item) => item.id || item.symbol}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={{
-                        padding: 12,
-                        borderBottomWidth: 1,
-                        borderBottomColor: theme.text,
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                      onPress={() => {
-                        setCoin(item);
-                        setSearchQuery("");
-                        setIsSearchActive(false);
-                      }}
-                    >
-                      <Text style={[styles.defaultText, { fontWeight: "500" }]}>
-                        {item.name} ({item.symbol?.toUpperCase()})
-                      </Text>
-                      <Text
-                        style={[styles.defaultText, { color: theme.accent }]}
-                      >
-                        {formatCurrency(item.current_price)}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  ListEmptyComponent={
-                    <Text
-                      style={[
-                        styles.defaultText,
-                        { padding: 12, textAlign: "center" },
-                      ]}
-                    >
-                      Keine Ergebnisse gefunden
-                    </Text>
-                  }
-                />
-              </View>
-            )}
           </View>
-        )}
 
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginVertical: 8,
-          }}
-        >
-          <View style={{ flexDirection: "row", flexWrap: "wrap", flex: 1 }}>
-            {Object.keys(timeIntervals).map((range) => (
-              <Button
-                key={range}
-                onPress={() =>
-                  setSelectedRange(range as keyof typeof timeIntervals)
-                }
-                title={range}
-                type={selectedRange === range ? "primary" : "outline"}
-                size="small"
-                style={{
-                  marginRight: 4,
-                  marginBottom: 4,
-                  paddingVertical: 2,
-                  paddingHorizontal: 4,
-                }}
-                textStyle={{ fontSize: 10 }}
+          {isSearchActive && (
+            <View style={{ marginVertical: 10}}>
+              <TextInput
+                placeholder="search coin..."
+                placeholderTextColor={styles.defaultText.color}
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                style={[styles.input, { width: "100%" }]}
+                autoFocus
               />
-            ))}
+
+              {searchQuery.length > 0 && (
+                <View
+                  style={{
+                    maxHeight: 200,
+                    backgroundColor: theme.background,
+                    borderRadius: 8,
+                    marginTop: 4,
+                    borderWidth: 1,
+                    borderColor: theme.text,
+                  }}
+                >
+                  <FlatList
+                    data={filteredCoins}
+                    keyExtractor={(item) => item.id || item.symbol}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={{
+                          padding: 12,
+                          borderBottomWidth: 1,
+                          borderBottomColor: theme.text,
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                        onPress={() => {
+                          setCoin(item);
+                          setSearchQuery("");
+                          setIsSearchActive(false);
+                        }}
+                      >
+                        <Text style={[styles.defaultText, { fontWeight: "500" }]}>
+                          {item.name} ({item.symbol?.toUpperCase()})
+                        </Text>
+                        <Text
+                          style={[styles.defaultText, { color: theme.accent }]}
+                        >
+                          {formatCurrency(item.current_price)}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    ListEmptyComponent={
+                      <Text
+                        style={[
+                          styles.defaultText,
+                          { padding: 12, textAlign: "center" },
+                        ]}
+                      >
+                        Keine Ergebnisse gefunden
+                      </Text>
+                    }
+                  />
+                </View>
+              )}
+            </View>
+          )}
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginVertical: 8,
+            }}
+          >
+            <View style={{ flexDirection: "row", flexWrap: "wrap", flex: 1 }}>
+              {Object.keys(timeIntervals).map((range) => (
+                <Button
+                  key={range}
+                  onPress={() =>
+                    setSelectedRange(range as keyof typeof timeIntervals)
+                  }
+                  title={range}
+                  type={selectedRange === range ? "primary" : "outline"}
+                  size="small"
+                  style={{
+                    marginRight: 4,
+                    marginBottom: 4,
+                    paddingVertical: 2,
+                    paddingHorizontal: 4,
+                  }}
+                  textStyle={{ fontSize: 10 }}
+                />
+              ))}
+            </View>
+
+            <Button
+              onPress={() =>
+                setChartType(chartType === "line" ? "d3-candlestick" : "line")
+              }
+              title={chartType === "line" ? "Candle" : "Line"}
+              size="small"
+              style={{ paddingVertical: 4, paddingHorizontal: 8 }}
+              textStyle={{ fontSize: 12 }}
+            />
           </View>
-
-          <Button
-            onPress={() =>
-              setChartType(chartType === "line" ? "d3-candlestick" : "line")
-            }
-            title={chartType === "line" ? "Candle" : "Line"}
-            size="small"
-            style={{ paddingVertical: 4, paddingHorizontal: 8 }}
-            textStyle={{ fontSize: 12 }}
-          />
-        </View>
-
-        {chartComponent}
-
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "flex-start",
-            alignItems: "center",
-            marginTop: 16,
-            gap: 4,
-          }}
-        >
-          <Button
-            onPress={() =>
-              setTradeType(tradeType === "spot" ? "order" : "spot")
-            }
-            title={tradeType === "spot" ? "Order" : "Spot"}
-            size="small"
-            style={{ padding: 4, paddingHorizontal: 8 }}
-            textStyle={{ fontSize: 12 }}
-          />
-          <TextInput
-            style={[
-              styles.input,
-              { width: "25%", padding: 4, fontFamily: "monospace" },
-            ]}
-            placeholder="Amount..."
-            placeholderTextColor={styles.defaultText.color}
-            value={quantity}
-            onChangeText={setQuantity}
-            keyboardType="numeric"
-          />
-          {tradeType === "order" && (
+          <View
+            style={{
+              borderWidth: 1,
+              borderRadius: 8,
+              borderColor: theme.accent,
+              boxShadow: `0 0 10px ${theme.accent}55`,
+            }}
+          >
+            {chartComponent}
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              alignItems: "center",
+              marginTop: 16,
+              gap: 4,
+              marginLeft: 4,
+            }}
+          >
+            <Button
+              onPress={() =>
+                setTradeType(tradeType === "spot" ? "order" : "spot")
+              }
+              title={tradeType === "spot" ? "Order" : "Spot"}
+              size="small"
+              style={{ padding: 4, paddingHorizontal: 8 }}
+              textStyle={{ fontSize: 12 }}
+            />
             <TextInput
               style={[
                 styles.input,
                 { width: "25%", padding: 4, fontFamily: "monospace" },
               ]}
-              placeholder="Price..."
+              placeholder="Amount..."
               placeholderTextColor={styles.defaultText.color}
-              value={orderPrice}
-              onChangeText={setOrderPrice}
+              value={quantity}
+              onChangeText={setQuantity}
               keyboardType="numeric"
             />
-          )}
-          <Button
-            onPress={handleMax}
-            title="Max"
-            size="small"
-            style={{ padding: 4, paddingHorizontal: 6 }}
-            textStyle={{ fontSize: 12 }}
-          />
-          <Button
-            onPress={() => handleTrade("buy")}
-            title="Buy"
-            size="small"
-            style={{ padding: 4, paddingHorizontal: 6 }}
-            textStyle={{ fontSize: 12 }}
-          />
-          <Button
-            onPress={() => handleTrade("sell")}
-            title="Sell"
-            size="small"
-            style={{ padding: 4, paddingHorizontal: 6 }}
-            textStyle={{ fontSize: 12 }}
-          />
+            {tradeType === "order" && (
+              <TextInput
+                style={[
+                  styles.input,
+                  { width: "25%", padding: 4, fontFamily: "monospace" },
+                ]}
+                placeholder="Price..."
+                placeholderTextColor={styles.defaultText.color}
+                value={orderPrice}
+                onChangeText={setOrderPrice}
+                keyboardType="numeric"
+              />
+            )}
+            <Button
+              onPress={handleMax}
+              title="Max"
+              size="small"
+              style={{ padding: 4, paddingHorizontal: 10 }}
+              textStyle={{ fontSize: 12 }}
+            />
+            <Button
+              onPress={() => handleTrade("buy")}
+              title="Buy"
+              size="small"
+              style={{ padding: 4, paddingHorizontal: 10 }}
+              textStyle={{ fontSize: 12 }}
+            />
+            <Button
+              onPress={() => handleTrade("sell")}
+              title="Sell"
+              size="small"
+              style={{ padding: 4, paddingHorizontal: 10 }}
+              textStyle={{ fontSize: 12 }}
+            />
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 

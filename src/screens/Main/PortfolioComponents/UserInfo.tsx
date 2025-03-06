@@ -303,7 +303,7 @@ export default function UserInfo({
 
       {/* Portfolio composition */}
       <View style={styles.compositionContainer}>
-        <Text style={styles.historyTitle}>Portfolio Composition</Text>
+        <Text style={styles.historyTitle}>Distribution</Text>
 
         <View style={styles.compositionBar}>
           <View style={styles.cashPortion} />

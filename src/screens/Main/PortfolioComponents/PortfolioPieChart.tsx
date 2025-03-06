@@ -92,9 +92,7 @@ export default function PortfolioPieChart({
   if (portfolioItems.length === 0 || totalValue === 0) {
     return (
       <View style={styles.container}>
-        <Text style={[styles.title, { color: theme.text }]}>
-          Portfolio Positions
-        </Text>
+ 
         <Text
           style={{
             color: theme.text,
@@ -131,9 +129,7 @@ export default function PortfolioPieChart({
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: theme.text }]}>
-        Portfolio Positions
-      </Text>
+     
 
       <View style={styles.chartContainer}>
         <Svg width={width} height={height} ref={svgRef}>
