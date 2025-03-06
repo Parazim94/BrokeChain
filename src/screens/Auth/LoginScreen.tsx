@@ -5,17 +5,19 @@ import { StackParamList } from "@/src/types/types";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "./authStyles";
-import Button from "@/src/components/Button"; // Neue Button-Komponente importieren
+import Button from "@/src/components/Button"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAlert } from "@/src/context/AlertContext";
 
 export default function LoginScreen() {
   const styles = createStyles();
   const auth = authStyles();
   const navigation = useNavigation<NavigationProp<StackParamList>>();
   const { setIsLoggedIn, setUser } = useContext(AuthContext);
+  const { showAlert } = useAlert();   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Für Loading-State des Buttons
+  const [isLoading, setIsLoading] = useState(false); 
 
   const handleLogin = async () => {
     try {
@@ -43,7 +45,11 @@ export default function LoginScreen() {
       }, 100);
     
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Unexpected error occurred");
+      showAlert({
+        type: "error",
+        title: "Login Error",
+        message: error instanceof Error ? error.message : "Unexpected error occurred"
+      });
     } finally {
       setIsLoading(false);
     }

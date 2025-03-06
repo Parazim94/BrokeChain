@@ -5,12 +5,15 @@ import { createStyles } from "../../styles/style";
 import { authStyles } from "./authStyles";
 import { AuthContext } from "../../context/AuthContext";
 import Button from "@/src/components/Button"; // Neue Button-Komponente importieren
+import { useAlert } from "@/src/context/AlertContext"; 
 
 export default function AuthScreen() {
   const navigation = useNavigation();
   const styles = createStyles();
   const auth = authStyles();
   const { isLoggedIn, setIsLoggedIn, setUser } = useContext(AuthContext);
+  const { showAlert } = useAlert(); // Hook für Custom Alerts
+  
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Logout-Funktion
@@ -20,7 +23,12 @@ export default function AuthScreen() {
       setUser(null);
       setIsLoggedIn(false);
       setIsLoggingOut(false);
-      alert("Erfolgreich ausgeloggt!");
+      
+      showAlert({
+        type: "success",
+        title: "Logged Out",
+        message: "You have been successfully logged out."
+      });
     }, 500);
   };
 

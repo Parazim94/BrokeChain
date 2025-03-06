@@ -3,12 +3,14 @@ import { View, Text, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "./authStyles";
-import Button from "@/src/components/Button"; // Neue Button-Komponente importieren
+import Button from "@/src/components/Button"; 
+import { useAlert } from "@/src/context/AlertContext"; 
 
 export default function RegisterScreen() {
   const styles = createStyles();
   const auth = authStyles();
   const navigation = useNavigation();
+  const { showAlert } = useAlert(); 
 
   const [userName, setuserName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,15 +26,20 @@ export default function RegisterScreen() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userName, email, age, password }),
       });
-      if (!response.ok) throw new Error("Registrierung fehlgeschlagen");
-      alert("✅ Registriert!");
-      navigation.navigate("Login" as never);
+      if (!response.ok) throw new Error("Registration failed");
+
+      showAlert({
+        type: "success",
+        title: "Success",
+        message: "Registration successful!",
+        onConfirm: () => navigation.navigate("Login" as never)
+      });
     } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("Unexpected error occurred");
-      }
+      showAlert({
+        type: "error",
+        title: "Registration Error",
+        message: error instanceof Error ? error.message : "Unexpected error occurred"
+      });
     } finally {
       setIsLoading(false);
     }

@@ -6,6 +6,7 @@ import StackNavigator from "./src/navigation/StackNavigator";
 import { ThemeProvider, ThemeContext } from "./src/context/ThemeContext";
 import { AuthProvider, AuthContext } from "./src/context/AuthContext";
 import { DataProvider } from "./src/context/DataContext";
+import { AlertProvider } from "./src/context/AlertContext";
 
 function AppContent() {
   const { user, isLoggedIn } = useContext(AuthContext);
@@ -44,7 +45,9 @@ export default function App() {
     <ThemeProvider>
       <DataProvider>
         <AuthProvider>
-          <AppContent />
+          <AlertProvider>
+            <AppContent />
+          </AlertProvider>
         </AuthProvider>
       </DataProvider>
     </ThemeProvider>

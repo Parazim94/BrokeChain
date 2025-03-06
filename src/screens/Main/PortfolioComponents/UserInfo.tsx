@@ -152,7 +152,8 @@ export default function UserInfo({
       fontFamily: Platform.OS === "ios" ? undefined : "monospace",
     },
     compositionContainer: {
-      marginVertical: 16,
+      marginVertical: 16,      
+      backgroundColor: `${theme.background}20`
     },
     compositionBar: {
       height: 8,
@@ -347,11 +348,7 @@ export default function UserInfo({
             width="100%"
             height={80}
             stroke={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
-            strokeWidth={2}
-            fillOpacity={0.2}
-            fill={`${
-              performanceMetrics.isPositive ? "#4CAF5020" : "#F4433620"
-            }`}
+            strokeWidth={2}           
           />
         </View>
       </View>

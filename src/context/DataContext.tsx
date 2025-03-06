@@ -8,7 +8,7 @@ import React, {
 import { useFetch, fetchPost } from "../hooks/useFetch";
 import { AuthContext } from "./AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { useAlert } from "./AlertContext"; 
 export interface MarketData {
   id: string;
   name: string;
@@ -62,6 +62,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { user, setUser } = useContext(AuthContext);
+  const { showAlert } = useAlert(); // Hook für Custom Alerts
 
   // Zentrale Marktdaten via useFetch
   const {
@@ -122,15 +123,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
           try {
             token = await AsyncStorage.getItem('userToken');
             if (!token) {
-              throw new Error("Benutzer ist nicht angemeldet - kein Token gefunden");
+              throw new Error("User not logged in - no token found");
             }
-            console.log("Token aus AsyncStorage geladen:", token.substring(0, 15) + "...");
+            console.log("Token loaded from AsyncStorage:", token.substring(0, 15) + "...");
           } catch (error) {
-            console.error("Fehler beim Laden des Tokens:", error);
-            throw new Error("Fehler beim Laden des Auth-Tokens");
+            console.error("Error loading token:", error);
+            throw new Error("Error loading auth token");
           }
         } else {
-          console.log("Token aus Context verwendet:", token.substring(0, 15) + "...");
+          console.log("Using token from context:", token.substring(0, 15) + "...");
         }
         
         // Füge den Token hinzu, falls er nicht bereits im Payload ist
@@ -142,26 +143,34 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
         
         // Benutzeraktualisierung
         if (result) {
-          console.log("Trade erfolgreich, aktualisiere Benutzer");
+          console.log("Trade successful, updating user");
           setUser(result);
           
           // Erst nach dem Setzen des Benutzers versuchen, Positionen neu zu laden
           if (result.token) {
-            console.log("Lade Positionen neu mit neuem Token");
+            console.log("Reloading positions with new token");
             await new Promise(resolve => setTimeout(resolve, 500)); // Kurze Verzögerung
             await refreshPositions();
           } else {
-            console.warn("Kein Token in der Antwort gefunden!");
+            console.warn("No token found in response!");
           }
         }
         
         return result;
       } catch (error) {
-        console.error(`Fehler bei ${mode}-Trade:`, error);
+        console.error(`Error in ${mode}-trade:`, error);
+        
+        // Zeige den Fehler als modalen Dialog an
+        showAlert({
+          type: "error",
+          title: `${mode === "order" ? "Order" : "Trade"} Error`,
+          message: error instanceof Error ? error.message : "Unexpected error during trade execution"
+        });
+        
         throw error;
       }
     },
-    [user, refreshPositions, setUser]
+    [user, refreshPositions, setUser, showAlert]
   );
 
   // Historische Daten – erstmal von Binance, mit Fallback auf Marktdaten

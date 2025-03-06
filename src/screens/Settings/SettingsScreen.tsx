@@ -6,13 +6,15 @@ import { createStyles } from "../../styles/style";
 import { AccentColors } from "../../constants/accentColors";
 import DropdownAccentPicker from "./SettingsComponents/DropdownAccentPicker";
 import Button from "@/src/components/Button";
-import { useData } from "@/src/context/DataContext"; // Import für Coin-Daten
-import { Ionicons } from "@expo/vector-icons"; // Für Icons
+import { useData } from "@/src/context/DataContext";
+import { Ionicons } from "@expo/vector-icons"; 
+import { useAlert } from "@/src/context/AlertContext";
 
 export default function SettingsScreen() {
   const { colorTheme, setColorTheme, accent, setAccent, theme } = useContext(ThemeContext);
   const { user, setUser } = useContext(AuthContext); 
-  const { marketData } = useData(); // Marketdaten für Coin-Suche
+  const { marketData } = useData(); 
+  const { showAlert } = useAlert(); // Hook für Custom Alerts
   const styles = createStyles();
   const [isSaving, setIsSaving] = useState(false);
   
@@ -69,13 +71,22 @@ export default function SettingsScreen() {
         body: JSON.stringify(payload)
       });
       if (!response.ok) {
-        throw new Error("Speichern fehlgeschlagen");
+        throw new Error("Saving failed");
       }
       const updatedUser = await response.json();
       setUser(updatedUser);
-      alert("Einstellungen gespeichert!");
+      
+      showAlert({
+        type: "success",
+        title: "Settings Saved",
+        message: "Your settings have been saved successfully!"
+      });
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Unerwarteter Fehler");
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: error instanceof Error ? error.message : "Unexpected error"
+      });
     } finally {
       setIsSaving(false);
     }

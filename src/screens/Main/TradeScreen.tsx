@@ -22,6 +22,7 @@ import D3CandlestickChart from "@/src/components/d3-Candlestick";
 import CashInfo from "@/src/components/CashInfo";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/src/components/Button";
+import { useAlert } from "@/src/context/AlertContext";
 
 const timeIntervals = {
   "1m": "1m",
@@ -37,6 +38,7 @@ const timeIntervals = {
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
   const { user, setUser } = useContext(AuthContext);
+  const { showAlert } = useAlert();
   const styles = createStyles();
   const route = useRoute();
   const { marketData, executeTrade, getHistoricalData } = useData();
@@ -114,12 +116,20 @@ export default function TradeScreen() {
 
   const handleTrade = async (type: "buy" | "sell") => {
     if (!coin || !user?.token) {
-      alert("Münze oder User-Token fehlt");
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: "Coin or user token missing"
+      });
       return;
     }
     const quantityInput = parseFloat(quantity);
     if (isNaN(quantityInput) || quantityInput <= 0) {
-      alert("Ungültige Menge");
+      showAlert({
+        type: "error",
+        title: "Invalid Input",
+        message: "Please enter a valid quantity"
+      });
       return;
     }
 
@@ -130,7 +140,11 @@ export default function TradeScreen() {
       if (tradeType === "order") {
         const threshold = parseFloat(orderPrice);
         if (isNaN(threshold)) {
-          alert("Ungültiger Order-Preis");
+          showAlert({
+            type: "error",
+            title: "Invalid Price",
+            message: "Please enter a valid order price"
+          });
           return;
         }
         const orderPayload = {
@@ -143,26 +157,32 @@ export default function TradeScreen() {
         if (result) {
           setUser(result);
         }
-        alert(
-          `${
-            type === "buy" ? "Kaufauftrag" : "Verkaufsauftrag"
-          } erfolgreich platziert!`
-        );
+        showAlert({
+          type: "success",
+          title: "Order Placed",
+          message: `${type === "buy" ? "Buy" : "Sell"} order successfully placed!`
+        });
       } else {
         const spotPayload = { symbol: coin.symbol, value: amount };
         const result = await executeTrade(spotPayload, "spot");
         if (result) {
           setUser(result);
         }
-        alert(
-          `${type === "buy" ? "Kaufvorgang" : "Verkaufsvorgang"} erfolgreich!`
-        );
+        showAlert({
+          type: "success",
+          title: "Trade Executed",
+          message: `${type === "buy" ? "Buy" : "Sell"} trade successfully executed!`
+        });
       }
 
       setQuantity("");
       if (tradeType === "order") setOrderPrice("");
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Unerwarteter Fehler");
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: error instanceof Error ? error.message : "Unexpected error"
+      });
     } finally {
       setIsLoading(false);
     }
