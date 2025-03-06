@@ -72,7 +72,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     refetch: refreshMarketData,
   } = useFetch<MarketData[]>("marketData", {
     autoRefetch: true,
-    refetchInterval: 300000,
+    refetchInterval: 30000,
     expectJson: true,
   });
 
@@ -93,7 +93,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     error: errorPositions,
     refetch: refreshPositions,
   } = useFetch<Record<string, number>>(
-    positionsEndpoint || "", // leerer String wird in useFetch abgefangen
+    positionsEndpoint || "",
     { expectJson: true }
   );
 
@@ -177,7 +177,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   const getHistoricalData = useCallback(
     async (symbol: string, interval: string) => {
       try {
-        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=1000`;
+        // Falls ein Sekundenintervall gewählt wurde, verwende es unverändert als "1s"
+        const adjustedInterval = interval.endsWith("s") ? "1s" : interval;
+        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${adjustedInterval}&limit=100`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Binance Fehler: ${response.status}`);
         const data = await response.json();
@@ -193,12 +195,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     []
   );
 
-  // Historische Candlestick Daten abrufen
   const getHistoricalCandleData = useCallback(
     async (symbol: string, interval: string) => {
       try {
+        // Falls ein Sekundenintervall gewählt wurde, verwende es als "1s"
+        const adjustedInterval = interval.endsWith("s") ? "1s" : interval;
         // Erhöhe das Limit z.B. auf 1000, damit mehr Daten vorhanden sind
-        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=300`;
+        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${adjustedInterval}&limit=100`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Binance Fehler: ${response.status}`);
         const data = await response.json();

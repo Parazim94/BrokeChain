@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo } from "react";
+import React, { useState, useEffect, useContext, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
 import { AuthContext } from "@/src/context/AuthContext";
 import { createStyles } from "@/src/styles/style";
@@ -20,12 +20,12 @@ import { formatCurrency } from "@/src/utils/formatCurrency";
 import D3LineChart from "@/src/components/TradeComponents/d3-LineChart";
 import { useData } from "@/src/context/DataContext";
 import D3CandlestickChart from "@/src/components/TradeComponents/d3-Candlestick";
-import CashInfo from "@/src/components/CashInfo";
-import { Ionicons } from "@expo/vector-icons";
+import TradeControls from "@/src/components/TradeComponents/TradeControls";
 import Button from "@/src/components/Button";
-import { useAlert } from "@/src/context/AlertContext";
+import { createTradeScreenStyles } from "@/src/components/TradeComponents/sharedstyles";
 
 const timeIntervals = {
+  "5s": "5s", 
   "1m": "1m",
   "5m": "5m",
   "1h": "1h",
@@ -39,15 +39,14 @@ const timeIntervals = {
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
   const { user, setUser } = useContext(AuthContext);
-  const { showAlert } = useAlert();
-  const styles = createStyles();
+  const baseStyles = createStyles();
+  const tradeStyles = createTradeScreenStyles(theme);
   const route = useRoute();
-  const { marketData, executeTrade, getHistoricalData } = useData();
+  const { marketData, getHistoricalData, getHistoricalCandleData } = useData();
 
   const { coin: routeCoin } = (route.params || {}) as { coin?: any };
   const [coin, setCoin] = useState<any>(routeCoin);
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
-  const [quantity, setQuantity] = useState("");
   const [selectedRange, setSelectedRange] =
     useState<keyof typeof timeIntervals>("1h");
   const [chartData, setChartData] = useState<
@@ -56,8 +55,6 @@ export default function TradeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [chartType, setChartType] = useState<"line" | "d3-candlestick">("line");
   const [containerWidth, setContainerWidth] = useState<number>(0);
-  const [tradeType, setTradeType] = useState<"spot" | "order">("spot");
-  const [orderPrice, setOrderPrice] = useState("");
 
   // Zustände für die Suchfunktion
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,6 +70,7 @@ export default function TradeScreen() {
     );
   }, [searchQuery, marketData]);
 
+  // Coin Initialization
   useEffect(() => {
     if (routeCoin && routeCoin !== coin) setCoin(routeCoin);
   }, [routeCoin]);
@@ -86,6 +84,7 @@ export default function TradeScreen() {
     }
   }, [coin, marketData]);
 
+  // Market price from marketData
   useEffect(() => {
     if (coin?.symbol && marketData.length > 0) {
       const ticker = marketData.find(
@@ -101,115 +100,66 @@ export default function TradeScreen() {
     }
   }, [coin, marketData]);
 
+  // Load historical chart data
   useEffect(() => {
     const loadHistorical = async () => {
       if (coin?.symbol) {
         setIsLoading(true);
+        setChartData([]); // Leeren Sie chartData, wenn sich das Intervall ändert
         const symbol = coin.symbol.toUpperCase() + "USDT";
         const binanceInterval = timeIntervals[selectedRange];
-        const data = await getHistoricalData(symbol, binanceInterval);
+        
+        let data;
+        if (chartType === "line") {
+          data = await getHistoricalData(symbol, binanceInterval);
+        } else {
+          data = await getHistoricalCandleData(symbol, binanceInterval);
+        }
         setChartData(data);
         setIsLoading(false);
       }
     };
     loadHistorical();
-  }, [coin, selectedRange, getHistoricalData]);
+  }, [coin, selectedRange, chartType, getHistoricalData, getHistoricalCandleData]);
 
-  const handleTrade = async (type: "buy" | "sell") => {
-    if (!coin || !user?.token) {
-      showAlert({
-        type: "error",
-        title: "Error",
-        message: "Coin or user token missing"
-      });
-      return;
-    }
-    const quantityInput = parseFloat(quantity);
-    if (isNaN(quantityInput) || quantityInput <= 0) {
-      showAlert({
-        type: "error",
-        title: "Invalid Input",
-        message: "Please enter a valid quantity"
-      });
-      return;
-    }
+  // Live price update
+  const lastPriceFetch = useRef<number>(0);
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    const fetchLatestData = async () => {
+      if (!coin?.symbol) return;
+      const symbol = coin.symbol.toUpperCase() + "USDT";
 
-    try {
-      setIsLoading(true);
-      const amount = type === "sell" ? -Math.abs(quantityInput) : quantityInput;
-
-      if (tradeType === "order") {
-        const threshold = parseFloat(orderPrice);
-        if (isNaN(threshold)) {
-          showAlert({
-            type: "error",
-            title: "Invalid Price",
-            message: "Please enter a valid order price"
-          });
-          return;
+      if (chartType === "line") {
+        try {
+          const data = await getHistoricalData(symbol, timeIntervals[selectedRange]);
+          if (data.length > 0) {
+            const lastEntry = data[data.length - 1];
+            setMarketPrice(lastEntry.value);
+          }
+        } catch (error) {
+          console.error("Fehler beim Fetch der historischen Daten (line):", error);
         }
-        const orderPayload = {
-          token: user.token,
-          symbol: coin.symbol,
-          amount: amount,
-          threshold: threshold,
-        };
-        const result = await executeTrade(orderPayload, "order");
-        if (result) {
-          setUser(result);
-        }
-        showAlert({
-          type: "success",
-          title: "Order Placed",
-          message: `${type === "buy" ? "Buy" : "Sell"} order successfully placed!`
-        });
       } else {
-        const spotPayload = { symbol: coin.symbol, value: amount };
-        const result = await executeTrade(spotPayload, "spot");
-        if (result) {
-          setUser(result);
+        // Candlestick-Modus: fetch candlestick Daten
+        try {
+          const data = await getHistoricalCandleData(symbol, timeIntervals[selectedRange]);
+          setChartData(data);
+          if (data.length > 0) {
+            const lastCandle = data[data.length - 1];
+            setMarketPrice(lastCandle.close || 0);
+          }
+        } catch (error) {
+          console.error("Fehler beim Fetch der Candlestick-Daten:", error);
         }
-        showAlert({
-          type: "success",
-          title: "Trade Executed",
-          message: `${type === "buy" ? "Buy" : "Sell"} trade successfully executed!`
-        });
       }
+    };
+    fetchLatestData();
+    intervalId = setInterval(fetchLatestData, 5000);
+    return () => clearInterval(intervalId);
+  }, [coin, chartType, selectedRange, getHistoricalData, getHistoricalCandleData]);
 
-      setQuantity("");
-      if (tradeType === "order") setOrderPrice("");
-    } catch (error) {
-      showAlert({
-        type: "error",
-        title: "Error",
-        message: error instanceof Error ? error.message : "Unexpected error"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleMax = () => {
-    if (user && coin && user.positions) {
-      const coinNormalized = coin.symbol
-        ? coin.symbol.toLowerCase().replace(/usdt$/, "")
-        : "";
-      let maxAmount = 0;
-      let found = false;
-      Object.keys(user.positions).forEach((key) => {
-        const normalizedKey = key.toLowerCase().replace(/usdt$/, "");
-        if (normalizedKey === coinNormalized) {
-          maxAmount = user.positions[key];
-          found = true;
-        }
-      });
-      if (!found && marketPrice && user.cash) {
-        maxAmount = (user.cash - 10) / marketPrice;
-      }
-      setQuantity(String(maxAmount));
-    }
-  };
-
+  // Chart Component
   const chartComponent = useMemo(() => {
     if (chartType === "line") {
       return (
@@ -221,6 +171,7 @@ export default function TradeScreen() {
             interval={timeIntervals[selectedRange]}
             width={containerWidth ? containerWidth * 0.9666 : 300}
             height={300}
+            livePrice={marketPrice ?? undefined}
           />
         </View>
       );
@@ -234,15 +185,15 @@ export default function TradeScreen() {
             interval={timeIntervals[selectedRange]}
             width={containerWidth ? containerWidth * 0.91 : 300}
             height={300}
-          />
+           />
         </View>
       );
     }
-  }, [chartType, coin, selectedRange, containerWidth]);
+  }, [chartType, coin, selectedRange, containerWidth, marketPrice]);
 
-  // Gemeinsamer Inhalt
+  // MainContent
   const content = (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={baseStyles.container}>
       <ScrollView>
         <View
           style={{
@@ -255,39 +206,14 @@ export default function TradeScreen() {
             setContainerWidth(event.nativeEvent.layout.width);
           }}
         >
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginLeft: 4,
-            }}
-          >
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                flex: 1,
-              }}
-            >
-              <Text
-                style={[styles.defaultText, { fontSize: 20, marginBottom: 12 }]}
-              >
+          {/* Header mit Coin-Info und Suche */}
+          <View style={tradeStyles.headerContainer}>
+            <View style={tradeStyles.coinInfoContainer}>
+              <Text style={[baseStyles.defaultText, tradeStyles.coinTitle]}>
                 {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
               </Text>
               {marketPrice !== null && (
-                <Text
-                  style={[
-                    styles.defaultText,
-                    {
-                      fontSize: 14,
-                      color: theme.accent,
-                      fontFamily: "monospace",
-                    },
-                  ]}
-                >
+                <Text style={tradeStyles.coinPrice}>
                   Market: {formatCurrency(marketPrice)}
                 </Text>
               )}
@@ -306,14 +232,15 @@ export default function TradeScreen() {
             />
           </View>
 
+          {/* Suchbereich */}
           {isSearchActive && (
             <View style={{ marginVertical: 10}}>
               <TextInput
                 placeholder="search coin..."
-                placeholderTextColor={styles.defaultText.color}
+                placeholderTextColor={baseStyles.defaultText.color}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                style={[styles.input, { width: "100%" }]}
+                style={[baseStyles.input, { width: "100%" }]}
                 autoFocus
               />
 
@@ -346,11 +273,11 @@ export default function TradeScreen() {
                           setIsSearchActive(false);
                         }}
                       >
-                        <Text style={[styles.defaultText, { fontWeight: "500" }]}>
+                        <Text style={[baseStyles.defaultText, { fontWeight: "500" }]}>
                           {item.name} ({item.symbol?.toUpperCase()})
                         </Text>
                         <Text
-                          style={[styles.defaultText, { color: theme.accent }]}
+                          style={[baseStyles.defaultText, { color: theme.accent }]}
                         >
                           {formatCurrency(item.current_price)}
                         </Text>
@@ -359,7 +286,7 @@ export default function TradeScreen() {
                     ListEmptyComponent={
                       <Text
                         style={[
-                          styles.defaultText,
+                          baseStyles.defaultText,
                           { padding: 12, textAlign: "center" },
                         ]}
                       >
@@ -372,15 +299,9 @@ export default function TradeScreen() {
             </View>
           )}
 
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginVertical: 8,
-            }}
-          >
-            <View style={{ flexDirection: "row", flexWrap: "wrap", flex: 1 }}>
+          {/* Zeitintervalle und Chart-Typ */}
+          <View style={tradeStyles.timeIntervalContainer}>
+            <View style={tradeStyles.timeIntervalButtonsContainer}>
               {Object.keys(timeIntervals).map((range) => (
                 <Button
                   key={range}
@@ -411,81 +332,22 @@ export default function TradeScreen() {
               textStyle={{ fontSize: 12 }}
             />
           </View>
-          <View
-            style={{
-              borderWidth: 1,
-              borderRadius: 8,
-              borderColor: theme.accent,
-              boxShadow: `0 0 10px ${theme.accent}55`,
-            }}
-          >
+
+          {/* Chart-Bereich */}
+          <View style={tradeStyles.chartContainer}>
             {chartComponent}
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-              marginTop: 16,
-              gap: 4,
-              marginLeft: 4,
-            }}
-          >
-            <Button
-              onPress={() =>
-                setTradeType(tradeType === "spot" ? "order" : "spot")
-              }
-              title={tradeType === "spot" ? "Order" : "Spot"}
-              size="small"
-              style={{ padding: 4, paddingHorizontal: 8 }}
-              textStyle={{ fontSize: 12 }}
+
+          {/* Ausgelagerte Trade-Controls-Komponente */}
+          {coin && (
+            <TradeControls
+              symbol={coin.symbol}
+              marketPrice={marketPrice}
+              user={user}
+              setUser={setUser}
+              theme={theme}
             />
-            <TextInput
-              style={[
-                styles.input,
-                { width: "25%", padding: 4, fontFamily: "monospace" },
-              ]}
-              placeholder="Amount..."
-              placeholderTextColor={styles.defaultText.color}
-              value={quantity}
-              onChangeText={setQuantity}
-              keyboardType="numeric"
-            />
-            {tradeType === "order" && (
-              <TextInput
-                style={[
-                  styles.input,
-                  { width: "25%", padding: 4, fontFamily: "monospace" },
-                ]}
-                placeholder="Price..."
-                placeholderTextColor={styles.defaultText.color}
-                value={orderPrice}
-                onChangeText={setOrderPrice}
-                keyboardType="numeric"
-              />
-            )}
-            <Button
-              onPress={handleMax}
-              title="Max"
-              size="small"
-              style={{ padding: 4, paddingHorizontal: 10 }}
-              textStyle={{ fontSize: 12 }}
-            />
-            <Button
-              onPress={() => handleTrade("buy")}
-              title="Buy"
-              size="small"
-              style={{ padding: 4, paddingHorizontal: 10 }}
-              textStyle={{ fontSize: 12 }}
-            />
-            <Button
-              onPress={() => handleTrade("sell")}
-              title="Sell"
-              size="small"
-              style={{ padding: 4, paddingHorizontal: 10 }}
-              textStyle={{ fontSize: 12 }}
-            />
-          </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

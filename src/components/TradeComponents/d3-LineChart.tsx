@@ -32,11 +32,60 @@ interface LineData {
   volume: number;
 }
 
+// Hilfsfunktion zum Umrechnen des Intervalls in Millisekunden
+function intervalToMs(interval: string): number {
+  const num = parseFloat(interval);
+  if (interval.endsWith("s")) return num * 1000;  // neu: Unterstützung für Sekunden
+  if (interval.endsWith("m")) return num * 60 * 1000;
+  if (interval.endsWith("h")) return num * 60 * 60 * 1000;
+  if (interval.endsWith("d")) return num * 24 * 60 * 60 * 1000;
+  if (interval.endsWith("w")) return num * 7 * 24 * 60 * 60 * 1000;
+  if (interval.endsWith("M")) return num * 30 * 24 * 60 * 60 * 1000;
+  // Standard: falls nichts erkannt wird
+  return 60000;
+}
+
+// Neue Hilfsfunktion: Prüft, ob ein neuer Datenpunkt erstellt werden soll
+function shouldCreateNewDataPoint(
+  currentTime: number,
+  lastPointTime: number,
+  intervalString: string
+): boolean {
+  // Für 5s-Intervall: Immer neue Datenpunkte alle 5 Sekunden
+  if (intervalString === "5s") {
+    return currentTime - lastPointTime >= 5000;
+  }
+  
+  // Für andere Intervalle: Nur an Intervallgrenzen neue Datenpunkte
+  const date = new Date();
+  const lastDate = new Date(lastPointTime);
+  
+  if (intervalString.endsWith("m")) {
+    const minutes = parseInt(intervalString);
+    return date.getMinutes() % minutes === 0 && 
+           date.getMinutes() !== lastDate.getMinutes();
+  }
+  
+  if (intervalString.endsWith("h")) {
+    const hours = parseInt(intervalString);
+    return date.getHours() % hours === 0 && 
+           date.getHours() !== lastDate.getHours() && 
+           date.getMinutes() === 0;
+  }
+  
+  if (intervalString.endsWith("d")) {
+    return date.getDate() !== lastDate.getDate();
+  }
+  
+  return false;
+}
+
 interface D3LineChartProps {
   symbol: string;
   interval: string;
   width?: number;
   height?: number;
+  livePrice?: number;
 }
 
 export default function D3LineChart({
@@ -44,6 +93,7 @@ export default function D3LineChart({
   interval,
   width = Dimensions.get("window").width,
   height = 300,
+  livePrice, // neuer Parameter
 }: D3LineChartProps) {
   const { theme } = useContext(ThemeContext);
   const { getHistoricalData } = useData();
@@ -59,8 +109,28 @@ export default function D3LineChart({
   // Neuer State für den ausgewählten Datenpunkt
   const [selectedPoint, setSelectedPoint] = useState<LineData | null>(null);
 
+  // Neuer State: Toggle für MA(20)
+  const [showMA, setShowMA] = useState<boolean>(true);
+
+  // Neuer State für die Zeit des letzten Datenpunkts
+  const [lastDataPointTime, setLastDataPointTime] = useState<number>(0);
+
   // Margins für Achsen
   const margin = { top: 10, right: 10, bottom: 30, left: 60 };
+
+  // Verbesserte intervalToMs-Funktion 
+  function getMaxDataPoints(interval: string): number {
+    if (interval.endsWith("s")) return 180; // 15 Minuten bei 5s = 180 Punkte
+    if (interval.endsWith("m")) {
+      const mins = parseFloat(interval);
+      if (mins <= 5) return 60; // 5h bei 5m
+      return 48;  // 2 Tage bei 1h
+    }
+    if (interval.endsWith("h")) return 72; // 3 Tage bei 1h
+    if (interval.endsWith("d")) return 60; // 60 Tage
+    if (interval.endsWith("w")) return 52; // 52 Wochen
+    return 100; // Standard
+  }
 
   // Daten von Binance laden (analog zum d3-Candlestick)
   useEffect(() => {
@@ -78,6 +148,11 @@ export default function D3LineChart({
           volume: item.volume ? Number(item.volume) : 0,
         }));
         setLineData(mapped);
+        
+        // Setze lastDataPointTime für die weitere Aktualisierung
+        if (mapped.length > 0) {
+          setLastDataPointTime(mapped[mapped.length - 1].timestamp);
+        }
       } catch (error) {
         console.error("Fehler beim Abruf der LineChart-Daten:", error);
         setLineData([]);
@@ -87,6 +162,49 @@ export default function D3LineChart({
     };
     fetchData();
   }, [symbol, interval, getHistoricalData]);
+
+  // Dynamisches Anhängen bzw. Aktualisieren eines Datenpunkts basierend auf dem Intervall
+  useEffect(() => {
+    if (livePrice == null || lineData.length === 0) return;
+    
+    const now = Date.now();
+    
+    setLineData(prev => {
+      if (prev.length === 0) {
+        setLastDataPointTime(now);
+        return [{ timestamp: now, value: livePrice, volume: 0 }];
+      }
+      
+      const newData = [...prev];
+      const lastPoint = prev[prev.length - 1];
+      
+      // Bei 5s neue Datenpunkte alle 5 Sekunden hinzufügen
+      if (interval === "5s" && now - lastPoint.timestamp >= 5000) {
+        newData.push({ timestamp: now, value: livePrice, volume: 0 });
+        setLastDataPointTime(now);
+      } 
+      // Bei anderen Intervallen prüfen, ob ein neuer Datenpunkt erstellt werden sollte
+      else if (shouldCreateNewDataPoint(now, lastDataPointTime, interval)) {
+        newData.push({ timestamp: now, value: livePrice, volume: 0 });
+        setLastDataPointTime(now);
+      } 
+      // Sonst nur den letzten Datenpunkt aktualisieren
+      else {
+        // Update des letzten Punktes
+        newData[newData.length - 1] = { 
+          timestamp: lastPoint.timestamp, 
+          value: livePrice, 
+          volume: lastPoint.volume 
+        };
+      }
+      
+      // Begrenze die Datenpunkte auf eine sinnvolle Anzahl
+      const maxPoints = getMaxDataPoints(interval);
+      while (newData.length > maxPoints) newData.shift();
+      
+      return newData;
+    });
+  }, [livePrice, interval, lastDataPointTime]);
 
   if (loading) {
     return (
@@ -127,6 +245,23 @@ export default function D3LineChart({
   const points = lineData
     .map((d, i) => `${xScale(i)},${yScale(d.value)}`)
     .join(" ");
+
+  // Berechnung des MA(20)-Indikators
+  const maPeriod = 20;
+  let maPoints = "";
+  if (lineData.length >= maPeriod) {
+    const maData = [];
+    for (let i = maPeriod - 1; i < lineData.length; i++) {
+      let sum = 0;
+      for (let j = i - maPeriod + 1; j <= i; j++) {
+        sum += lineData[j].value;
+      }
+      const avg = sum / maPeriod;
+      maData.push({ index: i, avg });
+    }
+    maPoints = maData.map(d => `${xScale(d.index)},${yScale(d.avg)}`).join(" ");
+  }
+
   // Pfad für Füllbereich unter der Linie
   const fillPath =
     `M ${margin.left} ${height - margin.bottom} ` +
@@ -171,12 +306,15 @@ export default function D3LineChart({
     },
   });
 
-  // Format dates for X-axis labels, abhängig vom interval-Prop
+  // Format dates for X-axis labels anpassen:
   const getDateLabel = (index: number): string => {
     if (index < 0 || index >= lineData.length) return "";
     const date = new Date(lineData[index].timestamp);
-    let formatString = "HH:mm";
-    if (interval.endsWith("m")) {
+    let formatString = "MMM d, HH:mm"; // Default
+    // Falls das Intervall "5s" ist, setze Format auf "HH:mm"
+    if (interval === "5s") {
+      formatString = "HH:mm";
+    } else if (interval.endsWith("m")) {
       const val = parseInt(interval.slice(0, -1));
       formatString = val <= 5 ? "HH:mm" : "MMM d, HH:mm";
     } else if (interval.endsWith("h")) {
@@ -223,6 +361,16 @@ export default function D3LineChart({
             stroke={theme.accent}
             strokeWidth={2}
           />
+          {/* MA(20) Indikator (nur bei showMA=true) */}
+          {showMA && maPoints && (
+            <Polyline
+              points={maPoints}
+              fill="none"
+              stroke={`${theme.accent}AA`}
+              strokeWidth={2}
+              strokeDasharray="4,4"
+            />
+          )}
           {/* X-Achsen-Beschriftungen */}
           {lineData.map((d, i) => {
             if (i % labelInterval === 0) {
@@ -270,7 +418,16 @@ export default function D3LineChart({
             />
           )}
         </Svg>
-
+        {/* Legend/Controls, analog zum Candlestick-Chart */}
+        <View style={styles.legend}>
+          <TouchableOpacity
+            style={[styles.legendItem, showMA ? styles.legendItemActive : {}]}
+            onPress={() => setShowMA(!showMA)}
+          >
+            <View style={[styles.legendColor, { backgroundColor: theme.accent }]} />
+            <Text style={{ color: theme.text, fontSize: 10 }}>MA(20)</Text>
+          </TouchableOpacity>
+        </View>
         {/* Temporärer Tooltip */}
         {tooltip && tooltip.isVisible && (
           <View
@@ -298,35 +455,29 @@ export default function D3LineChart({
             {
               backgroundColor: `${theme.accent}15`,
               borderColor: `${theme.accent}40`,
+              flexDirection: "row",
+              justifyContent: "space-around",
+              alignItems: "center",
             },
           ]}
         >
-          <View style={styles.dataRow}>
+          <View style={styles.dataItem}>
             <Text style={[styles.dataLabel, { color: theme.text }]}>Date:</Text>
             <Text style={[styles.dataValue, { color: theme.text }]}>
               {format(new Date(selectedPoint.timestamp), "dd.MM.yyyy HH:mm")}
             </Text>
           </View>
-          <View style={styles.dataRow}>
-            <Text style={[styles.dataLabel, { color: theme.text }]}>
-              Price:
-            </Text>
-            <Text
-              style={[
-                styles.dataValue,
-                { color: theme.accent, fontWeight: "bold" },
-              ]}
-            >
+          <View style={styles.dataItem}>
+            <Text style={[styles.dataLabel, { color: theme.text }]}>Price:</Text>
+            <Text style={[styles.dataValue, { color: theme.accent, fontWeight: "bold" }]}>
               {formatCurrency(selectedPoint.value)}
             </Text>
           </View>
           {selectedPoint.volume > 0 && (
-            <View style={styles.dataRow}>
-              <Text style={[styles.dataLabel, { color: theme.text }]}>
-                Volumen:
-              </Text>
+            <View style={styles.dataItem}>
+              <Text style={[styles.dataLabel, { color: theme.text }]}>Volume:</Text>
               <Text style={[styles.dataValue, { color: theme.text }]}>
-                {selectedPoint.volume.toLocaleString()}
+          {selectedPoint.volume.toLocaleString()}
               </Text>
             </View>
           )}
@@ -377,5 +528,36 @@ const styles = StyleSheet.create({
   dataValue: {
     fontSize: 14,
     fontFamily: Platform.OS === "ios" ? undefined : "monospace",
+  },
+  legend: {
+    position: "absolute",
+    top: 10,
+    right: 15,
+    flexDirection: "row",
+    backgroundColor: "rgba(0,0,0,0.2)",
+    borderRadius: 4,
+    padding: 4,
+  },
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 8,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 3,
+  },
+  legendItemActive: {
+    backgroundColor: "rgba(255,255,255,0.15)",
+  },
+  legendColor: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 4,
+  },
+  // Neuer Style für einzelne Daten-Elemente in einer Zeile
+  dataItem: {
+    flex: 1,
+    alignItems: "center",
   },
 });
