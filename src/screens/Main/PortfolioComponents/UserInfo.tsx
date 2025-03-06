@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { createStyles as createGlobalStyles } from "@/src/styles/style";
+import PortfolioPieChart from "./PortfolioPieChart";
 
 interface UserInfoProps {
   userName: string;
@@ -83,6 +84,11 @@ export default function UserInfo({
     };
   }, [cash, positionsValue]);
 
+  // Check if we have valid portfolio positions to display
+  const hasValidPositions =
+    positions.length > 0 &&
+    positions.some((pos) => pos.marketInfo && pos.amount > 0);
+
   // Local styles
   const styles = StyleSheet.create({
     container: {
@@ -152,8 +158,8 @@ export default function UserInfo({
       fontFamily: Platform.OS === "ios" ? undefined : "monospace",
     },
     compositionContainer: {
-      marginVertical: 16,      
-      backgroundColor: `${theme.background}20`
+      marginVertical: 16,
+      backgroundColor: `${theme.background}20`,
     },
     compositionBar: {
       height: 8,
@@ -169,7 +175,7 @@ export default function UserInfo({
     },
     positionsPortion: {
       height: "100%",
-      backgroundColor: `${theme.text}80`,
+      backgroundColor: theme.accent + "80", // Using accent with opacity for better visibility in dark mode
       width: `${portfolioComposition.positions}%`,
     },
     legendContainer: {
@@ -303,7 +309,7 @@ export default function UserInfo({
             <View
               style={[
                 styles.legendColor,
-                { backgroundColor: `${theme.text}80` },
+                { backgroundColor: theme.accent + "80" },
               ]}
             />
             <Text style={styles.legendText}>
@@ -312,6 +318,14 @@ export default function UserInfo({
           </View>
         </View>
       </View>
+
+      {/* Portfolio Pie Chart */}
+      {hasValidPositions && (
+        <PortfolioPieChart
+          portfolioPositions={positions}
+          totalValue={positionsValue}
+        />
+      )}
 
       {/* Value history chart */}
       <View style={styles.historyContainer}>
@@ -348,7 +362,7 @@ export default function UserInfo({
             width="100%"
             height={80}
             stroke={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
-            strokeWidth={2}           
+            strokeWidth={2}
           />
         </View>
       </View>

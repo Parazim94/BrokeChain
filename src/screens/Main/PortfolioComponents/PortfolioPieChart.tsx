@@ -36,14 +36,14 @@ function adjustColorBrightness(hex: string, factor: number): string {
   // Entferne das '#' falls vorhanden
   hex = hex.replace("#", "");
   const num = parseInt(hex, 16);
-  let r = (num >> 16) & 0xFF;
-  let g = (num >> 8) & 0xFF;
-  let b = num & 0xFF;
-  
+  let r = (num >> 16) & 0xff;
+  let g = (num >> 8) & 0xff;
+  let b = num & 0xff;
+
   r = Math.round(Math.min(255, r * factor));
   g = Math.round(Math.min(255, g * factor));
   b = Math.round(Math.min(255, b * factor));
-  
+
   return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
@@ -57,14 +57,18 @@ export default function PortfolioPieChart({
 }: PortfolioPieChartProps) {
   const { theme } = useContext(ThemeContext);
   const accent = theme.accent; // Basis-Akzentfarbe
-  const [selectedSegment, setSelectedSegment] = useState<PortfolioItem | null>(null);
-  const isWeb = Platform.OS === 'web';
+  const [selectedSegment, setSelectedSegment] = useState<PortfolioItem | null>(
+    null
+  );
+  const isWeb = Platform.OS === "web";
   const svgRef = useRef(null);
 
   // Angepasste Erstellung der Portfolio-Items mit Farbabstufungen
   const portfolioItems = React.useMemo(() => {
     if (!portfolioPositions || portfolioPositions.length === 0) return [];
-    const validPositions = portfolioPositions.filter((pos) => pos.marketInfo && pos.amount > 0);
+    const validPositions = portfolioPositions.filter(
+      (pos) => pos.marketInfo && pos.amount > 0
+    );
     const n = validPositions.length;
     return validPositions
       .map((position, index) => {
@@ -89,7 +93,7 @@ export default function PortfolioPieChart({
     return (
       <View style={styles.container}>
         <Text style={[styles.title, { color: theme.text }]}>
-          Portfolio-Verteilung
+          Portfolio Positions
         </Text>
         <Text
           style={{
@@ -99,7 +103,7 @@ export default function PortfolioPieChart({
             marginBottom: 20,
           }}
         >
-          Keine Portfolio-Daten verfügbar
+          No portfolio positions available
         </Text>
       </View>
     );
@@ -128,7 +132,7 @@ export default function PortfolioPieChart({
   return (
     <View style={styles.container}>
       <Text style={[styles.title, { color: theme.text }]}>
-        Portfolio-Verteilung
+        Portfolio Positions
       </Text>
 
       <View style={styles.chartContainer}>
@@ -147,12 +151,14 @@ export default function PortfolioPieChart({
 
               // For web, we use regular SVG path without onPress
               // For native, onPress works correctly
-              const pathProps = isWeb ? {
-                // No onPress for web - we'll handle clicks differently
-                onClick: () => handleSegmentPress(d.data),
-              } : {
-                onPress: () => handleSegmentPress(d.data),
-              };
+              const pathProps = isWeb
+                ? {
+                    // No onPress for web - we'll handle clicks differently
+                    onClick: () => handleSegmentPress(d.data),
+                  }
+                : {
+                    onPress: () => handleSegmentPress(d.data),
+                  };
 
               return (
                 <Path
@@ -176,7 +182,7 @@ export default function PortfolioPieChart({
                 fill={theme.text}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                fontFamily="monospace"                            
+                fontFamily="monospace"
               >
                 {formatCurrency(totalValue)}
               </SvgText>
