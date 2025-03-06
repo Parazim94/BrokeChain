@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useContext, useState } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,9 @@ import Sparkline from "@/src/components/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { createStyles as createGlobalStyles } from "@/src/styles/style";
 import PortfolioPieChart from "./PortfolioPieChart";
+import { AuthContext } from "../../context/AuthContext";
+import { useAlert } from "@/src/context/AlertContext";
+import Button from "@/src/components/Button";
 
 interface UserInfoProps {
   userName: string;
@@ -34,6 +37,25 @@ export default function UserInfo({
   positions = [],
 }: UserInfoProps) {
   const globalStyles = createGlobalStyles();
+
+  // Neue Hooks für Logout
+  const { setIsLoggedIn, setUser } = useContext(AuthContext);
+  const { showAlert } = useAlert();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = () => {
+    setIsLoggingOut(true);
+    setTimeout(() => {
+      setUser(null);
+      setIsLoggedIn(false);
+      setIsLoggingOut(false);
+      showAlert({
+        type: "success",
+        title: "Logged Out",
+        message: "You have been successfully logged out."
+      });
+    }, 500);
+  };
 
   // Internal state
   const [localHistory, setLocalHistory] = React.useState("7d");
@@ -255,25 +277,35 @@ export default function UserInfo({
 
   return (
     <View style={styles.container}>
-      {/* Header with name and performance */}
+      {/* Header mit Name, Performance und Logout-Button */}
       <View style={styles.headerRow}>
         <View style={styles.userNameContainer}>
           <Ionicons name="person-circle" size={30} style={styles.profileIcon} />
           <Text style={styles.userName}>{userName}</Text>
         </View>
-        <View style={styles.performanceContainer}>
-          <Ionicons
-            name={
-              performanceMetrics.isPositive ? "trending-up" : "trending-down"
-            }
-            size={18}
-            color={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
-            style={styles.performanceIcon}
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={styles.performanceContainer}>
+            <Ionicons
+              name={
+                performanceMetrics.isPositive ? "trending-up" : "trending-down"
+              }
+              size={18}
+              color={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
+              style={styles.performanceIcon}
+            />
+            <Text style={styles.performanceText}>
+              {performanceMetrics.isPositive ? "+" : ""}
+              {performanceMetrics.percentage.toFixed(2)}%
+            </Text>
+          </View>
+          <Button
+            onPress={handleLogout}
+            title="Logout"
+            loading={isLoggingOut}
+            style={{ marginLeft: 10 }}
+            size="small"
+            type="danger"
           />
-          <Text style={styles.performanceText}>
-            {performanceMetrics.isPositive ? "+" : ""}
-            {performanceMetrics.percentage.toFixed(2)}%
-          </Text>
         </View>
       </View>
 
