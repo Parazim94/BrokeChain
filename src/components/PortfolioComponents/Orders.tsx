@@ -4,7 +4,7 @@ import { RootStackParamList } from "@/src/types/types";
 import { Text, View, TouchableOpacity, Modal, TextInput, StyleSheet, Image } from "react-native";
 import Card from "@/src/components/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import { createStyles } from "@/src/screens/Main/PortfolioComponents/portfolioStyles";
+import { createStyles } from "@/src/components/PortfolioComponents/portfolioStyles";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { Ionicons } from "@expo/vector-icons";
 import { useData } from "@/src/context/DataContext";

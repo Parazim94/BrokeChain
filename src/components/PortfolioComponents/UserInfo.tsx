@@ -287,7 +287,7 @@ export default function UserInfo({
         <View style={styles.metricBox}>
           <Text style={styles.metricLabel}>Positions</Text>
           <Text style={styles.metricValue}>
-            {formatCurrency(positionsValue)}
+            {positionsValue === 0 ? "0.00 $" : formatCurrency(positionsValue)}
           </Text>
         </View>
 

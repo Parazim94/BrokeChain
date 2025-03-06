@@ -1,14 +1,14 @@
 import React, { useContext, useState, useEffect, useMemo } from "react";
 import { SafeAreaView, View, Text, SectionList } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
-import { createStyles } from "./PortfolioComponents/portfolioStyles";
-import UserInfo from "./PortfolioComponents/UserInfo";
-import Sorting from "./PortfolioComponents/Sorting";
-import Holding from "./PortfolioComponents/Holding";
-import Fav from "./PortfolioComponents/Fav";
-import TradeHistory from "./PortfolioComponents/TradeHistory";
-import Orders from "./PortfolioComponents/Orders";
-import PortfolioPieChart from "./PortfolioComponents/PortfolioPieChart";
+import { createStyles } from "../../components/PortfolioComponents/portfolioStyles";
+import UserInfo from "../../components/PortfolioComponents/UserInfo";
+import Sorting from "../../components/PortfolioComponents/Sorting";
+import Holding from "../../components/PortfolioComponents/Holding";
+import Fav from "../../components/PortfolioComponents/Fav";
+import TradeHistory from "../../components/PortfolioComponents/TradeHistory";
+import Orders from "../../components/PortfolioComponents/Orders";
+import PortfolioPieChart from "../../components/PortfolioComponents/PortfolioPieChart";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
 import { AuthContext } from "../../context/AuthContext";
@@ -264,8 +264,8 @@ export default function PortfolioScreen() {
         styles={styles}
       />
       {(userData.positions || []).length === 0 && (
-        <Text style={[styles.header, { marginLeft: 12 }]}>
-          {user?.userName !== "gast" ? "Login or Register first!" : "buy some!"}
+        <Text style={ { marginLeft: 12, color: theme.text, marginTop: 20 } }>
+          {user?.userName !== "gast" ? "" : "Login or Register first!"}
         </Text>
       )}
     </>

@@ -5,7 +5,7 @@ import { FlatList, Image, Text, View } from "react-native";
 import Card from "@/src/components/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import Sparkline from "@/src/components/Sparkline";
-import { createStyles } from "@/src/screens/Main/PortfolioComponents/portfolioStyles";
+import { createStyles } from "@/src/components/PortfolioComponents/portfolioStyles";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 
 interface FavProps {

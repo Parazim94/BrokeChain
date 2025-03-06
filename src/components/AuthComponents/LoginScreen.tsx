@@ -4,7 +4,7 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { StackParamList } from "@/src/types/types";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
-import { authStyles } from "./authStyles";
+import { authStyles } from "../../screens/Auth/authStyles";
 import Button from "@/src/components/Button"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAlert } from "@/src/context/AlertContext";

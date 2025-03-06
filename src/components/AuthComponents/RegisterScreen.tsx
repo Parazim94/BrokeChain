@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../../styles/style";
-import { authStyles } from "./authStyles";
+import { authStyles } from "../../screens/Auth/authStyles";
 import Button from "@/src/components/Button"; 
 import { useAlert } from "@/src/context/AlertContext"; 
 

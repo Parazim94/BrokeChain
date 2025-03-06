@@ -4,7 +4,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
 import { AccentColors } from "../../constants/accentColors";
-import DropdownAccentPicker from "./SettingsComponents/DropdownAccentPicker";
+import DropdownAccentPicker from "../../components/SettingsComponents/DropdownAccentPicker";
 import Button from "@/src/components/Button";
 import { useData } from "@/src/context/DataContext";
 import { Ionicons } from "@expo/vector-icons"; 

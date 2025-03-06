@@ -2,7 +2,7 @@ import React from "react";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { Text, View } from "react-native";
 import Card from "@/src/components/Card";
-import { createStyles } from "@/src/screens/Main/PortfolioComponents/portfolioStyles";
+import { createStyles } from "@/src/components/PortfolioComponents/portfolioStyles";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 
 // Trade History Schema Interface
