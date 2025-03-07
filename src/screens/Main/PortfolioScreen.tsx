@@ -243,7 +243,7 @@ export default function PortfolioScreen() {
   };
 
   const headerComponent = () => (
-    <View style={styles.headerContainer}>
+    <View style={{marginTop: 20}}>
       <UserInfo
         userName={userData.userName}
         cash={userData.cash}

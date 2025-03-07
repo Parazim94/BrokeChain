@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import Svg, {
   Polyline,
   Path,
@@ -236,10 +237,13 @@ export default function D3LineChart({
   // Neue Tick-Werte für die Y-Achse
   const yTicks = d3Scale.scaleLinear().domain([minValue, maxValue]).ticks(10);
 
+  // Definiere horizontales Padding (ca. 15% von effectiveWidth)
+  const horizontalPadding = effectiveWidth * 0.15;
+  // Aktualisierte xScale: Passe linke und rechte Grenze an
   const xScale = d3Scale
     .scaleLinear()
     .domain([0, lineData.length - 1])
-    .range([margin.left, effectiveWidth - margin.right]);
+    .range([margin.left + horizontalPadding, effectiveWidth - margin.right - horizontalPadding]);
 
   // Punkte für Linie generieren
   const points = lineData
@@ -363,7 +367,26 @@ export default function D3LineChart({
           {/* MA(20) Indikator (nur bei showMA=true) */}
           {showMA && maPoints && (
             <Polyline
-              points={maPoints}
+              // Statt maPoints: Wir erzeugen jetzt den Polyline-Pfad mit korrekt berechneten x‑Werten
+              points={
+                (() => {
+                  const maData: { x: number; y: number }[] = [];
+                  if (lineData.length >= maPeriod) {
+                    for (let i = maPeriod - 1; i < lineData.length; i++) {
+                      let sum = 0;
+                      // Berechne den Durchschnitt der x-Koordinaten
+                      for (let j = i - maPeriod + 1; j <= i; j++) {
+                        sum += xScale(j);
+                      }
+                      const xAvg = sum / maPeriod;
+                      maData.push({ x: xAvg, y: yScale(
+                        lineData.slice(i - maPeriod + 1, i + 1).reduce((acc, d) => acc + d.value, 0) / maPeriod
+                      ) });
+                    }
+                  }
+                  return maData.map(d => `${d.x},${d.y}`).join(" ");
+                })()
+              }
               fill="none"
               stroke={`${theme.accent}AA`}
               strokeWidth={2}
@@ -448,38 +471,46 @@ export default function D3LineChart({
 
       {/* Persistente Datenanzeige unter dem Chart */}
       {selectedPoint && (
-        <View
-          style={[
-            styles.dataDisplay,
-            {
-              backgroundColor: `${theme.accent}15`,
+        <View style={[
+            styles.dataDisplay, 
+            { 
+              backgroundColor: `${theme.accent}15`, 
               borderColor: `${theme.accent}40`,
               flexDirection: "row",
-              justifyContent: "space-around",
+              justifyContent: "space-between",
               alignItems: "center",
-            },
+              maxWidth: 768,         // neu
+              alignSelf: "flex-start" // neu
+            }
           ]}
         >
-          <View style={styles.dataItem}>
+          <View style={{ flex: 1 }}>
             <Text style={[styles.dataLabel, { color: theme.text }]}>Date:</Text>
             <Text style={[styles.dataValue, { color: theme.text }]}>
               {format(new Date(selectedPoint.timestamp), "dd.MM.yyyy HH:mm")}
             </Text>
           </View>
-          <View style={styles.dataItem}>
+          <View style={{ flex: 1 }}>
             <Text style={[styles.dataLabel, { color: theme.text }]}>Price:</Text>
             <Text style={[styles.dataValue, { color: theme.accent, fontWeight: "bold" }]}>
               {formatCurrency(selectedPoint.value)}
             </Text>
           </View>
           {selectedPoint.volume > 0 && (
-            <View style={styles.dataItem}>
+            <View style={{ flex: 1 }}>
               <Text style={[styles.dataLabel, { color: theme.text }]}>Volume:</Text>
               <Text style={[styles.dataValue, { color: theme.text }]}>
-          {selectedPoint.volume.toLocaleString()}
+                {selectedPoint.volume.toLocaleString()}
               </Text>
             </View>
           )}
+          <TouchableOpacity 
+            onPress={() => setSelectedPoint(null)}
+            style={{ marginLeft: 8 }}
+          >
+            {/* Close Button in rot */}
+            <Ionicons name="close-circle" size={24} color="red" />  {/* hinzugefügt/angepasst */}
+          </TouchableOpacity>
         </View>
       )}
     </View>

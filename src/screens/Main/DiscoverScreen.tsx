@@ -42,7 +42,6 @@ export default function CryptoNews() {
   const newsStyles = createNewsStyles();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { width } = useWindowDimensions();
-  const cardMaxWidth = width >= 480 && width < 768 ? 480 : 350;
   const columns = useResponsiveColumns();
   const isMobile = width < 768;
 
@@ -77,7 +76,7 @@ export default function CryptoNews() {
             keyExtractor={(item) => item.guid}
             renderItem={({ item }) => (
               <Card
-                style={{ minWidth: "98%", marginTop: 16, maxWidth: cardMaxWidth }}
+                style={{ minWidth: "98%", marginTop: 16, maxWidth: 350 }}
                 onPress={() =>
                   setExpandedNews(expandedNews === item.guid ? null : item.guid)
                 }
@@ -161,7 +160,7 @@ export default function CryptoNews() {
                 <Card
                   style={{
                     margin: 8,
-                    width: cardMaxWidth
+                    width: 350,
                   }}
                   onPress={() => setModalNews(item)} // <-- geändert
                 >

@@ -78,8 +78,8 @@ export default function MarketList({
       alignItems: "center",
     },
     coinIcon: {
-      width: 32,
-      height: 32,
+      width: 48,
+      height: 48,
       borderRadius: 16,
       marginRight: 8,
     },

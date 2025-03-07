@@ -135,9 +135,10 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   activeCard: {
-    padding: 0,
+    paddingVertical: 8,
+    paddingHorizontal: 0,
     margin: 0,
-    marginHorizontal: 4,
+    marginHorizontal: 0,
     borderRadius: 12,
   }
 });

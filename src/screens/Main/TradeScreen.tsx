@@ -35,7 +35,7 @@ const timeIntervals = {
   "1M": "1M",
 };
 
-const windowHeight = Dimensions.get("window").height;
+
 
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
@@ -300,18 +300,17 @@ export default function TradeScreen() {
     <SafeAreaView style={[
       localStyles.container, 
       Platform.OS === "web" && { 
-         minHeight: windowHeight, 
-         paddingTop: 50,
+         paddingTop: 20,
         
       }
     ]}>
-      <ScrollView style={{ flexGrow: 1 }}>
+      <ScrollView >
       
         <View
           style={{
             padding: 8,
-            maxWidth: 1248,
-            width: "100%",
+            maxWidth: 1600,
+            width: "100%",            
             marginHorizontal: "auto",
             marginVertical: "auto",
           }}
