@@ -25,7 +25,7 @@ import { format } from "date-fns";
 import { ThemeContext } from "@/src/context/ThemeContext";
 import { useData } from "@/src/context/DataContext";
 import { formatCurrency } from "@/src/utils/formatCurrency";
-
+import Card from "@/src/components/Card";
 interface LineData {
   timestamp: number;
   value: number;
@@ -328,8 +328,9 @@ export default function D3LineChart({
   // X-Achsen-Beschriftungen in regelmäßigen Abständen
   const labelInterval = Math.max(1, Math.floor(lineData.length / 6));
 
-  return (
-    <View style={{ width: "100%" }}>
+  return (  
+    <View>
+   
       <View style={styles.container} {...panResponder.panHandlers}>
         <Svg width={"100%"} height={height}>
           {/* Grid-Linien */}

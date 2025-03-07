@@ -247,12 +247,12 @@ export function createTradeControlsStyles(theme: any): TradeControlsStyles {
  */
 export function createTradeScreenStyles(theme: any) {
   return StyleSheet.create({
-    chartContainer: {
-      borderWidth: 1,
-      borderRadius: 8,
-      borderColor: theme.accent,
-      boxShadow: `0 0 10px ${theme.accent}55`,
-    },
+    // chartContainer: {
+    //   borderWidth: 1,
+    //   borderRadius: 8,
+    //   borderColor: theme.accent,
+    //   boxShadow: `0 0 10px ${theme.accent}55`,
+    // },
     headerContainer: {
       display: "flex",
       flexDirection: "row",
@@ -270,6 +270,7 @@ export function createTradeScreenStyles(theme: any) {
       fontSize: 20, 
       marginBottom: 12,
       color: theme.text,
+      backgroundColor: "transparent",
     },
     coinPrice: {
       fontSize: 14,

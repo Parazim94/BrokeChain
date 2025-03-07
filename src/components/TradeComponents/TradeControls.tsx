@@ -138,7 +138,7 @@ export default function TradeControls({
   };
 
   return (
-    <Card style={{maxWidth: "100%", margin:"auto", marginTop: 20}}>
+    <View style={{maxWidth: "100%", margin:"auto", marginTop: 20}}>
       {/* <View style={styles.container}> */}
         {/* Handelstyp und Aktion Umschalter */}
         <View style={styles.header}>
@@ -277,7 +277,7 @@ export default function TradeControls({
           </View>
         )}
       {/* </View> */}
-    </Card>
+    </View>
   );
 }
 

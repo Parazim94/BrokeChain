@@ -23,6 +23,7 @@ import D3CandlestickChart from "@/src/components/TradeComponents/d3-Candlestick"
 import TradeControls from "@/src/components/TradeComponents/TradeControls";
 import Button from "@/src/components/Button";
 import { createTradeScreenStyles } from "@/src/components/TradeComponents/sharedstyles";
+import Card from "@/src/components/Card";
 
 const timeIntervals = {
   "1s": "1s", 
@@ -39,7 +40,7 @@ const timeIntervals = {
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
   const { user, setUser } = useContext(AuthContext);
-  const baseStyles = createStyles();
+  const localStyles = createStyles();
   const tradeStyles = createTradeScreenStyles(theme);
   const route = useRoute();
   const { marketData, getHistoricalData, getHistoricalCandleData } = useData();
@@ -277,11 +278,12 @@ export default function TradeScreen() {
   
   // MainContent
   const content = (
-    <SafeAreaView style={baseStyles.container}>
+    <SafeAreaView style={localStyles.container}>
       <ScrollView>
+      
         <View
           style={{
-            padding: 16,
+            padding: 8,
             maxWidth: 1024,
             width: "100%",
             marginHorizontal: "auto",
@@ -290,10 +292,11 @@ export default function TradeScreen() {
             setContainerWidth(event.nativeEvent.layout.width);
           }}
         >
+          <Card style={{margin:0}}>
           {/* Header mit Coin-Info und Suche */}
           <View style={tradeStyles.headerContainer}>
             <View style={tradeStyles.coinInfoContainer}>
-              <Text style={[baseStyles.defaultText, tradeStyles.coinTitle]}>
+              <Text style={[localStyles.defaultText, tradeStyles.coinTitle]}>
                 {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
               </Text>
               {marketPrice !== null && (
@@ -321,10 +324,10 @@ export default function TradeScreen() {
             <View style={{ marginVertical: 10}}>
               <TextInput
                 placeholder="search coin..."
-                placeholderTextColor={baseStyles.defaultText.color}
+                placeholderTextColor={localStyles.defaultText.color}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                style={[baseStyles.input, { width: "100%" }]}
+                style={[localStyles.input, { width: "100%" }]}
                 autoFocus
               />
 
@@ -357,11 +360,11 @@ export default function TradeScreen() {
                           setIsSearchActive(false);
                         }}
                       >
-                        <Text style={[baseStyles.defaultText, { fontWeight: "500" }]}>
+                        <Text style={[localStyles.defaultText, { fontWeight: "500" }]}>
                           {item.name} ({item.symbol?.toUpperCase()})
                         </Text>
                         <Text
-                          style={[baseStyles.defaultText, { color: theme.accent }]}
+                          style={[localStyles.defaultText, { color: theme.accent }]}
                         >
                           {formatCurrency(item.current_price)}
                         </Text>
@@ -370,7 +373,7 @@ export default function TradeScreen() {
                     ListEmptyComponent={
                       <Text
                         style={[
-                          baseStyles.defaultText,
+                          localStyles.defaultText,
                           { padding: 12, textAlign: "center" },
                         ]}
                       >
@@ -432,7 +435,10 @@ export default function TradeScreen() {
               theme={theme}
             />
           )}
+          </Card>
         </View>
+      
+      
       </ScrollView>
     </SafeAreaView>
   );

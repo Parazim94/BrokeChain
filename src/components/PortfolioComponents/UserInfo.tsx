@@ -14,6 +14,7 @@ import PortfolioPieChart from "./PortfolioPieChart";
 import { AuthContext } from "../../context/AuthContext";
 import { useAlert } from "@/src/context/AlertContext";
 import Button from "@/src/components/Button";
+import Card from "@/src/components/Card";
 
 interface UserInfoProps {
   userName: string;
@@ -122,15 +123,11 @@ export default function UserInfo({
       padding: 16,
       backgroundColor: theme.background,
       borderRadius: 12,
-      // More subtle themed shadow
-      shadowColor: theme.accent,
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: theme.isDark ? 0.5 : 0.25,
-      shadowRadius: 15,
-      elevation: 10,
+      // More subtle themed box shadow
+      // boxShadow: `0px 0px 11px ${theme.accent}`,
       // More subtle themed border
-      borderWidth: 1.5,
-      borderColor: theme.accent,
+      // borderWidth: 1.5,
+      // borderColor: theme.accent,
     },
     headerRow: {
       flexDirection: "row",
@@ -193,7 +190,6 @@ export default function UserInfo({
     },
     compositionContainer: {
       marginVertical: 16,
-      backgroundColor: `${theme.background}20`,
     },
     compositionBar: {
       height: 8,
@@ -276,141 +272,143 @@ export default function UserInfo({
   });
 
   return (
-    <View style={styles.container}>
-      {/* Header mit Name, Performance und Logout-Button */}
-      <View style={styles.headerRow}>
-        <View style={styles.userNameContainer}>
-          <Ionicons name="person-circle" size={30} style={styles.profileIcon} />
-          <Text style={styles.userName}>{userName}</Text>
-          <View style={[styles.performanceContainer, { marginLeft: 10 }]}>
-        <Ionicons
-          name={
-            performanceMetrics.isPositive ? "trending-up" : "trending-down"
-          }
-          size={18}
-          color={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
-          style={styles.performanceIcon}
-        />
-        <Text style={styles.performanceText}>
-          {performanceMetrics.isPositive ? "+" : ""}
-          {performanceMetrics.percentage.toFixed(2)}%
-        </Text>
-          </View>
-        </View>
-        <Button
-          onPress={handleLogout}
-          title="Logout"
-          loading={isLoggingOut}
-          style={{ marginLeft: 10 }}
-          size="small"
-          type="danger"
-        />
-      </View>
-
-      {/* Key metrics in boxes */}
-      <View style={styles.metricsContainer}>
-        <View style={styles.metricBox}>
-          <Text style={styles.metricLabel}>Cash</Text>
-          <Text style={styles.metricValue}>{formatCurrency(cash)}</Text>
-        </View>
-
-        <View style={styles.metricBox}>
-          <Text style={styles.metricLabel}>Positions</Text>
-          <Text style={styles.metricValue}>
-            {positionsValue === 0 ? "0.00 $" : formatCurrency(positionsValue)}
+    <Card style={{padding: 16, borderRadius: 12}}>
+      
+        {/* Header mit Name, Performance und Logout-Button */}
+        <View style={styles.headerRow}>
+          <View style={styles.userNameContainer}>
+            <Ionicons name="person-circle" size={30} style={styles.profileIcon} />
+            <Text style={styles.userName}>{userName}</Text>
+            <View style={[styles.performanceContainer, { marginLeft: 10 }]}>
+          <Ionicons
+            name={
+              performanceMetrics.isPositive ? "trending-up" : "trending-down"
+            }
+            size={18}
+            color={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
+            style={styles.performanceIcon}
+          />
+          <Text style={styles.performanceText}>
+            {performanceMetrics.isPositive ? "+" : ""}
+            {performanceMetrics.percentage.toFixed(2)}%
           </Text>
-        </View>
-
-        <View
-          style={[styles.metricBox, { backgroundColor: `${theme.accent}20` }]}
-        >
-          <Text style={styles.metricLabel}>Total Value</Text>
-          <Text style={styles.metricValue}>
-            {formatCurrency(combinedValue)}
-          </Text>
-        </View>
-      </View>
-
-      {/* Portfolio composition */}
-      <View style={styles.compositionContainer}>
-        <Text style={styles.historyTitle}>Distribution</Text>
-
-        <View style={styles.compositionBar}>
-          <View style={styles.cashPortion} />
-          <View style={styles.positionsPortion} />
-        </View>
-
-        <View style={styles.legendContainer}>
-          <View style={styles.legendItem}>
-            <View
-              style={[styles.legendColor, { backgroundColor: theme.accent }]}
-            />
-            <Text style={styles.legendText}>
-              Cash ({portfolioComposition.cash.toFixed(0)}%)
-            </Text>
+            </View>
           </View>
-
-          <View style={styles.legendItem}>
-            <View
-              style={[
-                styles.legendColor,
-                { backgroundColor: theme.accent + "80" },
-              ]}
-            />
-            <Text style={styles.legendText}>
-              Positions ({portfolioComposition.positions.toFixed(0)}%)
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Portfolio Pie Chart */}
-      {hasValidPositions && (
-        <PortfolioPieChart
-          portfolioPositions={positions}
-          totalValue={positionsValue}
-        />
-      )}
-
-      {/* Value history chart */}
-      <View style={styles.historyContainer}>
-        <View style={styles.historyHeader}>
-          <Text style={styles.historyTitle}>Value History</Text>
-
-          <View style={styles.historyTabsContainer}>
-            {historyOptions.map((opt) => (
-              <TouchableOpacity
-                key={opt}
-                onPress={() => setLocalHistory(opt)}
-                style={[
-                  styles.historyTab,
-                  localHistory === opt && styles.historyTabActive,
-                ]}
-              >
-                <Text
-                  style={
-                    localHistory === opt
-                      ? styles.historyTabTextActive
-                      : styles.historyTabText
-                  }
-                >
-                  {opt}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.sparklineContainer}>
-          <Sparkline
-            prices={historyValues}
-            width="100%"
-            height={80}
-            stroke={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
-            strokeWidth={2}
+          <Button
+            onPress={handleLogout}
+            title="Logout"
+            loading={isLoggingOut}
+            style={{ marginLeft: 10 }}
+            size="small"
+            type="danger"
           />
         </View>
-      </View>
-    </View>
+
+        {/* Key metrics in boxes */}
+        <View style={styles.metricsContainer}>
+          <View style={styles.metricBox}>
+            <Text style={styles.metricLabel}>Cash</Text>
+            <Text style={styles.metricValue}>{formatCurrency(cash)}</Text>
+          </View>
+
+          <View style={styles.metricBox}>
+            <Text style={styles.metricLabel}>Positions</Text>
+            <Text style={styles.metricValue}>
+              {positionsValue === 0 ? "0.00 $" : formatCurrency(positionsValue)}
+            </Text>
+          </View>
+
+          <View
+            style={[styles.metricBox, { backgroundColor: `${theme.accent}20` }]}
+          >
+            <Text style={styles.metricLabel}>Total Value</Text>
+            <Text style={styles.metricValue}>
+              {formatCurrency(combinedValue)}
+            </Text>
+          </View>
+        </View>
+
+        {/* Portfolio composition */}
+        <View style={styles.compositionContainer}>
+          <Text style={styles.historyTitle}>Distribution</Text>
+
+          <View style={styles.compositionBar}>
+            <View style={styles.cashPortion} />
+            <View style={styles.positionsPortion} />
+          </View>
+
+          <View style={styles.legendContainer}>
+            <View style={styles.legendItem}>
+              <View
+                style={[styles.legendColor, { backgroundColor: theme.accent }]}
+              />
+              <Text style={styles.legendText}>
+                Cash ({portfolioComposition.cash.toFixed(0)}%)
+              </Text>
+            </View>
+
+            <View style={styles.legendItem}>
+              <View
+                style={[
+                  styles.legendColor,
+                  { backgroundColor: theme.accent + "80" },
+                ]}
+              />
+              <Text style={styles.legendText}>
+                Positions ({portfolioComposition.positions.toFixed(0)}%)
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Portfolio Pie Chart */}
+        {hasValidPositions && (
+          <PortfolioPieChart
+            portfolioPositions={positions}
+            totalValue={positionsValue}
+          />
+        )}
+
+        {/* Value history chart */}
+        <View style={styles.historyContainer}>
+          <View style={styles.historyHeader}>
+            <Text style={styles.historyTitle}>Value History</Text>
+
+            <View style={styles.historyTabsContainer}>
+              {historyOptions.map((opt) => (
+                <TouchableOpacity
+                  key={opt}
+                  onPress={() => setLocalHistory(opt)}
+                  style={[
+                    styles.historyTab,
+                    localHistory === opt && styles.historyTabActive,
+                  ]}
+                >
+                  <Text
+                    style={
+                      localHistory === opt
+                        ? styles.historyTabTextActive
+                        : styles.historyTabText
+                    }
+                  >
+                    {opt}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.sparklineContainer}>
+            <Sparkline
+              prices={historyValues}
+              width="100%"
+              height={80}
+              stroke={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
+              strokeWidth={2}
+            />
+          </View>
+        </View>
+      
+    </Card>
   );
 }

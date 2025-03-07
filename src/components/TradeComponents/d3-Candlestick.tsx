@@ -17,6 +17,8 @@ import { ThemeContext } from "@/src/context/ThemeContext";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { useData } from "@/src/context/DataContext";
 import { createChartStyles } from "@/src/components/TradeComponents/sharedstyles";
+import Card from "@/src/components/Card";
+import { Ionicons } from "@expo/vector-icons";
 
 // Neue helper-Funktion: adjustColor zum Anpassen der Helligkeit einer Hex-Farbe
 function adjustColor(hex: string, amt: number): string {
@@ -255,7 +257,7 @@ export default function D3CandlestickChart({
   });
 
   return (
-    <View style={{  margin: "auto", marginTop: 10 }}>
+    <>
       <ScrollView horizontal={true} contentContainerStyle={{ minWidth: width }}>
         <View style={styles.container} {...panResponder.panHandlers}>
           <Svg width={width} height={height}>
@@ -524,13 +526,18 @@ export default function D3CandlestickChart({
           marginHorizontal: 10,
           marginTop: 8
         }]}>
-          <View style={styles.dataHeader}>
-            <Text style={[styles.dataTitle, { color: theme.accent }]}>
-              Ausgewählte Candle
-            </Text>
-            <Text style={[styles.dataSubtitle, { color: theme.text }]}>
-              {format(new Date(selectedCandle.timestamp), "dd.MM.yyyy HH:mm")}
-            </Text>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <View>
+              <Text style={[styles.dataTitle, { color: theme.accent }]}>
+                Ausgewählte Candle
+              </Text>
+              <Text style={[styles.dataSubtitle, { color: theme.text }]}>
+                {format(new Date(selectedCandle.timestamp), "dd.MM.yyyy HH:mm")}
+              </Text>
+            </View>
+            <TouchableOpacity onPress={() => { setSelectedCandle(null); setSelectedIndex(null); }}>
+              <Ionicons name="close-circle" size={24} color={theme.accent} />
+            </TouchableOpacity>
           </View>
           
           <View style={styles.dataGrid}>
@@ -584,6 +591,6 @@ export default function D3CandlestickChart({
           </View>
         </View>
       )}
-    </View>
+   </>
   );
 }
