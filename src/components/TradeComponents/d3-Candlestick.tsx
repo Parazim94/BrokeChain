@@ -88,8 +88,7 @@ export default function D3CandlestickChart({
   const CHART_HEIGHT = Math.round(height * 0.8);
   const VOLUME_HEIGHT = Math.round(height * 0.15);
   const MARGIN = { top: 10, right: 10, bottom: 10, left: 60 };
-  const horizontalPadding = width * 0.15;
-  const INNER_WIDTH = width - horizontalPadding * 2; // neu
+  const INNER_WIDTH = width - MARGIN.left - MARGIN.right ;
   const INNER_HEIGHT = CHART_HEIGHT - MARGIN.top - MARGIN.bottom;
 
   // Moving average period
@@ -189,7 +188,7 @@ export default function D3CandlestickChart({
   const xScale = d3Scale
     .scaleBand()
     .domain(candles.map((_, i) => i.toString()))
-    .range([horizontalPadding, width - horizontalPadding])
+    .range([MARGIN.left, width - MARGIN.right])
     .padding(0.2);
 
   // Calculate tick values for Y-axis
@@ -388,25 +387,19 @@ export default function D3CandlestickChart({
                 {movingAverages.map((point, i) => {
                   if (i === 0) return null;
                   const prevPoint = movingAverages[i - 1];
-                  // Berechne Durchschnitts-x-Position für den Zeitraum des MA
-                  const calcXAvg = (index: number) => {
-                    const start = index - MA_PERIOD + 1;
-                    let sum = 0;
-                    for (let j = start; j <= index; j++) {
-                      sum += xScale(j.toString())! + xScale.bandwidth() / 2;
-                    }
-                    return sum / MA_PERIOD;
-                  };
-                  const x1 = calcXAvg(prevPoint.index);
-                  const x2 = calcXAvg(point.index);
                   return (
                     <Line
                       key={`ma-${i}`}
-                      x1={x1}
+                      x1={
+                        xScale(prevPoint.index.toString())! +
+                        xScale.bandwidth() / 2
+                      }
                       y1={yScale(prevPoint.value)}
-                      x2={x2}
+                      x2={
+                        xScale(point.index.toString())! + xScale.bandwidth() / 2
+                      }
                       y2={yScale(point.value)}
-                      stroke={theme.accent}
+                      stroke={theme.accent} // Orange color for MA line
                       strokeWidth={2}
                     />
                   );

@@ -237,13 +237,10 @@ export default function D3LineChart({
   // Neue Tick-Werte für die Y-Achse
   const yTicks = d3Scale.scaleLinear().domain([minValue, maxValue]).ticks(10);
 
-  // Definiere horizontales Padding (ca. 15% von effectiveWidth)
-  const horizontalPadding = effectiveWidth * 0.15;
-  // Aktualisierte xScale: Passe linke und rechte Grenze an
   const xScale = d3Scale
     .scaleLinear()
     .domain([0, lineData.length - 1])
-    .range([margin.left + horizontalPadding, effectiveWidth - margin.right - horizontalPadding]);
+    .range([margin.left, effectiveWidth - margin.right]);
 
   // Punkte für Linie generieren
   const points = lineData
@@ -330,6 +327,11 @@ export default function D3LineChart({
   // X-Achsen-Beschriftungen in regelmäßigen Abständen
   const labelInterval = Math.max(1, Math.floor(lineData.length / 6));
 
+  // Direkt vor der return-Anweisung:
+  const persistentDisplayStyle = Platform.OS === "web"
+    ? { flexDirection: "row", alignItems: "center", justifyContent: "space-between" }
+    : { flexDirection: "column" };
+
   return (  
     <View>
    
@@ -367,26 +369,7 @@ export default function D3LineChart({
           {/* MA(20) Indikator (nur bei showMA=true) */}
           {showMA && maPoints && (
             <Polyline
-              // Statt maPoints: Wir erzeugen jetzt den Polyline-Pfad mit korrekt berechneten x‑Werten
-              points={
-                (() => {
-                  const maData: { x: number; y: number }[] = [];
-                  if (lineData.length >= maPeriod) {
-                    for (let i = maPeriod - 1; i < lineData.length; i++) {
-                      let sum = 0;
-                      // Berechne den Durchschnitt der x-Koordinaten
-                      for (let j = i - maPeriod + 1; j <= i; j++) {
-                        sum += xScale(j);
-                      }
-                      const xAvg = sum / maPeriod;
-                      maData.push({ x: xAvg, y: yScale(
-                        lineData.slice(i - maPeriod + 1, i + 1).reduce((acc, d) => acc + d.value, 0) / maPeriod
-                      ) });
-                    }
-                  }
-                  return maData.map(d => `${d.x},${d.y}`).join(" ");
-                })()
-              }
+              points={maPoints}
               fill="none"
               stroke={`${theme.accent}AA`}
               strokeWidth={2}
@@ -479,20 +462,19 @@ export default function D3LineChart({
               flexDirection: "row",
               justifyContent: "space-between",
               alignItems: "center",
-              maxWidth: 768,         // neu
-              alignSelf: "flex-start" // neu
+              width: "100%",
+              maxWidth: 768,        
+              alignSelf: "flex-start" 
             }
           ]}
         >
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.dataLabel, { color: theme.text }]}>Date:</Text>
-            <Text style={[styles.dataValue, { color: theme.text }]}>
+          <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+            <Text style={[styles.dataLabel, { color: theme.text,width:"10%" }]}>Date:</Text>
+            <Text style={[styles.dataValue, { color: theme.text,width:"40%" }]}>
               {format(new Date(selectedPoint.timestamp), "dd.MM.yyyy HH:mm")}
-            </Text>
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.dataLabel, { color: theme.text }]}>Price:</Text>
-            <Text style={[styles.dataValue, { color: theme.accent, fontWeight: "bold" }]}>
+            </Text>          
+            <Text style={[styles.dataLabel, { color: theme.text,width:"10%" }]}>Price:</Text>
+            <Text style={[styles.dataValue, { color: theme.accent, fontWeight: "bold",width:"40%" }]}>
               {formatCurrency(selectedPoint.value)}
             </Text>
           </View>
