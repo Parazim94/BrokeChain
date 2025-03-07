@@ -20,6 +20,7 @@ import RegisterScreen from "../components/AuthComponents/RegisterScreen";
 import CashInfo from "../components/CashInfo";
 import LandingPage from "../screens/LandingPage";
 import { RootStackParamList } from "../types/types";
+import WebTabTextMenu from "./WebTabTextMenu";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -46,35 +47,39 @@ export default function StackNavigator() {
         component={LandingPage}
         options={{ headerShown: false }}
       />
+
+    
       <Stack.Screen
         name="Main"
         component={ResponsiveNavigator}
-        options={{
+        options={{      
           headerTitle: Platform.OS === "web" ? () => (
             <View
               style={{
-                position: "absolute",
-                left: "50%",
-                transform: [{ translateX: "415%" }], // adjust half the logo width
-                marginTop: Platform.OS === "ios" ? 15 : 0,
+                width: "100%",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: width >= 1024 ? "center" : "flex-start",
+                marginTop: Platform.OS === "ios" ? 15 : 0, 
               }}
             >
               <Image
                 source={require("../../assets/images/Brokechain3.png")}
                 tintColor={theme.accent}
-                style={{ width: 110, height: 45 }}
+                style={{ width: 120, height: 45 }}
                 resizeMode="contain"
               />
+              {width >= 1024 && <WebTabTextMenu />}
             </View>
           ) : () => null,
           headerLeft: Platform.OS === "web" ? () => null : () => (
             <View
               style={{
-                width:Platform.OS==="web"?"100%":"auto",
+                width:"auto",
                 marginLeft: 15,
-                alignItems: Platform.OS==="web"?"center":"flex-start",
-                justifyContent:Platform.OS==="web"?"center":"flex-start",
-                marginTop: Platform.OS === "ios" ? 15 : 0,
+                alignItems: "flex-start",
+                justifyContent:"flex-start",
+                margin: "auto",
               }}
             >
               <Image

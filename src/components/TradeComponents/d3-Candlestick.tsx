@@ -578,8 +578,8 @@ export default function D3CandlestickChart({
             <Text style={[styles.dataValue, { 
               color: selectedCandle.close >= selectedCandle.open ? bullColor : bearColor
             }]}>
-              {formatCurrency(selectedCandle.close - selectedCandle.open)} 
-              ({((selectedCandle.close - selectedCandle.open) / selectedCandle.open * 100).toFixed(2)}%)
+              {(selectedCandle.close - selectedCandle.open).toFixed(2)+ "$"} 
+              ({((selectedCandle.close - selectedCandle.open) / selectedCandle.open * 100).toFixed(2)} %)
             </Text>
           </View>
           

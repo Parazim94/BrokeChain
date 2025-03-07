@@ -29,11 +29,8 @@ import Card from "@/src/components/Card";
 const timeIntervals = {
   "1s": "1s", 
   "1m": "1m",
-  "5m": "5m",
   "1h": "1h",
-  "4h": "4h",
   "1d": "1d",
-  "3d": "3d",
   "1w": "1w",
   "1M": "1M",
 };
@@ -128,7 +125,7 @@ export default function TradeScreen() {
     const loadHistorical = async () => {
       if (coin?.symbol) {
         setIsLoading(true);
-        setChartData([]); // Leeren Sie chartData, wenn sich das Intervall ändert
+        setChartData([]); 
         const symbol = coin.symbol.toUpperCase() + "USDT";
         const binanceInterval = timeIntervals[selectedRange];
         
@@ -428,7 +425,7 @@ export default function TradeScreen() {
                     marginRight: 4,
                     marginBottom: 4,
                     paddingVertical: 2,
-                    paddingHorizontal: 4,
+                    paddingHorizontal: 8,
                   }}
                   textStyle={{ fontSize: 10 }}
                 />

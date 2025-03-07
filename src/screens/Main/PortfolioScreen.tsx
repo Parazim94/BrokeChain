@@ -243,7 +243,7 @@ export default function PortfolioScreen() {
   };
 
   const headerComponent = () => (
-    <>
+    <View style={styles.headerContainer}>
       <UserInfo
         userName={userData.userName}
         cash={userData.cash}
@@ -268,7 +268,7 @@ export default function PortfolioScreen() {
           {user?.userName !== "gast" ? "" : "Login or Register first!"}
         </Text>
       )}
-    </>
+    </View>
   );
 
   return (

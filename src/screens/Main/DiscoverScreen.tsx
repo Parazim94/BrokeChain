@@ -65,7 +65,7 @@ export default function CryptoNews() {
       <SafeAreaView style={styles.container}>
         {loading ? (
           <ActivityIndicator size="large" color={styles.defaultText.color} />
-        ) : (
+        ) : news && news.length > 0 ? (
           <FlatList
             data={news}
             style={{ padding: 5 }}
@@ -125,6 +125,12 @@ export default function CryptoNews() {
               </Card>
             )}
           />
+        ) : (
+          <View style={{ alignItems: "center", justifyContent: "center", padding: 20 }}>
+            <Text style={[styles.defaultText, { fontSize: 16 }]}>
+              No News Fetched
+            </Text>
+          </View>
         )}
       </SafeAreaView>
     );
@@ -143,7 +149,7 @@ export default function CryptoNews() {
         >
           {loading ? (
             <ActivityIndicator size="large" color={styles.defaultText.color} />
-          ) : (
+          ) : news && news.length > 0 ? (
             <FlatList
               data={news}
               keyExtractor={(item) => item.guid}
@@ -210,6 +216,12 @@ export default function CryptoNews() {
                 </Card>
               )}
             />
+          ) : (
+            <View style={{ alignItems: "center", justifyContent: "center", padding: 20 }}>
+              <Text style={[styles.defaultText, { fontSize: 16 }]}>
+                no News Fetched
+              </Text>
+            </View>
           )}
         </View>
       </SafeAreaView>
@@ -222,7 +234,7 @@ export default function CryptoNews() {
       <View style={{ flex: 1, width: "100%", maxWidth: 1024, alignSelf: "center" }}>
         {loading ? (
           <ActivityIndicator size="large" color={styles.defaultText.color} />
-        ) : (
+        ) : news && news.length > 0 ? (
           <FlatList
             data={news}
             style={{ width: "100%" }}
@@ -293,6 +305,12 @@ export default function CryptoNews() {
               </Card>
             )}
           />
+        ) : (
+          <View style={{ alignItems: "center", justifyContent: "center", padding: 20 }}>
+            <Text style={[styles.defaultText, { fontSize: 16 }]}>
+              no News Fetched
+            </Text>
+          </View>
         )}
       </View>
     </SafeAreaView>

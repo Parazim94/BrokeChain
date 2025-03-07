@@ -32,6 +32,8 @@ export default function SettingsScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [favorites, setFavorites] = useState<string[]>(user?.favorites || []);
+  const [isUpdatingAppearance, setIsUpdatingAppearance] = useState(false);
+  const [isUpdatingFavorites, setIsUpdatingFavorites] = useState(false);
 
   // States for password change
   const [currentPassword, setCurrentPassword] = useState("");
@@ -72,6 +74,92 @@ export default function SettingsScreen() {
     setFavorites(favorites.filter((fav) => fav !== symbol));
   };
 
+  // Handle appearance update
+  const handleAppearanceUpdate = async () => {
+    if (!user) return;
+    setIsUpdatingAppearance(true);
+
+    try {
+      const response = await fetch(
+        "https://broke-end.vercel.app/user/settings",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify( 
+            {            
+            token: user?.token,           
+            theme: colorTheme,
+            accent: accent,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Appearance update failed");
+      }
+
+      const updatedUser = { ...user, prefTheme: [colorTheme, accent] };
+      setUser(updatedUser);
+
+      showAlert({
+        type: "success",
+        title: "Appearance Updated",
+        message: "Your appearance settings have been saved!",
+      });
+    } catch (error) {
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: error instanceof Error ? error.message : "Unexpected error",
+      });
+    } finally {
+      setIsUpdatingAppearance(false);
+    }
+  };
+  
+  // Handle favorites update
+  const handleFavoritesUpdate = async () => {
+    if (!user) return;
+    setIsUpdatingFavorites(true);
+
+    try {
+      const response = await fetch(
+        "https://broke-end.vercel.app/user/settings",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: user?.token,
+            favorites: favorites,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Favorites update failed");
+      }
+
+      const updatedUser = { ...user, favorites: favorites };
+      setUser(updatedUser);
+
+      showAlert({
+        type: "success",
+        title: "Favorites Updated",
+        message: "Your favorite coins have been saved!",
+      });
+    } catch (error) {
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: error instanceof Error ? error.message : "Unexpected error",
+      });
+    } finally {
+      setIsUpdatingFavorites(false);
+    }
+  };
+
   // Handle password change
   const handlePasswordChange = async () => {
     // Reset error
@@ -93,7 +181,7 @@ export default function SettingsScreen() {
     try {
       // Implement password change API call here
       const response = await fetch(
-        "https://broke-end.vercel.app/user/change-password",
+        "https://broke-end.vercel.app/user/change_password",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -145,15 +233,17 @@ export default function SettingsScreen() {
     setIsChangingEmail(true);
 
     try {
+      console.log("User token: ", user?.token , "New Email: ", newEmail);
+      
       // Implement email change API call here
       const response = await fetch(
-        "https://broke-end.vercel.app/user/change-email",
+        "https://broke-end.vercel.app/user/change_email",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId: user?.id,
-            newEmail,
+            token: user?.token,
+            newEmail: newEmail,
           }),
         }
       );
@@ -407,6 +497,18 @@ export default function SettingsScreen() {
                   />
                 </View>
               </View>
+              
+              <View style={settingsStyles.buttonRow}>
+                <Button
+                  onPress={handleAppearanceUpdate}
+                  title="Update Appearance"
+                  loading={isUpdatingAppearance}
+                  type="primary"
+                  size="small"
+                  icon="color-palette"
+                  iconPosition="left"
+                />
+              </View>
             </View>
           </View>
 
@@ -658,6 +760,18 @@ export default function SettingsScreen() {
                     </Text>
                   )}
                 </View>
+              </View>
+              
+              <View style={[settingsStyles.buttonRow, { marginTop: 15 }]}>
+                <Button
+                  onPress={handleFavoritesUpdate}
+                  title="Update Favorites"
+                  loading={isUpdatingFavorites}
+                  type="primary"
+                  size="small"
+                  icon="star"
+                  iconPosition="left"
+                />
               </View>
             </View>
           </View>

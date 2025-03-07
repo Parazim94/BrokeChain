@@ -15,8 +15,9 @@ export default function DrawerNavigator() {
   const { theme } = useContext(ThemeContext);
   const { width } = useWindowDimensions();
 
-  // Typ des Drawers basierend auf der Bildschirmgröße festlegen
-  const drawerType = width >= 1024 ? "permanent" : "front";
+  // Drawer soll nur bei mittleren Bildschirmgrößen permanent sein
+  // Bei großen Bildschirmen (>1024px) verwenden wir die Navigationsleiste im Header
+  const drawerType = width >= 768 && width < 1024 ? "permanent" : "front";
   
   return (
     <Drawer.Navigator

@@ -122,7 +122,8 @@ export default function UserInfo({
       marginBottom: 20,
       padding: 16,
       backgroundColor: theme.background,
-      borderRadius: 12,
+      borderRadius: 8,
+      overflow: "hidden",
       // More subtle themed box shadow
       // boxShadow: `0px 0px 11px ${theme.accent}`,
       // More subtle themed border
@@ -304,6 +305,48 @@ export default function UserInfo({
           type="danger"
         />
       </View>
+  {/* Value history chart */}
+  <View style={styles.historyContainer}>
+        <View style={styles.historyHeader}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Ionicons name="time-outline" size={20} color={theme.accent} style={{ marginRight: 6 }} />
+            <Text style={styles.historyTitle}>Value History</Text>
+          </View>
+
+          <View style={styles.historyTabsContainer}>
+            {historyOptions.map((opt) => (
+              <TouchableOpacity
+                key={opt}
+                onPress={() => setLocalHistory(opt)}
+                style={[
+                  styles.historyTab,
+                  localHistory === opt && styles.historyTabActive,
+                ]}
+              >
+                <Text
+                  style={
+                    localHistory === opt
+                      ? styles.historyTabTextActive
+                      : styles.historyTabText
+                  }
+                >
+                  {opt}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.sparklineContainer}>
+          <Sparkline
+            prices={historyValues}
+            width="100%"
+            height={80}
+            stroke={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
+            strokeWidth={2}
+          />
+        </View>
+      </View>
 
       {/* Key metrics in boxes */}
       <View style={styles.metricsContainer}>
@@ -373,48 +416,7 @@ export default function UserInfo({
         />
       )}
 
-      {/* Value history chart */}
-      <View style={styles.historyContainer}>
-        <View style={styles.historyHeader}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Ionicons name="time-outline" size={20} color={theme.accent} style={{ marginRight: 6 }} />
-            <Text style={styles.historyTitle}>Value History</Text>
-          </View>
-
-          <View style={styles.historyTabsContainer}>
-            {historyOptions.map((opt) => (
-              <TouchableOpacity
-                key={opt}
-                onPress={() => setLocalHistory(opt)}
-                style={[
-                  styles.historyTab,
-                  localHistory === opt && styles.historyTabActive,
-                ]}
-              >
-                <Text
-                  style={
-                    localHistory === opt
-                      ? styles.historyTabTextActive
-                      : styles.historyTabText
-                  }
-                >
-                  {opt}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.sparklineContainer}>
-          <Sparkline
-            prices={historyValues}
-            width="100%"
-            height={80}
-            stroke={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
-            strokeWidth={2}
-          />
-        </View>
-      </View>
+    
       </Card>
     
   );
