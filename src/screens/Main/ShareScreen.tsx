@@ -87,7 +87,7 @@ export default function ShareScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Card
-              style={{ marginTop: 16, maxWidth: 350 }}
+              style={{ marginTop: 16, maxWidth: 350, marginHorizontal:16, paddingHorizontal:"16"  }}
               onPress={() =>
                 setExpandedPost(expandedPost === item.id ? null : item.id)
               }

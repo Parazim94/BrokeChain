@@ -32,11 +32,11 @@ export default function LandingPage() {
         }),
       ]),
       // Kurz warten
-      Animated.delay(1500),
+      Animated.delay(1000),
       // Logo ausblenden
       Animated.timing(opacity, {
         toValue: 0,
-        duration: 1000,
+        duration: 500,
         useNativeDriver: false,
       }),
     ]).start(() => {

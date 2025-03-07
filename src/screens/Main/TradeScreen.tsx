@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Dimensions
 } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
@@ -36,6 +37,8 @@ const timeIntervals = {
   "1w": "1w",
   "1M": "1M",
 };
+
+const windowHeight = Dimensions.get("window").height;
 
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
@@ -63,13 +66,32 @@ export default function TradeScreen() {
 
   // Filtern der Coins basierend auf der Suchanfrage
   const filteredCoins = useMemo(() => {
-    if (!searchQuery) return [];
-    return marketData.filter(
+    const lowerSearch = searchQuery.toLowerCase();
+    if (!searchQuery) return marketData;
+    // Zunächst alle Coins aus dem Markt, die passen:
+    const marketMatches = marketData.filter(
       (item) =>
-        (item.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.symbol || "").toLowerCase().includes(searchQuery.toLowerCase())
+        (item.name || "").toLowerCase().includes(lowerSearch) ||
+        (item.symbol || "").toLowerCase().includes(lowerSearch)
     );
-  }, [searchQuery, marketData]);
+    // Dann Favoriten, die passen:
+    const favorites = user?.favorites || [];
+    const favoriteMatches = favorites.filter(
+      (item) =>
+        (item.name || "").toLowerCase().includes(lowerSearch) ||
+        (item.symbol || "").toLowerCase().includes(lowerSearch)
+    );
+    // Füge die Favoriten am Ende hinzu, sofern sie nicht bereits in marketMatches enthalten sind:
+    return [
+      ...marketMatches,
+      ...favoriteMatches.filter(
+        (fav) =>
+          !marketMatches.some(
+            (item) => item.symbol.toLowerCase() === fav.symbol.toLowerCase()
+          )
+      ),
+    ];
+  }, [searchQuery, marketData, user]);
 
   // Coin Initialization
   useEffect(() => {
@@ -278,15 +300,23 @@ export default function TradeScreen() {
   
   // MainContent
   const content = (
-    <SafeAreaView style={localStyles.container}>
-      <ScrollView>
+    <SafeAreaView style={[
+      localStyles.container, 
+      Platform.OS === "web" && { 
+         minHeight: windowHeight, 
+         paddingTop: 50,
+        
+      }
+    ]}>
+      <ScrollView >
       
         <View
           style={{
             padding: 8,
-            maxWidth: 1024,
+            maxWidth: 1248,
             width: "100%",
             marginHorizontal: "auto",
+            marginVertical: "auto",
           }}
           onLayout={(event) => {
             setContainerWidth(event.nativeEvent.layout.width);
@@ -297,26 +327,22 @@ export default function TradeScreen() {
           <View style={tradeStyles.headerContainer}>
             <View style={tradeStyles.coinInfoContainer}>
               <Text style={[localStyles.defaultText, tradeStyles.coinTitle]}>
-                {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""})
+                {coin?.name} ({coin?.symbol ? coin.symbol.toUpperCase() : ""}) <Button 
+                onPress={() => setIsSearchActive(!isSearchActive)}
+                title=""
+                icon="search"
+                size="small"
+                style={{ backgroundColor: "transparent", padding: 0 }}
+                textStyle={{ color: isSearchActive ? theme.accent : theme.text }}
+              />
               </Text>
+             
               {marketPrice !== null && (
                 <Text style={tradeStyles.coinPrice}>
                   Market: {formatCurrency(marketPrice)}
                 </Text>
               )}
             </View>
-
-            <Button
-              onPress={() => setIsSearchActive(!isSearchActive)}
-              title=""
-              icon="search"
-              type="secondary"
-              size="small"
-              style={{
-                backgroundColor: isSearchActive ? theme.accent : theme.background,
-                padding: 8,
-              }}
-            />
           </View>
 
           {/* Suchbereich */}
@@ -352,7 +378,7 @@ export default function TradeScreen() {
                           borderBottomWidth: 1,
                           borderBottomColor: theme.text,
                           flexDirection: "row",
-                          justifyContent: "space-between",
+                          justifyContent: "flex-start",
                         }}
                         onPress={() => {
                           setCoin(item);

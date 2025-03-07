@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TextInput, StyleSheet, Dimensions } from "react-native";
+import { View, TextInput, StyleSheet, Dimensions, Platform } from "react-native";
 import { useData } from "@/src/context/DataContext";
 import Button from "@/src/components/Button";
 import { useAlert } from "@/src/context/AlertContext";
@@ -138,7 +138,7 @@ export default function TradeControls({
   };
 
   return (
-    <View style={{maxWidth: "100%", margin:"auto", marginTop: 20}}>
+    <View style={{maxWidth: 1024, marginTop: 20}}>
       {/* <View style={styles.container}> */}
         {/* Handelstyp und Aktion Umschalter */}
         <View style={styles.header}>
@@ -152,8 +152,8 @@ export default function TradeControls({
             />
             <Button
               onPress={() => setTradeAction(tradeAction === "buy" ? "sell" : "buy")}
-              title={tradeAction === "buy" ? "Buy" : "Sell"}
-              type={tradeAction === "buy" ? "primary" : "secondary"}
+              title={tradeAction === "buy" ? "Sell" : "Buy"}
+              type={tradeAction === "buy" ? "secondary" : "primary" }
               size="small"
               style={{ paddingVertical: 4, paddingHorizontal: 12 }}
             />
@@ -222,58 +222,104 @@ export default function TradeControls({
             />
           </View>
         ) : (
-
           // Desktop Layout: All in one row
           <View style={styles.controlsRow}>
-            <View style={styles.controlsGroup}>
-              <TextInput
-                style={[
-                  baseStyles.input,
-                  { flex: 1, padding: 8, fontFamily: "monospace",maxWidth: 100 },
-                ]}
-                placeholder="Amount..."
-                placeholderTextColor={baseStyles.defaultText?.color}
-                value={quantity}
-                onChangeText={setQuantity}
-                keyboardType="numeric"
-              />
-              
-              <Button
-                onPress={handleMax}
-                title="Max"
-                size="small"
-                style={{ padding: 4, paddingHorizontal: 10, height: 35 }}
-                textStyle={{ fontSize: 12 }}
-              />
-              
-              {tradeType === "order" && (
+            {!isMobile && Platform.OS === "web" ? (
+              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                 <TextInput
                   style={[
                     baseStyles.input,
-                    { flex: 1, padding: 8, fontFamily: "monospace" },
+                    { flex: 1, padding: 8, fontFamily: "monospace", maxWidth: 100, marginRight: 8 },
                   ]}
-                  placeholder="Price..."
+                  placeholder="Amount..."
                   placeholderTextColor={baseStyles.defaultText?.color}
-                  value={orderPrice}
-                  onChangeText={setOrderPrice}
+                  value={quantity}
+                  onChangeText={setQuantity}
                   keyboardType="numeric"
                 />
-              )}
-            </View>
-            
-            <Button
-              onPress={handleTrade}
-              title={tradeAction === "buy" ? "Buy Now" : "Sell Now"}
-              type={tradeAction === "buy" ? "primary" : "secondary"}
-              size="medium"
-              style={{ 
-                paddingVertical: 8, 
-                paddingHorizontal: 16, 
-                minWidth: 120,
-                backgroundColor: tradeAction === "buy" ? theme.accent : "#F44336"
-              }}
-              loading={isLoading}
-            />
+                <Button
+                  onPress={handleMax}
+                  title="Max"
+                  size="small"
+                  style={{ padding: 4, paddingHorizontal: 10, height: 35, marginRight: 8 }}
+                  textStyle={{ fontSize: 12 }}
+                />
+                {tradeType === "order" && (
+                  <TextInput
+                    style={[
+                      baseStyles.input,
+                      { flex: 1, padding: 8, fontFamily: "monospace", marginRight: 8 },
+                    ]}
+                    placeholder="Price..."
+                    placeholderTextColor={baseStyles.defaultText?.color}
+                    value={orderPrice}
+                    onChangeText={setOrderPrice}
+                    keyboardType="numeric"
+                  />
+                )}
+                <Button
+                  onPress={handleTrade}
+                  title={tradeAction === "buy" ? "Buy Now" : "Sell Now"}
+                  type={tradeAction === "buy" ? "primary" : "secondary"}
+                  size="medium"
+                  style={{ paddingVertical: 8, paddingHorizontal: 16, minWidth: 120,
+                           backgroundColor: tradeAction === "buy" ? theme.accent : "#F44336" }}
+                  loading={isLoading}
+                />
+              </View>
+            ) : (
+              <View style={styles.controlsRow}>
+                <View style={styles.controlsGroup}>
+                  <TextInput
+                    style={[
+                      baseStyles.input,
+                      { flex: 1, padding: 8, fontFamily: "monospace",maxWidth: 100 },
+                    ]}
+                    placeholder="Amount..."
+                    placeholderTextColor={baseStyles.defaultText?.color}
+                    value={quantity}
+                    onChangeText={setQuantity}
+                    keyboardType="numeric"
+                  />
+                  
+                  <Button
+                    onPress={handleMax}
+                    title="Max"
+                    size="small"
+                    style={{ padding: 4, paddingHorizontal: 10, height: 35 }}
+                    textStyle={{ fontSize: 12 }}
+                  />
+                  
+                  {tradeType === "order" && (
+                    <TextInput
+                      style={[
+                        baseStyles.input,
+                        { flex: 1, padding: 8, fontFamily: "monospace" },
+                      ]}
+                      placeholder="Price..."
+                      placeholderTextColor={baseStyles.defaultText?.color}
+                      value={orderPrice}
+                      onChangeText={setOrderPrice}
+                      keyboardType="numeric"
+                    />
+                  )}
+                </View>
+                
+                <Button
+                  onPress={handleTrade}
+                  title={tradeAction === "buy" ? "Buy Now" : "Sell Now"}
+                  type={tradeAction === "buy" ? "primary" : "secondary"}
+                  size="medium"
+                  style={{ 
+                    paddingVertical: 8, 
+                    paddingHorizontal: 16, 
+                    minWidth: 120,
+                    backgroundColor: tradeAction === "buy" ? theme.accent : "#F44336"
+                  }}
+                  loading={isLoading}
+                />
+              </View>
+            )}
           </View>
         )}
       {/* </View> */}

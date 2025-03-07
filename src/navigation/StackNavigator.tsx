@@ -50,13 +50,30 @@ export default function StackNavigator() {
         name="Main"
         component={ResponsiveNavigator}
         options={{
-          headerTitle: () => null,
-          headerLeft: () => (
+          headerTitle: Platform.OS === "web" ? () => (
             <View
               style={{
+                position: "absolute",
+                left: "50%",
+                transform: [{ translateX: "415%" }], // adjust half the logo width
+                marginTop: Platform.OS === "ios" ? 15 : 0,
+              }}
+            >
+              <Image
+                source={require("../../assets/images/Brokechain3.png")}
+                tintColor={theme.accent}
+                style={{ width: 110, height: 45 }}
+                resizeMode="contain"
+              />
+            </View>
+          ) : () => null,
+          headerLeft: Platform.OS === "web" ? () => null : () => (
+            <View
+              style={{
+                width:Platform.OS==="web"?"100%":"auto",
                 marginLeft: 15,
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: Platform.OS==="web"?"center":"flex-start",
+                justifyContent:Platform.OS==="web"?"center":"flex-start",
                 marginTop: Platform.OS === "ios" ? 15 : 0,
               }}
             >
@@ -66,7 +83,7 @@ export default function StackNavigator() {
                 style={{
                   width: 110,
                   height: 45,
-                  marginTop: Platform.OS === "ios" ? 0 : 5,
+                  marginTop: Platform.OS === "ios" ? 0 : 5,                  
                 }}
                 resizeMode="contain"
               />

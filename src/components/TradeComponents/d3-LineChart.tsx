@@ -51,7 +51,7 @@ function shouldCreateNewDataPoint(
   lastPointTime: number,
   intervalString: string
 ): boolean {
-  // Für 5s-Intervall: Immer neue Datenpunkte alle 5 Sekunden
+  // Bei 1s-Intervall: Immer neue Datenpunkte
   if (intervalString === "1s") {
     return currentTime - lastPointTime >= 1000;
   }
@@ -178,7 +178,7 @@ export default function D3LineChart({
       const newData = [...prev];
       const lastPoint = prev[prev.length - 1];
       
-      // Bei 5s neue Datenpunkte alle 5 Sekunden hinzufügen
+      // Bei 1s-Intervall: Immer neuen Datenpunkt erstellen
       if (interval === "1s" && now - lastPoint.timestamp >= 1000) {
         newData.push({ timestamp: now, value: livePrice, volume: 0 });
         setLastDataPointTime(now);
@@ -311,14 +311,12 @@ export default function D3LineChart({
     if (index < 0 || index >= lineData.length) return "";
     const date = new Date(lineData[index].timestamp);
     let formatString = "MMM d, HH:mm"; // Default
-    // Falls das Intervall "5s" ist, setze Format auf "HH:mm"
     if (interval === "1s") {
       formatString = "HH:mm";
-    } else if (interval.endsWith("m")) {
-      const val = parseInt(interval.slice(0, -1));
-      formatString = val <= 1 ? "HH:mm" : "MMM d, HH:mm";
+    } else if (interval.endsWith("m")) {     
+      formatString = "HH:mm";
     } else if (interval.endsWith("h")) {
-      formatString = "MMM d";
+      formatString = "HH:mm";
     } else {
       formatString = "MMM yyyy";
     }
