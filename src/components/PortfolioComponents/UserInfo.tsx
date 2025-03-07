@@ -268,6 +268,7 @@ export default function UserInfo({
     },
     sparklineContainer: {
       marginTop: 10,
+      marginBottom: 16,
       height: 80,
       width: "100%",
     },

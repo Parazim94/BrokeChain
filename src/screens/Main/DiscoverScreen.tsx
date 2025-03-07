@@ -11,6 +11,7 @@ import {
   ScrollView,
   useWindowDimensions,
   Platform,
+  Modal  // <-- neu hinzugefügt
 } from "react-native";
 import * as Linking from "expo-linking";
 import { createStyles } from "../../styles/style";
@@ -32,9 +33,11 @@ interface NewsItem {
 }
 
 export default function CryptoNews() {
+  const { theme } = useContext(ThemeContext);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedNews, setExpandedNews] = useState<string | null>(null);
+  const [expandedNews, setExpandedNews] = useState<string | null>(null); // bleibt für mobile View
+  const [modalNews, setModalNews] = useState<NewsItem | null>(null); // <-- neu
   const styles = createStyles();
   const newsStyles = createNewsStyles();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -136,17 +139,11 @@ export default function CryptoNews() {
     );
   }
 
-  // Tablet/Web-Render: Nutze Flexbox statt numColumns, wenn Platform.OS "web" ist
+  // Web-Render: Öffne bei Klick ein Modal
   if (Platform.OS === "web") {
     return (
       <SafeAreaView style={styles.container}>
-        <View
-          style={{
-            flex: 1,
-            width: "100%",
-            alignSelf: "center",
-          }}
-        >
+        <View style={{ flex: 1, width: "100%", alignSelf: "center" }}>
           {loading ? (
             <ActivityIndicator size="large" color={styles.defaultText.color} />
           ) : news && news.length > 0 ? (
@@ -165,9 +162,7 @@ export default function CryptoNews() {
                     margin: 8,
                     width: 350,
                   }}
-                  onPress={() =>
-                    setExpandedNews(expandedNews === item.guid ? null : item.guid)
-                  }
+                  onPress={() => setModalNews(item)} // <-- geändert
                 >
                   {/* Obere Zeile: Bild und Header */}
                   <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
@@ -187,32 +182,11 @@ export default function CryptoNews() {
                       <Text style={newsStyles.newsDate}>{item.pubDate}</Text>
                     </View>
                   </View>
-                  {/* Content unterhalb */}
                   <View style={newsStyles.newsContent}>
-                    {expandedNews === item.guid ? (
-                      <ScrollView style={{ maxHeight: 400 }} scrollEnabled={true}>
-                        <Text style={newsStyles.newsDescription}>
-                          {item.content.replace(/<[^>]+>/g, "")}
-                        </Text>
-                      </ScrollView>
-                    ) : (
-                      <Text style={newsStyles.newsDescription} numberOfLines={5}>
-                        {item.content.replace(/<[^>]+>/g, "")}
-                      </Text>
-                    )}
+                    <Text style={newsStyles.newsDescription} numberOfLines={5}>
+                      {item.content.replace(/<[^>]+>/g, "")}
+                    </Text>
                   </View>
-                  {/* Button, um den Artikel zu öffnen */}
-                  {expandedNews === item.guid && (
-                    <View style={{ marginTop: 8 }}>
-                      <Button
-                        onPress={() => Linking.openURL(item.link)}
-                        title="Artikel öffnen"
-                        type="primary"
-                        size="medium"
-                        style={{ width: 150 }}
-                      />
-                    </View>
-                  )}
                 </Card>
               )}
             />
@@ -224,6 +198,66 @@ export default function CryptoNews() {
             </View>
           )}
         </View>
+        {/* Modal für Web-Ansicht */}
+        {modalNews && (
+          <Modal
+            transparent={true}
+            animationType="slide"
+            visible={true}
+            onRequestClose={() => setModalNews(null)}
+          >
+            <View style={{
+              flex: 1,
+              backgroundColor: "rgba(0, 0, 0, 0.788)",
+              justifyContent: "center",
+              alignItems: "center",
+              backdropFilter: "blur(5px)",
+            }}>
+              <Card style={{
+                width: 400,
+                padding: 16,
+                
+              }}>
+                {/* Modal-Inhalt */}
+                <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
+                  {modalNews.enclosure?.link ? (
+                    <Image
+                      source={{ uri: modalNews.enclosure.link }}
+                      style={newsStyles.newsImage}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View style={newsStyles.newsImage}>
+                      <Text style={[newsStyles.newsDate, { color: theme.text }]}>
+                        Kein Bild
+                      </Text>
+                    </View>
+                  )}
+                  <View style={newsStyles.newsHeader}>
+                    <Text style={newsStyles.newsTitle}>{modalNews.title}</Text>
+                    <Text style={[newsStyles.newsDate, { color: theme.text }]}>
+                      {modalNews.pubDate}
+                    </Text>
+                  </View>
+                </View>
+                <ScrollView style={{ maxHeight: 400 }}>
+                  <Text style={[newsStyles.newsDescription, { color: theme.text }]}>
+                    {modalNews.content.replace(/<[^>]+>/g, "")}
+                  </Text>
+                </ScrollView>
+                <View style={{ marginTop: 8, alignItems: "center" }}>
+                  <Button
+                    onPress={() => setModalNews(null)}
+                    title="Schließen"
+                    type="primary"
+                    size="medium"
+                    style={{ width: 150 }}
+                  />
+                </View>
+              </Card>
+            </View>
+          </Modal>
+        )}
       </SafeAreaView>
     );
   }
@@ -252,9 +286,7 @@ export default function CryptoNews() {
                   maxWidth: (width / columns) - 24,
                   flex: 1,
                 }}
-                onPress={() =>
-                  setExpandedNews(expandedNews === item.guid ? null : item.guid)
-                }
+                onPress={() => setModalNews(item)} // <-- geändert
               >
                 {/* Obere Zeile: Bild und Header */}
                 <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
@@ -277,31 +309,10 @@ export default function CryptoNews() {
                 
                 {/* Content unterhalb */}
                 <View style={newsStyles.newsContent}>
-                  {expandedNews === item.guid ? (
-                    <ScrollView style={{ maxHeight: 400 }} scrollEnabled={true}>
-                      <Text style={newsStyles.newsDescription}>
-                        {item.content.replace(/<[^>]+>/g, "")}
-                      </Text>
-                    </ScrollView>
-                  ) : (
-                    <Text style={newsStyles.newsDescription} numberOfLines={5}>
-                      {item.content.replace(/<[^>]+>/g, "")}
-                    </Text>
-                  )}
+                  <Text style={newsStyles.newsDescription} numberOfLines={5}>
+                    {item.content.replace(/<[^>]+>/g, "")}
+                  </Text>
                 </View>
-                
-                {/* Button, um den Artikel zu öffnen */}
-                {expandedNews === item.guid && (
-                  <View style={{ marginTop: 8 }}>
-                    <Button
-                      onPress={() => Linking.openURL(item.link)}
-                      title="Artikel öffnen"
-                      type="primary"
-                      size="medium"
-                      style={{ width: 150 }}
-                    />
-                  </View>
-                )}
               </Card>
             )}
           />
@@ -311,6 +322,64 @@ export default function CryptoNews() {
               no News Fetched
             </Text>
           </View>
+        )}
+        {/* Modal für responsive Ansicht */}
+        {modalNews && (
+          <Modal
+            transparent={true}
+            animationType="slide"
+            visible={true}
+            onRequestClose={() => setModalNews(null)}
+          >
+            <View style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              justifyContent: "center",
+              alignItems: "center",
+            }}>
+              <Card style={{
+                width: 400,
+                padding: 16,
+              }}>
+                {/* Modal-Inhalt */}
+                <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
+                  {modalNews.enclosure?.link ? (
+                    <Image
+                      source={{ uri: modalNews.enclosure.link }}
+                      style={newsStyles.newsImage}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View style={newsStyles.newsImage}>
+                      <Text style={[newsStyles.newsDate, { color: theme.text }]}>
+                        Kein Bild
+                      </Text>
+                    </View>
+                  )}
+                  <View style={newsStyles.newsHeader}>
+                    <Text style={newsStyles.newsTitle}>{modalNews.title}</Text>
+                    <Text style={[newsStyles.newsDate, { color: theme.text }]}>
+                      {modalNews.pubDate}
+                    </Text>
+                  </View>
+                </View>
+                <ScrollView style={{ maxHeight: 400 }}>
+                  <Text style={[newsStyles.newsDescription, { color: theme.text }]}>
+                    {modalNews.content.replace(/<[^>]+>/g, "")}
+                  </Text>
+                </ScrollView>
+                <View style={{ marginTop: 8, alignItems: "center" }}>
+                  <Button
+                    onPress={() => setModalNews(null)}
+                    title="Schließen"
+                    type="primary"
+                    size="medium"
+                    style={{ width: 150 }}
+                  />
+                </View>
+              </Card>
+            </View>
+          </Modal>
         )}
       </View>
     </SafeAreaView>

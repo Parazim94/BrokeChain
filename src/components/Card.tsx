@@ -34,8 +34,8 @@ export default function Card({ onPress, children, style }: CardProps) {
 
 function createCardStyles() {
   const { theme } = useContext(ThemeContext);
-  const gradientStart = theme.accent + "22";
-  const gradientEnd = theme.background;
+  const gradientStart = theme.accent + "22" ;
+  const gradientEnd = theme.accent + "03";
 
   const gradientColors = [gradientStart, gradientEnd] as const;
 
