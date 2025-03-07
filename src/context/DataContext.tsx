@@ -4,11 +4,13 @@ import React, {
   useCallback,
   ReactNode,
   useEffect,
+  useRef,
 } from "react";
-import { useFetch, fetchPost } from "../hooks/useFetch";
 import { AuthContext } from "./AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAlert } from "./AlertContext"; 
+import { useFetch, fetchPost } from "../hooks/useFetch";
+
 export interface MarketData {
   id: string;
   name: string;
@@ -50,8 +52,8 @@ interface DataContextType {
 
   executeTrade: (trade: Trade, mode?: "spot" | "order") => Promise<any>;
 
-  getHistoricalData: (symbol: string, interval: string) => Promise<any[]>;
-  getHistoricalCandleData: (symbol: string, interval: string) => Promise<any[]>;
+  getHistoricalData: (symbol: string, interval: string, limit?: number) => Promise<any[]>;
+  getHistoricalCandleData: (symbol: string, interval: string, limit?: number) => Promise<any[]>;
 }
 
 export const DataContext = createContext<DataContextType | undefined>(
@@ -175,11 +177,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
 
   // Historische Daten – erstmal von Binance, mit Fallback auf Marktdaten
   const getHistoricalData = useCallback(
-    async (symbol: string, interval: string) => {
+    async (symbol: string, interval: string, limit?: number) => {
       try {
-        // Falls ein Sekundenintervall gewählt wurde, verwende es unverändert als "1s"
         const adjustedInterval = interval.endsWith("s") ? "1s" : interval;
-        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${adjustedInterval}&limit=100`;
+        const limitVal = limit || 100;
+        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${adjustedInterval}&limit=${limitVal}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Binance Fehler: ${response.status}`);
         const data = await response.json();
@@ -196,12 +198,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   );
 
   const getHistoricalCandleData = useCallback(
-    async (symbol: string, interval: string) => {
+    async (symbol: string, interval: string, limit?: number) => {
       try {
-        // Falls ein Sekundenintervall gewählt wurde, verwende es als "1s"
         const adjustedInterval = interval.endsWith("s") ? "1s" : interval;
-        // Erhöhe das Limit z.B. auf 1000, damit mehr Daten vorhanden sind
-        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${adjustedInterval}&limit=100`;
+        const limitVal = limit || 100;
+        const url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${adjustedInterval}&limit=${limitVal}`;
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Binance Fehler: ${response.status}`);
         const data = await response.json();

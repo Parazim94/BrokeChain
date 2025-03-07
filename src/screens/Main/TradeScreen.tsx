@@ -25,7 +25,7 @@ import Button from "@/src/components/Button";
 import { createTradeScreenStyles } from "@/src/components/TradeComponents/sharedstyles";
 
 const timeIntervals = {
-  "5s": "5s", 
+  "1s": "1s", 
   "1m": "1m",
   "5m": "5m",
   "1h": "1h",
@@ -132,21 +132,39 @@ export default function TradeScreen() {
 
       if (chartType === "line") {
         try {
-          const data = await getHistoricalData(symbol, timeIntervals[selectedRange]);
-          if (data.length > 0) {
-            const lastEntry = data[data.length - 1];
+          const newData = await getHistoricalData(symbol, timeIntervals[selectedRange], 1);
+          // Mergen: Entferne Einträge, die bereits vorhanden sind (basierend auf Datum)
+          setChartData(prev => {
+            if (prev.length === 0) return newData;
+            const lastTimestamp = new Date(prev[prev.length - 1].label).getTime();
+            const filtered = newData.filter(item => new Date(item.label).getTime() > lastTimestamp);
+            return [...prev, ...filtered];
+          });
+          if (newData.length > 0) {
+            const lastEntry = newData[newData.length - 1];
             setMarketPrice(lastEntry.value);
           }
         } catch (error) {
           console.error("Fehler beim Fetch der historischen Daten (line):", error);
         }
       } else {
-        // Candlestick-Modus: fetch candlestick Daten
+        // Candlestick-Modus: fetch candlestick Daten mit limit=5
         try {
-          const data = await getHistoricalCandleData(symbol, timeIntervals[selectedRange]);
-          setChartData(data);
-          if (data.length > 0) {
-            const lastCandle = data[data.length - 1];
+          const newCandles = await getHistoricalCandleData(symbol, timeIntervals[selectedRange], 1);
+          setChartData(prev => {
+            if (prev.length === 0) return newCandles;
+            const lastTimestamp = prev[prev.length - 1].timestamp;
+            // Filtere Kerzen, deren Timestamp wirklich neu ist
+            const filteredNew = newCandles.filter(item => item.timestamp > lastTimestamp);
+            // Prüfe, ob es eine neue Kerze gibt, die den gleichen Timestamp hat – falls ja, aktualisiere die letzte
+            const incomingSame = newCandles.find(item => item.timestamp === lastTimestamp);
+            if (incomingSame) {
+              return [...prev.slice(0, -1), incomingSame, ...filteredNew];
+            }
+            return [...prev, ...filteredNew];
+          });
+          if (newCandles.length > 0) {
+            const lastCandle = newCandles[newCandles.length - 1];
             setMarketPrice(lastCandle.close || 0);
           }
         } catch (error) {
@@ -155,11 +173,75 @@ export default function TradeScreen() {
       }
     };
     fetchLatestData();
-    intervalId = setInterval(fetchLatestData, 5000);
+    intervalId = setInterval(fetchLatestData, 1000);
     return () => clearInterval(intervalId);
   }, [coin, chartType, selectedRange, getHistoricalData, getHistoricalCandleData]);
 
-  // Chart Component
+  // Live price update mit "sliding window"
+  const MAX_CANDLES = 100; // Konstante für maximale Kerzenanzahl
+  
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    const fetchLatestData = async () => {
+      if (!coin?.symbol) return;
+      const symbol = coin.symbol.toUpperCase() + "USDT";
+
+      if (chartType === "line") {
+        try {
+          const newData = await getHistoricalData(symbol, timeIntervals[selectedRange], 1);
+          setChartData(prev => {
+            if (prev.length === 0) return newData;
+            const lastTimestamp = new Date(prev[prev.length - 1].label).getTime();
+            const filtered = newData.filter(item => new Date(item.label).getTime() > lastTimestamp);
+            const updatedData = [...prev, ...filtered];
+            // "Sliding Window" - Nur die letzten MAX_CANDLES anzeigen
+            return updatedData.length > MAX_CANDLES 
+              ? updatedData.slice(updatedData.length - MAX_CANDLES) 
+              : updatedData;
+          });
+          if (newData.length > 0) {
+            const lastEntry = newData[newData.length - 1];
+            setMarketPrice(lastEntry.value);
+          }
+        } catch (error) {
+          console.error("Fehler beim Fetch der historischen Daten (line):", error);
+        }
+      } else {
+        // Candlestick-Modus: fetch candlestick Daten mit limit=1
+        try {
+          const newCandles = await getHistoricalCandleData(symbol, timeIntervals[selectedRange], 1);
+          setChartData(prev => {
+            if (prev.length === 0) return newCandles;
+            const lastTimestamp = prev[prev.length - 1].timestamp;
+            // Falls die neue Kerze denselben Timestamp hat, aktualisieren:
+            const incomingSame = newCandles.find(item => item.timestamp === lastTimestamp);
+            let updatedData;
+            if (incomingSame) {
+              updatedData = [...prev.slice(0, -1), incomingSame];
+            } else {
+              // Neue Candle anhängen
+              updatedData = [...prev, ...newCandles];
+            }
+            // Sliding Window: Entferne die älteste Candle, wenn die maximale Anzahl überschritten wird
+            return updatedData.length > MAX_CANDLES
+              ? updatedData.slice(updatedData.length - MAX_CANDLES)
+              : updatedData;
+          });
+          if (newCandles.length > 0) {
+            const lastCandle = newCandles[newCandles.length - 1];
+            setMarketPrice(lastCandle.close || 0);
+          }
+        } catch (error) {
+          console.error("Fehler beim Fetch der Candlestick-Daten:", error);
+        }
+      }
+    };
+    fetchLatestData();
+    intervalId = setInterval(fetchLatestData, 1000);
+    return () => clearInterval(intervalId);
+  }, [coin, chartType, selectedRange, getHistoricalData, getHistoricalCandleData]);
+
+  // Chart Component - Übergeben Sie chartData und maxCandleCount an die D3CandlestickChart
   const chartComponent = useMemo(() => {
     if (chartType === "line") {
       return (
@@ -185,12 +267,14 @@ export default function TradeScreen() {
             interval={timeIntervals[selectedRange]}
             width={containerWidth ? containerWidth * 0.91 : 300}
             height={300}
+            data={chartData}
+            maxCandleCount={MAX_CANDLES}
            />
         </View>
       );
     }
-  }, [chartType, coin, selectedRange, containerWidth, marketPrice]);
-
+  }, [chartType, coin, selectedRange, containerWidth, marketPrice, chartData]);
+  
   // MainContent
   const content = (
     <SafeAreaView style={baseStyles.container}>

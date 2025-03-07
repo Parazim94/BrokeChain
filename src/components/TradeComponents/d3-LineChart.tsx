@@ -52,8 +52,8 @@ function shouldCreateNewDataPoint(
   intervalString: string
 ): boolean {
   // Für 5s-Intervall: Immer neue Datenpunkte alle 5 Sekunden
-  if (intervalString === "5s") {
-    return currentTime - lastPointTime >= 5000;
+  if (intervalString === "1s") {
+    return currentTime - lastPointTime >= 1000;
   }
   
   // Für andere Intervalle: Nur an Intervallgrenzen neue Datenpunkte
@@ -120,7 +120,7 @@ export default function D3LineChart({
 
   // Verbesserte intervalToMs-Funktion 
   function getMaxDataPoints(interval: string): number {
-    if (interval.endsWith("s")) return 180; // 15 Minuten bei 5s = 180 Punkte
+    if (interval.endsWith("s")) return 50; // 15 Minuten bei 1s = 180 Punkte
     if (interval.endsWith("m")) {
       const mins = parseFloat(interval);
       if (mins <= 5) return 60; // 5h bei 5m
@@ -179,7 +179,7 @@ export default function D3LineChart({
       const lastPoint = prev[prev.length - 1];
       
       // Bei 5s neue Datenpunkte alle 5 Sekunden hinzufügen
-      if (interval === "5s" && now - lastPoint.timestamp >= 5000) {
+      if (interval === "1s" && now - lastPoint.timestamp >= 1000) {
         newData.push({ timestamp: now, value: livePrice, volume: 0 });
         setLastDataPointTime(now);
       } 
@@ -312,11 +312,11 @@ export default function D3LineChart({
     const date = new Date(lineData[index].timestamp);
     let formatString = "MMM d, HH:mm"; // Default
     // Falls das Intervall "5s" ist, setze Format auf "HH:mm"
-    if (interval === "5s") {
+    if (interval === "1s") {
       formatString = "HH:mm";
     } else if (interval.endsWith("m")) {
       const val = parseInt(interval.slice(0, -1));
-      formatString = val <= 5 ? "HH:mm" : "MMM d, HH:mm";
+      formatString = val <= 1 ? "HH:mm" : "MMM d, HH:mm";
     } else if (interval.endsWith("h")) {
       formatString = "MMM d";
     } else {
