@@ -71,7 +71,7 @@ export default function FavoritesCard({
                   placeholderTextColor={theme.text + "80"}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
-                  style={[defaultText, styles.input]}
+                  style={[defaultText, styles.input, { width: "100%" }]}
                   autoFocus
                 />
               </View>

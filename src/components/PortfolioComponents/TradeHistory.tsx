@@ -1,6 +1,6 @@
 import React from "react";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import { Text, View, Platform } from "react-native";
+import { Text, View, Platform, useWindowDimensions } from "react-native";
 import Card from "@/src/components/Card";
 import { createStyles } from "@/src/components/PortfolioComponents/portfolioStyles";
 import { formatCurrency } from "@/src/utils/formatCurrency";
@@ -24,6 +24,7 @@ interface TradeHistoryProps {
 
 export default function TradeHistory({ theme, tradeHistory = [], isLoggedIn = false }: TradeHistoryProps) {
   const styles = createStyles(theme);
+  const { width: screenWidth } = useWindowDimensions();
   
   // Entferne etwaige Duplikate basierend auf _id
   const uniqueTrades = React.useMemo(() => {
@@ -75,8 +76,8 @@ export default function TradeHistory({ theme, tradeHistory = [], isLoggedIn = fa
             onPress={() => {}}
             style={{ 
               ...styles.card, 
-              width: Platform.OS === "web" ? "100%" : "95%", // mobile width 95%
-              marginHorizontal: Platform.OS === "web" ? 0 : "auto", 
+              width: screenWidth < 1024 ? "95%" : (Platform.OS === "web" ? "100%" : "95%"),
+              marginHorizontal: screenWidth < 1024 ? "auto" : (Platform.OS === "web" ? 0 : "auto")
             }}
           >
             {/* Rest des Codes bleibt gleich */}

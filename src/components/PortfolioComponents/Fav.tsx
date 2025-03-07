@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
-import { FlatList, Image, Text, View, Platform } from "react-native";
+import { FlatList, Image, Text, View, Platform, useWindowDimensions } from "react-native";
 import Card from "@/src/components/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import Sparkline from "@/src/components/Sparkline";
@@ -16,6 +16,7 @@ interface FavProps {
 export default function Fav({ data, theme }: FavProps) {
   const styles = createStyles(theme);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { width: screenWidth } = useWindowDimensions();
 
   return (
     <Animated.FlatList
@@ -36,9 +37,9 @@ export default function Fav({ data, theme }: FavProps) {
               backgroundColor: theme.background,
               maxWidth: "100%",
               minWidth: 280,
-              marginHorizontal: Platform.OS === "web" ? 0 : "auto",
-              width: Platform.OS === "web" ? "100%" : "95%",
               marginTop: 8,
+              width: screenWidth < 1024 ? "95%" : (Platform.OS === "web" ? "100%" : "95%"),
+              marginHorizontal: screenWidth < 1024 ? "auto" : (Platform.OS === "web" ? 0 : "auto")
             }}
           >
             {/* Erste Zeile: Icon, Name und Sparkline */}

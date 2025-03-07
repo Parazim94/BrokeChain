@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
-import { Image, Text, View, Platform } from "react-native";
+import { Image, Text, View, Platform, useWindowDimensions } from "react-native";
 import Card from "@/src/components/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import Sparkline from "@/src/components/Sparkline";
@@ -16,6 +16,7 @@ interface HoldingProps {
 export default function Holding({ data, theme }: HoldingProps) {
   const styles = createStyles(theme);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { width: screenWidth } = useWindowDimensions();
 
   return (
     <Animated.FlatList
@@ -34,8 +35,8 @@ export default function Holding({ data, theme }: HoldingProps) {
             }}
             style={{
               ...styles.card,
-              width: Platform.OS === "web" ? "100%" : "95%",
-              marginHorizontal: Platform.OS === "web" ? 0 : "auto",
+              width: screenWidth < 1024 ? "95%" : (Platform.OS === "web" ? "100%" : "95%"),
+              marginHorizontal: screenWidth < 1024 ? "auto" : (Platform.OS === "web" ? 0 : "auto")
             }}
           >
             {/* Neues Layout: Logo links, Inhalt rechts */}

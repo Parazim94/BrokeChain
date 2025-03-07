@@ -305,7 +305,7 @@ export default function TradeScreen() {
         
       }
     ]}>
-      <ScrollView >
+      <ScrollView style={{ flexGrow: 1 }}>
       
         <View
           style={{

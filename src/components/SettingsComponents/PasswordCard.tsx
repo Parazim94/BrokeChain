@@ -50,7 +50,7 @@ export default function PasswordCard({
             <TextInput
               value={currentPassword}
               onChangeText={setCurrentPassword}
-              style={[defaultText, styles.input]}
+              style={[defaultText, styles.input, { width: "100%" }]}
               secureTextEntry
               placeholder="••••••••"
               placeholderTextColor={theme.text + "80"}
@@ -65,7 +65,7 @@ export default function PasswordCard({
             <TextInput
               value={newPassword}
               onChangeText={setNewPassword}
-              style={[defaultText, styles.input]}
+              style={[defaultText, styles.input, { width: "100%" }]}
               secureTextEntry
               placeholder="••••••••"
               placeholderTextColor={theme.text + "80"}
@@ -80,7 +80,7 @@ export default function PasswordCard({
             <TextInput
               value={confirmPassword}
               onChangeText={setConfirmPassword}
-              style={[defaultText, styles.input]}
+              style={[defaultText, styles.input, { width: "100%" }]}
               secureTextEntry
               placeholder="••••••••"
               placeholderTextColor={theme.text + "80"}

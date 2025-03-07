@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Share,
   Platform,
+  useWindowDimensions, // neu
 } from "react-native";
 import * as Linking from "expo-linking";
 import { Ionicons } from "@expo/vector-icons";
@@ -35,6 +36,8 @@ export default function ShareScreen() {
   const [likedPosts, setLikedPosts] = useState<Record<string, number>>({});
   const styles = createStyles();
   const shareStyles = createShareStyles();
+  const { width } = useWindowDimensions(); // neu
+  const cardMaxWidth = width >= 480 && width < 768 ? 480 : 350; // neu
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -87,7 +90,7 @@ export default function ShareScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Card
-              style={{ marginTop: 16, maxWidth: 350, marginHorizontal:16, paddingHorizontal:"16"  }}
+              style={{ marginTop: 16, maxWidth: cardMaxWidth, marginHorizontal: 16, paddingHorizontal:"16" }} // geändert
               onPress={() =>
                 setExpandedPost(expandedPost === item.id ? null : item.id)
               }

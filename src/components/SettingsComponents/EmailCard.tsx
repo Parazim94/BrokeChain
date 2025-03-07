@@ -36,7 +36,7 @@ export default function EmailCard({
             <TextInput
               value={newEmail}
               onChangeText={setNewEmail}
-              style={[defaultText, styles.input]}
+              style={[defaultText, styles.input, { width: "100%" }]}
               placeholder="Your email address"
               placeholderTextColor={theme.text + "80"}
             />

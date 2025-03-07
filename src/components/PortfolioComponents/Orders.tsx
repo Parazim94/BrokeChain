@@ -328,6 +328,7 @@ const modalStyles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     width: "80%",
+    // iOS shadow properties
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -335,7 +336,10 @@ const modalStyles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5
+    // Android elevation
+    elevation: 5,
+    // Web box-shadow for React Native Web
+    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)"
   },
   modalTitle: {
     fontSize: 20,
