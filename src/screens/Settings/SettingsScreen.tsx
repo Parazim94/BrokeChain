@@ -341,20 +341,14 @@ export default function SettingsScreen() {
       marginBottom: 30,
       borderRadius: 12,
       overflow: "hidden",
-      borderWidth: 0,            // Keine Border
-      borderColor: "transparent",// Transparente Border
       backgroundColor: theme.background,
-      shadowOpacity: 0,          // Kein Schatten
-      shadowRadius: 0,
-      elevation: 0,
     },
     sectionHeader: {
       padding: 15,
       flexDirection: "row",
       alignItems: "center",
       borderBottomWidth: 1,
-      borderBottomColor: theme.accent + "40",
-      // Remove background completely
+      borderBottomColor: theme.accent + "60",
       backgroundColor: "transparent",
     },
     sectionTitle: {
@@ -410,7 +404,7 @@ export default function SettingsScreen() {
       borderRadius: 8,
       marginTop: 10,
       borderWidth: 1,
-      borderColor: theme.accent,
+      borderColor: theme.accent+ "60",
     },
     favoriteItem: {
       flexDirection: "row",
@@ -419,7 +413,7 @@ export default function SettingsScreen() {
       paddingVertical: 10,
       paddingHorizontal: 15,
       borderBottomWidth: 1,
-      borderBottomColor: theme.accent + "30",
+      borderBottomColor: theme.accent + "60",
     },
     emptyText: {
       textAlign: "center",

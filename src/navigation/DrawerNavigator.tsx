@@ -15,9 +15,8 @@ export default function DrawerNavigator() {
   const { theme } = useContext(ThemeContext);
   const { width } = useWindowDimensions();
 
-  // Drawer soll nur bei mittleren Bildschirmgrößen permanent sein
-  // Bei großen Bildschirmen (>1024px) verwenden wir die Navigationsleiste im Header
-  const drawerType = width >= 768 && width < 1024 ? "permanent" : "front";
+  // Ändern: Drawer soll nicht permanent sein in der Tablet-Ansicht, sondern über den Burger-Button gesteuert werden.
+  const drawerType = "front";
   
   return (
     <Drawer.Navigator
