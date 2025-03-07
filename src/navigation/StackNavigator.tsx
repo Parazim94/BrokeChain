@@ -161,7 +161,7 @@ export default function StackNavigator() {
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
-        options={{ title: "Einstellungen" }}
+        options={{ title: "Account Settings" }}
       />
       <Stack.Screen
         name="Login"

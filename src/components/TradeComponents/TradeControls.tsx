@@ -184,7 +184,7 @@ export default function TradeControls({
                 onPress={handleMax}
                 title="Max"
                 size="small"
-                style={{ padding: 4, paddingHorizontal: 10, height: 30, margin: "auto" }}
+                style={{ padding: 4, paddingHorizontal: 10, height: 35, marginTop:"auto", marginBottom:"auto" }}
                 textStyle={{ fontSize: 12 }}
               />
             </View>

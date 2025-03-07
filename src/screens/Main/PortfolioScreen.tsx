@@ -220,7 +220,7 @@ export default function PortfolioScreen() {
     }
     switch (section.type) {
       case "orders":
-        return (
+        return (          
           <Orders
             data={[item]}
             theme={theme}

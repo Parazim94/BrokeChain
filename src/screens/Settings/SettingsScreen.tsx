@@ -13,11 +13,14 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
 import { AccentColors } from "../../constants/accentColors";
-import DropdownAccentPicker from "../../components/SettingsComponents/DropdownAccentPicker";
 import Button from "@/src/components/Button";
 import { useData } from "@/src/context/DataContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useAlert } from "@/src/context/AlertContext";
+import AppearanceCard from "./AppearanceCard";
+import EmailCard from "./EmailCard";
+import PasswordCard from "./PasswordCard";
+import FavoritesCard from "./FavoritesCard";
 
 export default function SettingsScreen() {
   const { colorTheme, setColorTheme, accent, setAccent, theme } =
@@ -331,19 +334,18 @@ export default function SettingsScreen() {
       marginBottom: 30,
       marginTop: 10,
       color: theme.accent,
+      backgroundColor: "transparent", // falls nötig
     },
     sectionContainer: {
       marginBottom: 30,
       borderRadius: 12,
       overflow: "hidden",
-      borderWidth: 1,
-      borderColor: theme.accent + "40",
+      borderWidth: 0,            // Keine Border
+      borderColor: "transparent",// Transparente Border
       backgroundColor: theme.background,
-      shadowColor: theme.text,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+      shadowOpacity: 0,          // Kein Schatten
+      shadowRadius: 0,
+      elevation: 0,
     },
     sectionHeader: {
       padding: 15,
@@ -460,323 +462,67 @@ export default function SettingsScreen() {
             Account Settings
           </Text>
 
-          {/* Theme Settings */}
-          <View style={settingsStyles.sectionContainer}>
-            <View style={settingsStyles.sectionHeader}>
-              <Ionicons name="color-palette" size={22} color={theme.accent} />
-              <Text style={[styles.defaultText, settingsStyles.sectionTitle]}>
-                Appearance
-              </Text>
-            </View>
-            <View style={settingsStyles.sectionContent}>
-              <View style={settingsStyles.row}>
-                <Text style={[styles.defaultText, settingsStyles.label]}>
-                  Theme Mode
-                </Text>
-                <View style={settingsStyles.control}>
-                  <Button
-                    onPress={toggleTheme}
-                    title={colorTheme === "light" ? "Dark Mode" : "Light Mode"}
-                    icon={colorTheme === "light" ? "moon" : "sunny"}
-                    iconPosition="left"
-                    type="secondary"
-                  />
-                </View>
-              </View>
+          <AppearanceCard
+            colorTheme={colorTheme}
+            toggleTheme={toggleTheme}
+            accent={accent}
+            setAccent={setAccent}
+            handleAppearanceUpdate={handleAppearanceUpdate}
+            isUpdatingAppearance={isUpdatingAppearance}
+            theme={theme}
+            AccentColors={AccentColors}
+            styles={settingsStyles}
+            defaultText={styles.defaultText}
+          />
 
-              <View style={settingsStyles.row}>
-                <Text style={[styles.defaultText, settingsStyles.label]}>
-                  Accent Color
-                </Text>
-                <View style={settingsStyles.control}>
-                  <DropdownAccentPicker
-                    accent={accent}
-                    setAccent={setAccent}
-                    accentColors={AccentColors}
-                    themeBackground={theme.background}
-                  />
-                </View>
-              </View>
-              
-              <View style={settingsStyles.buttonRow}>
-                <Button
-                  onPress={handleAppearanceUpdate}
-                  title="Update Appearance"
-                  loading={isUpdatingAppearance}
-                  type="primary"
-                  size="small"
-                  icon="color-palette"
-                  iconPosition="left"
-                />
-              </View>
-            </View>
-          </View>
+          <EmailCard
+            newEmail={newEmail}
+            setNewEmail={setNewEmail}
+            handleEmailChange={handleEmailChange}
+            isChangingEmail={isChangingEmail}
+            theme={theme}
+            styles={settingsStyles}
+            defaultText={styles.defaultText}
+          />
 
-          {/* Email Settings */}
-          <View style={settingsStyles.sectionContainer}>
-            <View style={settingsStyles.sectionHeader}>
-              <Ionicons name="mail" size={22} color={theme.accent} />
-              <Text style={[styles.defaultText, settingsStyles.sectionTitle]}>
-                Email Address
-              </Text>
-            </View>
-            <View style={settingsStyles.sectionContent}>
-              <View style={settingsStyles.row}>
-                <Text style={[styles.defaultText, settingsStyles.label]}>
-                  Current Email
-                </Text>
-                <View style={settingsStyles.control}>
-                  <TextInput
-                    value={newEmail}
-                    onChangeText={setNewEmail}
-                    style={[styles.defaultText, settingsStyles.input]}
-                    placeholder="Your email address"
-                    placeholderTextColor={theme.text + "80"}
-                  />
-                </View>
-              </View>
+          <PasswordCard
+            currentPassword={currentPassword}
+            setCurrentPassword={setCurrentPassword}
+            newPassword={newPassword}
+            setNewPassword={setNewPassword}
+            confirmPassword={confirmPassword}
+            setConfirmPassword={setConfirmPassword}
+            handlePasswordChange={handlePasswordChange}
+            isChangingPassword={isChangingPassword}
+            passwordError={passwordError}
+            theme={theme}
+            styles={settingsStyles}
+            defaultText={styles.defaultText}
+          />
 
-              <View style={settingsStyles.buttonRow}>
-                <Button
-                  onPress={handleEmailChange}
-                  title="Update Email"
-                  loading={isChangingEmail}
-                  type="primary"
-                  size="small"
-                  icon="checkmark-circle"
-                  iconPosition="left"
-                />
-              </View>
-            </View>
-          </View>
+          <FavoritesCard
+            favorites={favorites}
+            filteredCoins={useMemo(() => {
+              if (!searchQuery) return [];
+              return marketData.filter(
+                (item) =>
+                  (item.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  (item.symbol || "").toLowerCase().includes(searchQuery.toLowerCase())
+              );
+            }, [searchQuery, marketData])}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            isSearchActive={isSearchActive}
+            setIsSearchActive={setIsSearchActive}
+            addFavorite={addFavorite}
+            removeFavorite={removeFavorite}
+            handleFavoritesUpdate={handleFavoritesUpdate}
+            isUpdatingFavorites={isUpdatingFavorites}
+            theme={theme}
+            styles={settingsStyles}
+            defaultText={styles.defaultText}
+          />
 
-          {/* Password Change */}
-          <View style={settingsStyles.sectionContainer}>
-            <View style={settingsStyles.sectionHeader}>
-              <Ionicons name="lock-closed" size={22} color={theme.accent} />
-              <Text style={[styles.defaultText, settingsStyles.sectionTitle]}>
-                Password
-              </Text>
-            </View>
-            <View style={settingsStyles.sectionContent}>
-              <View style={settingsStyles.row}>
-                <Text style={[styles.defaultText, settingsStyles.label]}>
-                  Current Password
-                </Text>
-                <View style={settingsStyles.control}>
-                  <TextInput
-                    value={currentPassword}
-                    onChangeText={setCurrentPassword}
-                    style={[styles.defaultText, settingsStyles.input]}
-                    secureTextEntry
-                    placeholder="••••••••"
-                    placeholderTextColor={theme.text + "80"}
-                  />
-                </View>
-              </View>
-
-              <View style={settingsStyles.row}>
-                <Text style={[styles.defaultText, settingsStyles.label]}>
-                  New Password
-                </Text>
-                <View style={settingsStyles.control}>
-                  <TextInput
-                    value={newPassword}
-                    onChangeText={setNewPassword}
-                    style={[styles.defaultText, settingsStyles.input]}
-                    secureTextEntry
-                    placeholder="••••••••"
-                    placeholderTextColor={theme.text + "80"}
-                  />
-                </View>
-              </View>
-
-              <View style={settingsStyles.row}>
-                <Text style={[styles.defaultText, settingsStyles.label]}>
-                  Confirm New Password
-                </Text>
-                <View style={settingsStyles.control}>
-                  <TextInput
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    style={[styles.defaultText, settingsStyles.input]}
-                    secureTextEntry
-                    placeholder="••••••••"
-                    placeholderTextColor={theme.text + "80"}
-                  />
-                </View>
-              </View>
-
-              {passwordError ? (
-                <Text style={[settingsStyles.error]}>{passwordError}</Text>
-              ) : null}
-
-              <View style={settingsStyles.buttonRow}>
-                <Button
-                  onPress={handlePasswordChange}
-                  title="Change Password"
-                  loading={isChangingPassword}
-                  type="primary"
-                  size="small"
-                  icon="shield-checkmark"
-                  iconPosition="left"
-                />
-              </View>
-            </View>
-          </View>
-
-          {/* Favorites Management */}
-          <View style={settingsStyles.sectionContainer}>
-            <View style={settingsStyles.sectionHeader}>
-              <Ionicons name="star" size={22} color={theme.accent} />
-              <Text style={[styles.defaultText, settingsStyles.sectionTitle]}>
-                Favorite Coins
-              </Text>
-            </View>
-            <View style={settingsStyles.sectionContent}>
-              <View style={settingsStyles.row}>
-                <Text style={[styles.defaultText, settingsStyles.label]}>
-                  Add Favorites
-                </Text>
-                <View style={settingsStyles.control}>
-                  <Button
-                    onPress={() => setIsSearchActive(!isSearchActive)}
-                    title={isSearchActive ? "Cancel" : "Search Coins"}
-                    icon={isSearchActive ? "close-circle" : "search"}
-                    iconPosition="left"
-                    type="secondary"
-                    size="small"
-                  />
-                </View>
-              </View>
-
-              {isSearchActive && (
-                <>
-                  <View style={settingsStyles.row}>
-                    <Text style={[styles.defaultText, settingsStyles.label]}>
-                      Search
-                    </Text>
-                    <View style={settingsStyles.control}>
-                      <TextInput
-                        placeholder="Type coin name or symbol..."
-                        placeholderTextColor={theme.text + "80"}
-                        value={searchQuery}
-                        onChangeText={setSearchQuery}
-                        style={[styles.defaultText, settingsStyles.input]}
-                        autoFocus
-                      />
-                    </View>
-                  </View>
-
-                  {searchQuery.length > 0 && (
-                    <View style={settingsStyles.searchResultsContainer}>
-                      <FlatList
-                        data={filteredCoins}
-                        keyExtractor={(item) => item.id || item.symbol}
-                        renderItem={({ item }) => (
-                          <TouchableOpacity
-                            style={settingsStyles.favoriteItem}
-                            onPress={() =>
-                              addFavorite(item.symbol.toLowerCase())
-                            }
-                          >
-                            <Text
-                              style={[
-                                styles.defaultText,
-                                { fontWeight: "500" },
-                              ]}
-                            >
-                              {item.name} ({item.symbol?.toUpperCase()})
-                            </Text>
-                            <Ionicons
-                              name="add-circle-outline"
-                              size={20}
-                              color={theme.accent}
-                            />
-                          </TouchableOpacity>
-                        )}
-                        ListEmptyComponent={
-                          <Text
-                            style={[
-                              styles.defaultText,
-                              settingsStyles.emptyText,
-                            ]}
-                          >
-                            No matching coins found
-                          </Text>
-                        }
-                      />
-                    </View>
-                  )}
-                </>
-              )}
-
-              <View style={{ marginTop: 15 }}>
-                <Text
-                  style={[
-                    styles.defaultText,
-                    { fontWeight: "500", marginBottom: 10 },
-                  ]}
-                >
-                  Your Favorites:
-                </Text>
-
-                <View
-                  style={[
-                    settingsStyles.searchResultsContainer,
-                    {
-                      backgroundColor: theme.background,
-                    },
-                  ]}
-                >
-                  {favorites.length > 0 ? (
-                    <FlatList
-                      data={favorites}
-                      keyExtractor={(item) => item}
-                      renderItem={({ item }) => (
-                        <View style={settingsStyles.favoriteItem}>
-                          <Text style={styles.defaultText}>
-                            {item.toUpperCase()}
-                          </Text>
-                          <TouchableOpacity
-                            onPress={() => removeFavorite(item)}
-                          >
-                            <Ionicons
-                              name="trash-outline"
-                              size={20}
-                              color="#ff375f"
-                            />
-                          </TouchableOpacity>
-                        </View>
-                      )}
-                      scrollEnabled={false}
-                      style={{ maxHeight: 200 }}
-                    />
-                  ) : (
-                    <Text
-                      style={[styles.defaultText, settingsStyles.emptyText]}
-                    >
-                      No favorite coins added yet
-                    </Text>
-                  )}
-                </View>
-              </View>
-              
-              <View style={[settingsStyles.buttonRow, { marginTop: 15 }]}>
-                <Button
-                  onPress={handleFavoritesUpdate}
-                  title="Update Favorites"
-                  loading={isUpdatingFavorites}
-                  type="primary"
-                  size="small"
-                  icon="star"
-                  iconPosition="left"
-                />
-              </View>
-            </View>
-          </View>
-
-          {/* Save All Button */}
           <View style={settingsStyles.saveButtonContainer}>
             <Button
               onPress={handleSave}
