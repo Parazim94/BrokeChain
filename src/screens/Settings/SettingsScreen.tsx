@@ -17,10 +17,11 @@ import Button from "@/src/components/Button";
 import { useData } from "@/src/context/DataContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useAlert } from "@/src/context/AlertContext";
-import AppearanceCard from "./AppearanceCard";
-import EmailCard from "./EmailCard";
-import PasswordCard from "./PasswordCard";
-import FavoritesCard from "./FavoritesCard";
+import AppearanceCard from "@/src/components/SettingsComponents/AppearanceCard";
+import EmailCard from "@/src/components/SettingsComponents/EmailCard";
+import PasswordCard from "@/src/components/SettingsComponents/PasswordCard";
+import FavoritesCard from "@/src/components/SettingsComponents/FavoritesCard";
+
 
 export default function SettingsScreen() {
   const { colorTheme, setColorTheme, accent, setAccent, theme } =
