@@ -1,25 +1,34 @@
 import React, { useContext } from "react";
-import { TouchableOpacity, StyleSheet, ViewStyle } from "react-native";
+import { TouchableOpacity, View, StyleSheet, ViewStyle } from "react-native";
 import { ThemeContext } from "../context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface CardProps {
-  onPress: () => void;
+  onPress?: () => void;
   children: React.ReactNode;
   style?: ViewStyle;
 }
 
 export default function Card({ onPress, children, style }: CardProps) {
   const { styles, gradientColors } = createCardStyles();
-  return (
+  
+  const content = (
+    <LinearGradient
+      colors={gradientColors}
+      style={[styles.card, style]}
+    >
+      {children}
+    </LinearGradient>
+  );
+
+  return onPress ? (
     <TouchableOpacity onPress={onPress}>
-      <LinearGradient
-        colors={gradientColors}
-        style={[styles.card, style]}
-      >
-        {children}
-      </LinearGradient>
+      {content}
     </TouchableOpacity>
+  ) : (
+    <View>
+      {content}
+    </View>
   );
 }
 
