@@ -401,8 +401,8 @@ const modalStyles = StyleSheet.create({
     margin: 20,
     borderRadius: 10,
     padding: 20,
-    width: "80%",
-    maxWidth: 400,
+    width: 400,
+    maxWidth: "95%",
     // iOS shadow properties
     shadowColor: "#000",
     shadowOffset: {

@@ -87,13 +87,14 @@ export default function SettingsScreen() {
       const response = await fetch(
         "https://broke-end.vercel.app/user/settings",
         {
-          method: "POST",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify( 
             {            
-            token: user?.token,           
-            theme: colorTheme,
-            accent: accent,
+            token: user?.token,
+            prefTheme:[           
+            colorTheme,
+            accent]
           }),
         }
       );
@@ -103,7 +104,17 @@ export default function SettingsScreen() {
         throw new Error(errorData.message || "Appearance update failed");
       }
 
-      const updatedUser = { ...user, prefTheme: [colorTheme, accent] };
+      // Serverantwort parsen und neues Token extrahieren
+      const responseData = await response.json();
+      const newToken = responseData.token;
+      
+      // Aktualisiere User mit neuem Token und Theme-Einstellungen
+      const updatedUser = { 
+        ...user, 
+        prefTheme: [colorTheme, accent],
+        token: newToken || user.token // Verwende neues Token oder behalte altes, falls keins zurückkommt
+      };
+      
       setUser(updatedUser);
 
       showAlert({
@@ -131,7 +142,7 @@ export default function SettingsScreen() {
       const response = await fetch(
         "https://broke-end.vercel.app/user/settings",
         {
-          method: "POST",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             token: user?.token,
@@ -187,7 +198,7 @@ export default function SettingsScreen() {
       const response = await fetch(
         "https://broke-end.vercel.app/user/change_password",
         {
-          method: "POST",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userId: user?.id,
@@ -243,7 +254,7 @@ export default function SettingsScreen() {
       const response = await fetch(
         "https://broke-end.vercel.app/user/change_email",
         {
-          method: "POST",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             token: user?.token,
@@ -291,7 +302,7 @@ export default function SettingsScreen() {
       const response = await fetch(
         "https://broke-end.vercel.app/user/settings",
         {
-          method: "POST",
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedUserData),
         }
@@ -458,7 +469,7 @@ export default function SettingsScreen() {
           </Text>
 
           <AppearanceCard
-            colorTheme={colorTheme}
+            colorTheme={colorTheme ?? "light"}
             toggleTheme={toggleTheme}
             accent={accent}
             setAccent={setAccent}

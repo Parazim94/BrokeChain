@@ -56,15 +56,15 @@ const CustomModal: React.FC<CustomModalProps> = ({
       supportedOrientations={["portrait", "landscape"]}
     >
       <View style={[styles.modalOverlay, backdropStyle]}>
-        <Card
-          style={[
+          <Card
+          style={StyleSheet.flatten([
             styles.modalContainer,
             {
               width: width || defaultWidth,
               height: height || defaultHeight,
             },
             modalStyle,
-          ]}
+          ])}
         >
           {showCloseButton && (
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.8)",
-    backdropFilter: "blur(5px)",
+    ...(Platform.OS === "web" ? { backdropFilter: "blur(5px)" } : {}),
   },
   modalContainer: {
     borderRadius: 20,
