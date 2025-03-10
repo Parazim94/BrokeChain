@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,12 +14,30 @@ import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import CustomModal from "../CustomModal";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GEMINI_API_KEY } from '@env';
+
+console.log("GEMINI_API_KEY from env:", GEMINI_API_KEY);
+
+// Initialize Google Generative AI with your API key
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 interface Message {
   id: string;
   text: string;
   sender: "user" | "bot";
   timestamp: Date;
+}
+
+interface NewsItem {
+  guid: string;
+  link: string;
+  title: string;
+  pubDate: string;
+  description: string;
+  content: string;
+  enclosure?: { link: string };
 }
 
 interface ChatModalProps {
@@ -38,8 +56,66 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
       timestamp: new Date(),
     },
   ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [newsLoaded, setNewsLoaded] = useState(false);
 
-  const handleSend = () => {
+  // Lade Nachrichtendaten wenn die Komponente geladen wird
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const response = await fetch(
+          "https://broke-end.vercel.app/marketData/news"
+        );
+        const data = await response.json();
+        setNews(data.items);
+        setNewsLoaded(true);
+      } catch (error) {
+        console.error("Fehler beim Laden der Nachrichten:", error);
+        setNewsLoaded(true); // Trotzdem als geladen markieren
+      }
+    };
+    fetchNews();
+  }, []);
+
+  // Bereite Nachrichten für den Kontext vor
+  const prepareNewsContext = useCallback(() => {
+    if (!news || news.length === 0) return "";
+    
+    // Erstelle einen kurzen Überblick über die letzten 5 Nachrichten
+    const recentNews = news.slice(0, 5);
+    let newsContext = "Hier sind aktuelle Krypto-Nachrichten:\n\n";
+    
+    recentNews.forEach((item, index) => {
+      newsContext += `${index + 1}. ${item.title}\n`;
+      // Beschränke den Inhalt auf 100 Zeichen für einen kurzen Überblick
+      const cleanContent = item.content.replace(/<[^>]+>/g, "").substring(0, 100) + "...";
+      newsContext += `${cleanContent}\n\n`;
+    });
+    
+    return newsContext;
+  }, [news]);
+
+  // Generate AI response using Google's Generative AI
+  const generateAIResponse = useCallback(async (userPrompt: string): Promise<string> => {
+    try {
+      const newsContext = prepareNewsContext();
+      let fullPrompt = userPrompt;
+      
+      // Füge Nachrichtenkontext hinzu, wenn Nachrichten verfügbar sind
+      if (newsContext) {
+        fullPrompt = `Ich stelle dir eine Frage, aber bevor du antwortest, hier sind aktuelle Krypto-Nachrichten, die du in deine Antwort einbeziehen kannst, wenn relevant:\n\n${newsContext}\n\nMeine Frage ist: ${userPrompt}`;
+      }
+      
+      const result = await model.generateContent(fullPrompt);
+      return result.response.text();
+    } catch (error) {
+      console.error("Error generating AI response:", error);
+      return "Sorry, I couldn't process that request. Please try again later.";
+    }
+  }, [prepareNewsContext]);
+
+  const handleSend = async () => {
     if (!message.trim()) return;
 
     // Add user message
@@ -51,18 +127,36 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
     };
 
     setMessages([...messages, userMessage]);
+    const userPrompt = message;
     setMessage("");
+    setIsLoading(true);
 
-    // Simulate bot response (this will be replaced with your AI implementation)
-    setTimeout(() => {
+    // Generate AI response
+    try {
+      const aiResponse = await generateAIResponse(userPrompt);
+      
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I'm just a placeholder response. The real AI will be implemented later!",
+        text: aiResponse,
         sender: "bot",
         timestamp: new Date(),
       };
+      
       setMessages((prevMessages) => [...prevMessages, botMessage]);
-    }, 1000);
+    } catch (error) {
+      console.error("Error in AI response:", error);
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "Sorry, I encountered an error. Please try again.",
+        sender: "bot",
+        timestamp: new Date(),
+      };
+      
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const { width } = Dimensions.get("window");
@@ -83,7 +177,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
               Trading Assistant
             </Text>
             <Text style={[styles.subtitle, { color: "white" }]}>
-              How can I help?
+              {newsLoaded ? "Mit aktuellen News-Daten" : "Lade News-Daten..."}
             </Text>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
