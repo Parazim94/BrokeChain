@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useContext } from 'react';
 import { ThemeContext } from '@/src/context/ThemeContext';
 import { Video, ResizeMode } from 'expo-av';
+import AnimatedLogo from '@/src/components/AnimatedLogo';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,7 +24,7 @@ export default function LandingPage() {
       Animated.parallel([
         Animated.timing(opacity, {
           toValue: 1,
-          duration: 800,
+          duration: 1800,
           useNativeDriver: false,
         }),
         Animated.timing(scale, {
@@ -37,7 +38,7 @@ export default function LandingPage() {
       // Logo ausblenden
       Animated.timing(opacity, {
         toValue: 0,
-        duration: 500,
+        duration: 1000,
         useNativeDriver: false,
       }),
     ]).start(() => {
@@ -73,12 +74,7 @@ export default function LandingPage() {
           }
         ]}
       >
-        <Image
-          source={require('../../assets/images/Brokechain3.png')}
-          style={styles.logo}
-          tintColor={theme.accent}
-          resizeMode="contain"
-        />
+        <AnimatedLogo />
       </Animated.View>
     </View>
   );
@@ -95,8 +91,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 250,
-    height: 250,
+    width: 450,
+    height: 450,
   },
   backgroundVideo: {
     position: 'absolute',
@@ -106,5 +102,6 @@ const styles = StyleSheet.create({
     right: 0,
     width: width,
     height: height,
+    opacity: 0.3,
   },
 });
