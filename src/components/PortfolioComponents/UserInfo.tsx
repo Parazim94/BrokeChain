@@ -76,7 +76,7 @@ export default function UserInfo({
   }
 
   // Prepare chart data
-  const historyData = history.slice(-dataPoints);
+  const historyData = Array.isArray(history) ? history.slice(-dataPoints) : [];
   const historyValues = historyData.map((item) => item.total);
 
   // Calculate performance metrics
