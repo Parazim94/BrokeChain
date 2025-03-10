@@ -92,15 +92,15 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
         >
           <View style={styles.header}>
             <View style={styles.headerContent}>
-              <Text style={[styles.title, { color: theme.text }]}>
+              <Text style={[styles.title, { color: "white" }]}>
                 Trading Assistant
               </Text>
-              <Text style={[styles.subtitle, { color: theme.text }]}>
+              <Text style={[styles.subtitle, { color: "white" }]}>
                 How can I help?
               </Text>
             </View>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color={theme.text} />
+              <Ionicons name="close" size={24} color={"white"} />
             </TouchableOpacity>
           </View>
 
@@ -123,7 +123,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
                 <Text
                   style={[
                     styles.messageText,
-                    { color: item.sender === "user" ? "#FFFFFF" : theme.text },
+                    { color:  "#FFFFFF"   },
                     {backgroundColor: "transparent"}
                   ]}
                 >
@@ -178,7 +178,6 @@ const styles = StyleSheet.create({
   modalContainer: {
     borderRadius: 20,
     overflow: "hidden",
-    borderWidth: 1,
     display: "flex",
     flexDirection: "column",
   },
