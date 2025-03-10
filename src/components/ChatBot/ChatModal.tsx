@@ -87,8 +87,6 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
             {
               width: modalWidth,
               height: modalHeight,
-              backgroundColor: theme.card,
-              borderColor: theme.border,
             },
           ]}
         >
@@ -97,7 +95,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
               <Text style={[styles.title, { color: theme.text }]}>
                 Trading Assistant
               </Text>
-              <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
+              <Text style={[styles.subtitle, { color: theme.text }]}>
                 How can I help?
               </Text>
             </View>
@@ -118,7 +116,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
                     ? [styles.userMessage, { backgroundColor: theme.accent }]
                     : [
                         styles.botMessage,
-                        { backgroundColor: theme.backgroundSecondary },
+                        { backgroundColor: "transparent" },
                       ],
                 ]}
               >
@@ -126,6 +124,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
                   style={[
                     styles.messageText,
                     { color: item.sender === "user" ? "#FFFFFF" : theme.text },
+                    {backgroundColor: "transparent"}
                   ]}
                 >
                   {item.text}
@@ -142,15 +141,15 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
               style={[
                 styles.input,
                 {
-                  backgroundColor: theme.backgroundSecondary,
+                  backgroundColor: theme.background,
                   color: theme.text,
-                  borderColor: theme.border,
+                  borderColor: theme.accent,
                 },
               ]}
               value={message}
               onChangeText={setMessage}
               placeholder="Type a message..."
-              placeholderTextColor={theme.textSecondary}
+              placeholderTextColor={theme.text}
               multiline={true}
               maxLength={500}
             />
@@ -173,7 +172,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backdropFilter: "blur(5px)",
   },
   modalContainer: {
     borderRadius: 20,
@@ -222,6 +222,7 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 16,
+    backgroundColor: "transparent",
   },
   inputContainer: {
     flexDirection: "row",
