@@ -455,46 +455,29 @@ export default function D3LineChart({
       {/* Persistente Datenanzeige unter dem Chart */}
       {selectedPoint && (
         <View style={[
-            styles.dataDisplay, 
-            { 
-              backgroundColor: `${theme.accent}15`, 
-              borderColor: `${theme.accent}40`,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-              maxWidth: 768,        
-              alignSelf: "flex-start" 
-            }
-          ]}
-        >
+          styles.dataDisplay,
+          {
+            backgroundColor: `${theme.accent}15`,
+            borderColor: `${theme.accent}40`,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+            ...(Platform.OS === "web" ? {} : { maxWidth: 768, alignSelf: "flex-start" })
+          }
+        ]}>
           <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <Text style={[styles.dataLabel, { color: theme.text,width:"10%" }]}>Date:</Text>
-            <Text style={[styles.dataValue, { color: theme.text,width:"40%" }]}>
-              {format(new Date(selectedPoint.timestamp), "dd.MM.yyyy HH:mm")}
-            </Text>          
-            <Text style={[styles.dataLabel, { color: theme.text,width:"10%" }]}>Price:</Text>
-            <Text style={[styles.dataValue, { color: theme.accent, fontWeight: "bold",width:"40%" }]}>
-              {formatCurrency(selectedPoint.value)}
-            </Text>
-          </View>
-          {selectedPoint.volume > 0 && (
+            <Text style={[styles.dataLabel, { color: theme.text, width: "10%" }]}>Date:</Text><Text style={[styles.dataValue, { color: theme.text, width: "40%" }]}>{format(new Date(selectedPoint.timestamp), "dd.MM.yyyy HH:mm")}</Text><Text style={[styles.dataLabel, { color: theme.text, width: "10%" }]}>Price:</Text><Text style={[styles.dataValue, { color: theme.accent, fontWeight: "bold", width: "40%" }]}>{formatCurrency(selectedPoint.value)}</Text>
+          </View>{selectedPoint.volume > 0 && (
             <View style={{ flex: 1 }}>
-              <Text style={[styles.dataLabel, { color: theme.text }]}>Volume:</Text>
-              <Text style={[styles.dataValue, { color: theme.text }]}>
-                {selectedPoint.volume.toLocaleString()}
-              </Text>
+              <Text style={[styles.dataLabel, { color: theme.text }]}>Volume:</Text><Text style={[styles.dataValue, { color: theme.text }]}>{selectedPoint.volume.toLocaleString()}</Text>
             </View>
           )}
-          <TouchableOpacity 
-            onPress={() => setSelectedPoint(null)}
-            style={{ marginLeft: 8 }}
-          >
-            {/* Close Button in rot */}
-            <Ionicons name="close-circle" size={24} color="red" />  {/* hinzugefügt/angepasst */}
+          <TouchableOpacity onPress={() => setSelectedPoint(null)} style={{ marginLeft: 8 }}>
+            <Ionicons name="close-circle" size={24} color="red" />
           </TouchableOpacity>
         </View>
-      )}
+      )}      
     </View>
   );
 }

@@ -520,14 +520,17 @@ export default function D3CandlestickChart({
       
       {/* Persistente Datenanzeige unter dem Chart */}
       {selectedCandle && (
-        <View style={[styles.dataDisplay, { 
-          backgroundColor: `${theme.accent}15`, 
-          borderColor: `${theme.accent}40`,
-          marginHorizontal: 10,
-          marginTop: 8,
-          maxWidth: 768,         // neu
-          alignSelf: "flex-start" // neu
-        }]}>
+        <View style={[
+          styles.dataDisplay,
+          {
+            backgroundColor: `${theme.accent}15`,
+            borderColor: `${theme.accent}40`,
+            marginHorizontal: 10,
+            marginTop: 8,
+            // Für Webmodus keine Begrenzung, ansonsten alte Einstellungen
+            ...(Platform.OS === "web" ? {} : { maxWidth: 768, alignSelf: "flex-start" })
+          }
+        ]}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
             <View>
               <Text style={[styles.dataTitle, { color: theme.accent }]}>
