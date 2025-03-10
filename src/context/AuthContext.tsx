@@ -17,7 +17,9 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => {},
 });
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isLoggedIn, setIsLoggedInState] = useState(false);
   const [user, setUserState] = useState<any>(null);
 
@@ -29,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const setUser = (userData: any) => {
     setUserState(userData);
     AsyncStorage.setItem("user", JSON.stringify(userData));
-    
+
     // Speichere auch den Token separat im AsyncStorage für einfacheren Zugriff
     if (userData && userData.token) {
       console.log("Token im AsyncStorage gespeichert:", userData.token);
@@ -45,15 +47,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const storedIsLoggedIn = await AsyncStorage.getItem("isLoggedIn");
         const storedUser = await AsyncStorage.getItem("user");
-        
+
         if (storedIsLoggedIn !== null) {
           setIsLoggedInState(JSON.parse(storedIsLoggedIn));
         }
-        
+
         if (storedUser !== null) {
           const parsedUser = JSON.parse(storedUser);
           setUserState(parsedUser);
-          
+
           // Stelle sicher, dass der Token auch separat gespeichert ist
           if (parsedUser && parsedUser.token) {
             AsyncStorage.setItem("userToken", parsedUser.token);
@@ -63,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error("Fehler beim Laden des Auth-Status:", error);
       }
     }
-    
+
     loadAuthState();
   }, []);
 
@@ -71,24 +73,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const restoreToken = async () => {
       try {
-        const token = await AsyncStorage.getItem('userToken');
+        const token = await AsyncStorage.getItem("userToken");
         if (token) {
-          console.log("Gespeicherter Token gefunden:", token.substring(0, 15) + "...");
+          console.log(
+            "Gespeicherter Token gefunden:",
+            token.substring(0, 15) + "..."
+          );
         }
       } catch (error) {
         console.error("Fehler beim Wiederherstellen des Tokens:", error);
       }
     };
-    
+
     restoreToken();
   }, []);
 
   // Logout-Funktion aktualisieren, um auch den gespeicherten Token zu löschen
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('userToken');
-      await AsyncStorage.removeItem('user');
-      await AsyncStorage.setItem('isLoggedIn', JSON.stringify(false));
+      await AsyncStorage.removeItem("userToken");
+      await AsyncStorage.removeItem("user");
+      await AsyncStorage.setItem("isLoggedIn", JSON.stringify(false));
     } catch (error) {
       console.error("Fehler beim Löschen der Benutzerdaten:", error);
     }
@@ -97,13 +102,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      isLoggedIn, 
-      user, 
-      setIsLoggedIn, 
-      setUser,
-      logout
-    }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        user,
+        setIsLoggedIn,
+        setUser,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

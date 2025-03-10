@@ -15,9 +15,9 @@ import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
 import CustomModal from "../CustomModal";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { GEMINI_API_KEY } from '@env';
-
-console.log("GEMINI_API_KEY from env:", GEMINI_API_KEY);
+import { GEMINI_API_KEY } from "@env";
+import { AuthContext } from "../../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Initialize Google Generative AI with your API key
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -47,6 +47,7 @@ interface ChatModalProps {
 
 const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
   const { theme } = useContext(ThemeContext);
+  const { user, setUser } = useContext(AuthContext);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -81,39 +82,65 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
   // Bereite Nachrichten für den Kontext vor
   const prepareNewsContext = useCallback(() => {
     if (!news || news.length === 0) return "";
-    
+
     // Erstelle einen kurzen Überblick über die letzten 5 Nachrichten
     const recentNews = news.slice(0, 5);
     let newsContext = "Hier sind aktuelle Krypto-Nachrichten:\n\n";
-    
+
     recentNews.forEach((item, index) => {
       newsContext += `${index + 1}. ${item.title}\n`;
       // Beschränke den Inhalt auf 100 Zeichen für einen kurzen Überblick
-      const cleanContent = item.content.replace(/<[^>]+>/g, "").substring(0, 100) + "...";
+      const cleanContent =
+        item.content.replace(/<[^>]+>/g, "").substring(0, 100) + "...";
       newsContext += `${cleanContent}\n\n`;
     });
-    
+
     return newsContext;
   }, [news]);
-
   // Generate AI response using Google's Generative AI
-  const generateAIResponse = useCallback(async (userPrompt: string): Promise<string> => {
-    try {
-      const newsContext = prepareNewsContext();
-      let fullPrompt = userPrompt;
-      
-      // Füge Nachrichtenkontext hinzu, wenn Nachrichten verfügbar sind
-      if (newsContext) {
-        fullPrompt = `Ich stelle dir eine Frage, aber bevor du antwortest, hier sind aktuelle Krypto-Nachrichten, die du in deine Antwort einbeziehen kannst, wenn relevant:\n\n${newsContext}\n\nMeine Frage ist: ${userPrompt}`;
+  const generateAIResponse = useCallback(
+    async (userPrompt: string): Promise<string> => {
+      console.log("user", user);
+      try {
+        const response = await fetch("https://broke-end.vercel.app/ai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: userPrompt, token: user.token }),
+        });
+        if (!response.ok) {
+          const errorText = await response.text();
+
+          console.error(
+            `[POST] Error response (${response.status}):`,
+            errorText
+          );
+          throw new Error(`Error ${response.status}: ${errorText}`);
+        }
+        // const newsContext = prepareNewsContext();
+        // let fullPrompt = userPrompt;
+
+        // // Füge Nachrichtenkontext hinzu, wenn Nachrichten verfügbar sind
+        // if (newsContext) {
+        //   fullPrompt = `Ich stelle dir eine Frage, aber bevor du antwortest, hier sind aktuelle Krypto-Nachrichten, die du in deine Antwort einbeziehen kannst, wenn relevant:\n\n${newsContext}\n\nMeine Frage ist: ${userPrompt}`;
+        // }
+
+        // const result = await model.generateContent(fullPrompt);
+        const responseData = await response.json();
+
+        if (setUser && user) {
+          console.log(responseData.token);
+          setUser({ ...user, token: responseData.token });
+          // AsyncStorage.setItem("userToken", responseData.token);
+        }
+        console.log(user);
+        return responseData.message;
+      } catch (error) {
+        console.error("Error generating AI response:", error);
+        return "Sorry, I couldn't process that request. Please try again later.";
       }
-      
-      const result = await model.generateContent(fullPrompt);
-      return result.response.text();
-    } catch (error) {
-      console.error("Error generating AI response:", error);
-      return "Sorry, I couldn't process that request. Please try again later.";
-    }
-  }, [prepareNewsContext]);
+    },
+    [user, setUser]
+  );
 
   const handleSend = async () => {
     if (!message.trim()) return;
@@ -134,25 +161,25 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
     // Generate AI response
     try {
       const aiResponse = await generateAIResponse(userPrompt);
-      
+
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: aiResponse,
         sender: "bot",
         timestamp: new Date(),
       };
-      
+
       setMessages((prevMessages) => [...prevMessages, botMessage]);
     } catch (error) {
       console.error("Error in AI response:", error);
-      
+
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: "Sorry, I encountered an error. Please try again.",
         sender: "bot",
         timestamp: new Date(),
       };
-      
+
       setMessages((prevMessages) => [...prevMessages, errorMessage]);
     } finally {
       setIsLoading(false);
