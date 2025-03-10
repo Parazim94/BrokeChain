@@ -332,23 +332,23 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
         <View style={modalStyles.centeredView}>
           <View style={[modalStyles.modalView, { backgroundColor: theme.background }]}>
             <Text style={[modalStyles.modalTitle, { color: theme.text }]}>
-              Order bearbeiten
+              Edit Order
             </Text>
             
             {editData && (
               <>
                 <Text style={[modalStyles.orderInfo, { color: theme.text }]}>
-                  {editData.symbol.toUpperCase()} • {editData.amount > 0 ? "KAUFEN" : "VERKAUFEN"}
+                  {editData.symbol.toUpperCase()} • {editData.amount > 0 ? "Buy" : "Sell"}
                 </Text>
                 
                 <View style={modalStyles.inputContainer}>
-                  <Text style={[modalStyles.label, { color: theme.text }]}>Menge:</Text>
+                  <Text style={[modalStyles.label, { color: theme.text }]}>Amount:</Text>
                   <TextInput
                     style={[modalStyles.input, { color: theme.text, borderColor: theme.text, fontFamily: "monospace" }]}
                     value={newAmount}
                     onChangeText={setNewAmount}
                     keyboardType="decimal-pad"
-                    placeholder="Neue Menge"
+                    placeholder="new Amount..."
                     placeholderTextColor="gray"
                   />
                 </View>
@@ -360,7 +360,7 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                     value={newThreshold}
                     onChangeText={setNewThreshold}
                     keyboardType="decimal-pad"
-                    placeholder="Neues Preislimit"
+                    placeholder="New Pricelimit"
                     placeholderTextColor="gray"
                   />
                 </View>
@@ -370,14 +370,14 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                     style={[modalStyles.button, modalStyles.cancelButton]}
                     onPress={() => setModalVisible(false)}
                   >
-                    <Text style={modalStyles.buttonText}>Abbrechen</Text>
+                    <Text style={modalStyles.buttonText}>Cancle</Text>
                   </TouchableOpacity>
                   
                   <TouchableOpacity
                     style={[modalStyles.button, { backgroundColor: theme.accent }]}
                     onPress={handleSaveEdit}
                   >
-                    <Text style={modalStyles.buttonText}>Speichern</Text>
+                    <Text style={modalStyles.buttonText}>Save</Text>
                   </TouchableOpacity>
                 </View>
               </>
@@ -453,7 +453,7 @@ const modalStyles = StyleSheet.create({
     margin: 5
   },
   cancelButton: {
-    backgroundColor: "#9e9e9e",
+    backgroundColor: "#ff2c2c",
   },
   buttonText: {
     color: "white",

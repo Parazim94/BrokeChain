@@ -7,7 +7,6 @@ import { ThemeProvider, ThemeContext } from "./src/context/ThemeContext";
 import { AuthProvider, AuthContext } from "./src/context/AuthContext";
 import { DataProvider } from "./src/context/DataContext";
 import { AlertProvider } from "./src/context/AlertContext";
-import { GEMINI_API_KEY } from '@env'; // Importiere die Variable
 
 function AppContent() {
   const { user, isLoggedIn } = useContext(AuthContext);

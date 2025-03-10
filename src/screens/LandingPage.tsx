@@ -6,6 +6,7 @@ import { RootStackParamList } from '@/src/types/types';
 import { StatusBar } from 'expo-status-bar';
 import { useContext } from 'react';
 import { ThemeContext } from '@/src/context/ThemeContext';
+import { Video, ResizeMode } from 'expo-av';
 
 const { width, height } = Dimensions.get('window');
 
@@ -52,6 +53,17 @@ export default function LandingPage() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <StatusBar hidden />
+      
+      {/* Hintergrundvideo */}
+      <Video
+        source={require('../../assets/videos/intro.mp4')}
+        style={styles.backgroundVideo}
+        resizeMode={ResizeMode.COVER}
+        shouldPlay
+        isLooping={false}
+        isMuted={true}
+      />
+      
       <Animated.View 
         style={[
           styles.logoContainer, 
@@ -85,5 +97,14 @@ const styles = StyleSheet.create({
   logo: {
     width: 250,
     height: 250,
+  },
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    width: width,
+    height: height,
   },
 });

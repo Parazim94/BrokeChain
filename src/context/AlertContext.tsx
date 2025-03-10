@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useCallback, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useCallback, ReactNode, useRef } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemeContext } from './ThemeContext';
@@ -38,6 +38,9 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     title: '',
     message: '',
   });
+  
+  // Ref für Modal hinzufügen, um findDOMNode-Warnung zu vermeiden
+  const modalRef = useRef(null);
 
   // Entscheiden, ob natives Alert oder Modal basierend auf Plattform
   const isWeb = Platform.OS === 'web';
@@ -127,6 +130,7 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       {children}
       {isWeb && (
         <Modal
+          ref={modalRef}
           transparent={true}
           visible={visible}
           animationType="fade"

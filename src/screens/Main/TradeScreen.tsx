@@ -10,7 +10,8 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
+  Dimensions
 } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import { ThemeContext } from "@/src/context/ThemeContext";
@@ -48,7 +49,7 @@ export default function TradeScreen() {
   const [coin, setCoin] = useState<any>(routeCoin);
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
   const [selectedRange, setSelectedRange] =
-    useState<keyof typeof timeIntervals>("1m");
+    useState<keyof typeof timeIntervals>("1h");
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
@@ -72,26 +73,26 @@ export default function TradeScreen() {
     );
     // Dann Favoriten, die passen:
     const favorites = user?.favorites || [];
-    interface CoinItem {
+    interface Favorite {
       name?: string;
       symbol?: string;
     }
 
-    const favoriteMatches: CoinItem[] = favorites.filter(
-      (item: CoinItem) =>
+    const favoriteMatches: Favorite[] = favorites.filter(
+      (item: Favorite) =>
         (item.name || "").toLowerCase().includes(lowerSearch) ||
         (item.symbol || "").toLowerCase().includes(lowerSearch)
     );
-    // Füge die Favoriten am Ende hinzu, sofern sie nicht bereits in marketMatches enthalten sind:
-    return [
-      ...marketMatches,
-      ...favoriteMatches.filter(
-        (fav) =>
-          !marketMatches.some(
-            (item) => item.symbol.toLowerCase() === fav.symbol?.toLowerCase()
-          )
-      ),
-    ];
+     // Füge die Favoriten am Ende hinzu, sofern sie nicht bereits in marketMatches enthalten sind:
+     return [
+       ...marketMatches,
+       ...favoriteMatches.filter(
+         (fav) =>
+           !marketMatches.some(
+             (item) => item.symbol.toLowerCase() === (fav.symbol || "").toLowerCase()
+           )
+       ),
+     ];
   }, [searchQuery, marketData, user]);
 
   // Coin Initialization
@@ -323,7 +324,7 @@ export default function TradeScreen() {
           }}
         >
           <Card style={{margin:0}}>
-          {/* HEADER SECTION */}
+          {/* Header mit Coin-Info und Suche */}
           <View style={tradeStyles.headerContainer}>
             <View style={tradeStyles.coinInfoContainer}>
               <Text style={[localStyles.defaultText, tradeStyles.coinTitle]}>
@@ -344,9 +345,8 @@ export default function TradeScreen() {
               )}
             </View>
           </View>
-          {/* END HEADER SECTION */}
 
-          {/* SEARCH SECTION */}
+          {/* Suchbereich */}
           {isSearchActive && (
             <View style={{ marginVertical: 10}}>
               <TextInput
@@ -412,9 +412,8 @@ export default function TradeScreen() {
               )}
             </View>
           )}
-          {/* END SEARCH SECTION */}
 
-          {/* TIME INTERVAL & CHART TYPE SECTION */}
+          {/* Zeitintervalle und Chart-Typ */}
           <View style={tradeStyles.timeIntervalContainer}>
             <View style={tradeStyles.timeIntervalButtonsContainer}>
               {Object.keys(timeIntervals).map((range) => (
@@ -447,15 +446,13 @@ export default function TradeScreen() {
               textStyle={{ fontSize: 12 }}
             />
           </View>
-          {/* END TIME INTERVAL & CHART TYPE SECTION */}
 
-          {/* CHART SECTION */}
+          {/* Chart-Bereich */}
           <View style={tradeStyles.chartContainer}>
             {chartComponent}
           </View>
-          {/* END CHART SECTION */}
 
-          {/* TRADE CONTROLS SECTION */}
+          {/* Ausgelagerte Trade-Controls-Komponente */}
           {coin && (
             <TradeControls
               symbol={coin.symbol}
@@ -465,7 +462,6 @@ export default function TradeScreen() {
               theme={theme}
             />
           )}
-          {/* END TRADE CONTROLS SECTION */}
           </Card>
         </View>
       
