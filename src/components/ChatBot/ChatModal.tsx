@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  Modal,
   StyleSheet,
   TouchableOpacity,
   TextInput,
@@ -14,7 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-import Card from "../Card";
+import CustomModal from "../CustomModal";
 
 interface Message {
   id: string;
@@ -66,118 +65,94 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
     }, 1000);
   };
 
-  const { width, height } = Dimensions.get("window");
-  const isSmallScreen = width < 500;
+  const { width } = Dimensions.get("window");
   const modalWidth =
     Platform.OS === "web" ? Math.min(400, width * 0.9) : width * 0.9;
-  const modalHeight =
-    Platform.OS === "web" ? Math.min(500, height * 0.7) : height * 0.7;
 
   return (
-    <Modal
-      transparent={true}
+    <CustomModal
       visible={visible}
-      animationType="slide"
-      supportedOrientations={["portrait", "landscape"]}
+      onClose={onClose}
+      width={modalWidth}
+      showCloseButton={false}
     >
-      <View style={styles.modalOverlay}>
-        <Card
-          style={[
-            styles.modalContainer,
-            {
-              width: modalWidth,
-              height: modalHeight,
-            },
-          ]}
-        >
-          <View style={styles.header}>
-            <View style={styles.headerContent}>
-              <Text style={[styles.title, { color: "white" }]}>
-                Trading Assistant
-              </Text>
-              <Text style={[styles.subtitle, { color: "white" }]}>
-                How can I help?
-              </Text>
-            </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color={"white"} />
-            </TouchableOpacity>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <Text style={[styles.title, { color: "white" }]}>
+              Trading Assistant
+            </Text>
+            <Text style={[styles.subtitle, { color: "white" }]}>
+              How can I help?
+            </Text>
           </View>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Ionicons name="close" size={24} color={"white"} />
+          </TouchableOpacity>
+        </View>
 
-          <FlatList
-            data={messages}
-            keyExtractor={(item) => item.id}
-            style={styles.messageList}
-            renderItem={({ item }) => (
-              <View
+        <FlatList
+          data={messages}
+          keyExtractor={(item) => item.id}
+          style={styles.messageList}
+          renderItem={({ item }) => (
+            <View
+              style={[
+                styles.messageBubble,
+                item.sender === "user"
+                  ? [styles.userMessage, { backgroundColor: theme.accent }]
+                  : [styles.botMessage, { backgroundColor: "transparent" }],
+              ]}
+            >
+              <Text
                 style={[
-                  styles.messageBubble,
-                  item.sender === "user"
-                    ? [styles.userMessage, { backgroundColor: theme.accent }]
-                    : [
-                        styles.botMessage,
-                        { backgroundColor: "transparent" },
-                      ],
+                  styles.messageText,
+                  { color: "#FFFFFF" },
+                  { backgroundColor: "transparent" },
                 ]}
               >
-                <Text
-                  style={[
-                    styles.messageText,
-                    { color:  "#FFFFFF"   },
-                    {backgroundColor: "transparent"}
-                  ]}
-                >
-                  {item.text}
-                </Text>
-              </View>
-            )}
-          />
+                {item.text}
+              </Text>
+            </View>
+          )}
+        />
 
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.inputContainer}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.inputContainer}
+        >
+          <TextInput
+            style={[
+              styles.input,
+              {
+                backgroundColor: theme.background,
+                color: theme.text,
+                borderColor: theme.accent,
+              },
+            ]}
+            value={message}
+            onChangeText={setMessage}
+            placeholder="Type a message..."
+            placeholderTextColor={theme.text}
+            multiline={true}
+            maxLength={500}
+          />
+          <TouchableOpacity
+            onPress={handleSend}
+            style={[styles.sendButton, { backgroundColor: theme.accent }]}
+            disabled={!message.trim()}
           >
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: theme.background,
-                  color: theme.text,
-                  borderColor: theme.accent,
-                },
-              ]}
-              value={message}
-              onChangeText={setMessage}
-              placeholder="Type a message..."
-              placeholderTextColor={theme.text}
-              multiline={true}
-              maxLength={500}
-            />
-            <TouchableOpacity
-              onPress={handleSend}
-              style={[styles.sendButton, { backgroundColor: theme.accent }]}
-              disabled={!message.trim()}
-            >
-              <Ionicons name="send" size={20} color="#FFFFFF" />
-            </TouchableOpacity>
-          </KeyboardAvoidingView>
-        </Card>
+            <Ionicons name="send" size={20} color="#FFFFFF" />
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
       </View>
-    </Modal>
+    </CustomModal>
   );
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: {
+  container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
-    backdropFilter: "blur(5px)",
-  },
-  modalContainer: {
-    borderRadius: 20,
-    overflow: "hidden",
     display: "flex",
     flexDirection: "column",
   },
