@@ -7,34 +7,35 @@ interface CardProps {
   onPress?: () => void;
   children: React.ReactNode;
   style?: ViewStyle;
+  noGradient?: boolean;
 }
 
-export default function Card({ onPress, children, style }: CardProps) {
+export default function Card({
+  onPress,
+  children,
+  style,
+  noGradient = false,
+}: CardProps) {
   const { styles, gradientColors } = createCardStyles();
-  
-  const content = (
-    <LinearGradient
-      colors={gradientColors}
-      style={[styles.card, style]}
-    >
+
+  const content = noGradient ? (
+    <View style={[styles.card, style]}>{children}</View>
+  ) : (
+    <LinearGradient colors={gradientColors} style={[styles.card, style]}>
       {children}
     </LinearGradient>
   );
 
   return onPress ? (
-    <TouchableOpacity onPress={onPress}>
-      {content}
-    </TouchableOpacity>
+    <TouchableOpacity onPress={onPress}>{content}</TouchableOpacity>
   ) : (
-    <View>
-      {content}
-    </View>
+    <View>{content}</View>
   );
 }
 
 function createCardStyles() {
   const { theme } = useContext(ThemeContext);
-  const gradientStart = theme.accent + "22" ;
+  const gradientStart = theme.accent + "22";
   const gradientEnd = theme.accent + "03";
 
   const gradientColors = [gradientStart, gradientEnd] as const;
@@ -45,7 +46,7 @@ function createCardStyles() {
         padding: 12,
         margin: 4,
         width: "100%",
-        borderRadius: 8,       
+        borderRadius: 8,
       },
     }),
     gradientColors,

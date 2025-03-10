@@ -11,7 +11,6 @@ import {
   ScrollView,
   useWindowDimensions,
   Platform,
-  Modal  // <-- neu hinzugefügt
 } from "react-native";
 import * as Linking from "expo-linking";
 import { createStyles } from "../../styles/style";
@@ -21,6 +20,7 @@ import Button from "@/src/components/Button";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
 import { useResponsiveColumns } from "@/src/hooks/useResponsiveColumns";
+import CustomModal from "@/src/components/CustomModal";
 
 interface NewsItem {
   guid: string;
@@ -129,7 +129,13 @@ export default function CryptoNews() {
             )}
           />
         ) : (
-          <View style={{ alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 20,
+            }}
+          >
             <Text style={[styles.defaultText, { fontSize: 16 }]}>
               No News Fetched
             </Text>
@@ -162,10 +168,12 @@ export default function CryptoNews() {
                     margin: 8,
                     width: 350,
                   }}
-                  onPress={() => setModalNews(item)} // <-- geändert
+                  onPress={() => setModalNews(item)}
                 >
                   {/* Obere Zeile: Bild und Header */}
-                  <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
+                  <View
+                    style={[newsStyles.newsTopRow, { alignItems: "center" }]}
+                  >
                     {item.enclosure?.link ? (
                       <Image
                         source={{ uri: item.enclosure.link }}
@@ -191,72 +199,65 @@ export default function CryptoNews() {
               )}
             />
           ) : (
-            <View style={{ alignItems: "center", justifyContent: "center", padding: 20 }}>
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 20,
+              }}
+            >
               <Text style={[styles.defaultText, { fontSize: 16 }]}>
                 no News Fetched
               </Text>
             </View>
           )}
         </View>
-        {/* Modal für Web-Ansicht */}
+
+        {/* Using our new CustomModal */}
         {modalNews && (
-          <Modal
-            transparent={true}
-            animationType="slide"
+          <CustomModal
             visible={true}
-            onRequestClose={() => setModalNews(null)}
+            onClose={() => setModalNews(null)}
+            width={748}
           >
-            <View style={{
-              flex: 1,
-              backgroundColor: "rgba(0, 0, 0, 0.788)",
-              justifyContent: "center",
-              alignItems: "center",
-              backdropFilter: "blur(5px)",
-            }}>
-              <Card style={{
-                width: 748,
-                padding: 16,
-                
-              }}>
-                {/* Modal-Inhalt */}
-                <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
-                  {modalNews.enclosure?.link ? (
-                    <Image
-                      source={{ uri: modalNews.enclosure.link }}
-                      style={newsStyles.newsImage}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View style={newsStyles.newsImage}>
-                      <Text style={[newsStyles.newsDate, { color: "white" }]}>
-                        Kein Bild
-                      </Text>
-                    </View>
-                  )}
-                  <View style={newsStyles.newsHeader}>
-                    <Text style={newsStyles.newsTitle}>{modalNews.title}</Text>
+            <View style={{ padding: 16 }}>
+              <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
+                {modalNews.enclosure?.link ? (
+                  <Image
+                    source={{ uri: modalNews.enclosure.link }}
+                    style={newsStyles.newsImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={newsStyles.newsImage}>
                     <Text style={[newsStyles.newsDate, { color: "white" }]}>
-                      {modalNews.pubDate}
+                      Kein Bild
                     </Text>
                   </View>
-                </View>
-                <ScrollView style={{ maxHeight: 500 }}>
-                  <Text style={[newsStyles.newsDescription, { color: "white" }]}>
-                    {modalNews.content.replace(/<[^>]+>/g, "")}
+                )}
+                <View style={newsStyles.newsHeader}>
+                  <Text style={newsStyles.newsTitle}>{modalNews.title}</Text>
+                  <Text style={[newsStyles.newsDate, { color: "white" }]}>
+                    {modalNews.pubDate}
                   </Text>
-                </ScrollView>
-                <View style={{ marginTop: 8, alignItems: "center" }}>
-                  <Button
-                    onPress={() => setModalNews(null)}
-                    title="Schließen"
-                    type="primary"
-                    size="medium"
-                    style={{ width: 150 }}
-                  />
                 </View>
-              </Card>
+              </View>
+              <ScrollView style={{ maxHeight: 500 }}>
+                <Text style={[newsStyles.newsDescription, { color: "white" }]}>
+                  {modalNews.content.replace(/<[^>]+>/g, "")}
+                </Text>
+              </ScrollView>
+              <View style={{ marginTop: 8, alignItems: "center" }}>
+                <Button
+                  onPress={() => setModalNews(null)}
+                  title="Schließen"
+                  type="primary"
+                  size="medium"
+                  style={{ width: 150 }}
+                />
+              </View>
             </View>
-          </Modal>
+          </CustomModal>
         )}
       </SafeAreaView>
     );
@@ -265,16 +266,18 @@ export default function CryptoNews() {
   // Tablet/Web-Render (Responsive mit Columns)
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flex: 1, width: "100%", maxWidth: 1024, alignSelf: "center" }}>
+      <View
+        style={{ flex: 1, width: "100%", maxWidth: 1024, alignSelf: "center" }}
+      >
         {loading ? (
           <ActivityIndicator size="large" color={styles.defaultText.color} />
         ) : news && news.length > 0 ? (
           <FlatList
             data={news}
             style={{ width: "100%" }}
-            contentContainerStyle={{ 
+            contentContainerStyle={{
               padding: 8,
-              alignItems: columns > 1 ? "flex-start" : "center" 
+              alignItems: columns > 1 ? "flex-start" : "center",
             }}
             numColumns={columns}
             key={columns} // Force re-render when columns change
@@ -283,10 +286,10 @@ export default function CryptoNews() {
               <Card
                 style={{
                   margin: 8,
-                  maxWidth: (width / columns) - 24,
+                  maxWidth: width / columns - 24,
                   flex: 1,
                 }}
-                onPress={() => setModalNews(item)} // <-- geändert
+                onPress={() => setModalNews(item)}
               >
                 {/* Obere Zeile: Bild und Header */}
                 <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
@@ -306,7 +309,7 @@ export default function CryptoNews() {
                     <Text style={newsStyles.newsDate}>{item.pubDate}</Text>
                   </View>
                 </View>
-                
+
                 {/* Content unterhalb */}
                 <View style={newsStyles.newsContent}>
                   <Text style={newsStyles.newsDescription} numberOfLines={5}>
@@ -317,69 +320,66 @@ export default function CryptoNews() {
             )}
           />
         ) : (
-          <View style={{ alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 20,
+            }}
+          >
             <Text style={[styles.defaultText, { fontSize: 16 }]}>
               no News Fetched
             </Text>
           </View>
         )}
-        {/* Modal für responsive Ansicht */}
+
+        {/* Using our new CustomModal */}
         {modalNews && (
-          <Modal
-            transparent={true}
-            animationType="slide"
+          <CustomModal
             visible={true}
-            onRequestClose={() => setModalNews(null)}
+            onClose={() => setModalNews(null)}
+            width={650}
           >
-            <View style={{
-              flex: 1,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              justifyContent: "center",
-              alignItems: "center",
-            }}>
-              <Card style={{
-                width: 650,
-                padding: 16,
-              }}>
-                {/* Modal-Inhalt */}
-                <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
-                  {modalNews.enclosure?.link ? (
-                    <Image
-                      source={{ uri: modalNews.enclosure.link }}
-                      style={newsStyles.newsImage}
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <View style={newsStyles.newsImage}>
-                      <Text style={[newsStyles.newsDate, { color: theme.text }]}>
-                        Kein Bild
-                      </Text>
-                    </View>
-                  )}
-                  <View style={newsStyles.newsHeader}>
-                    <Text style={newsStyles.newsTitle}>{modalNews.title}</Text>
+            <View style={{ padding: 16 }}>
+              <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
+                {modalNews.enclosure?.link ? (
+                  <Image
+                    source={{ uri: modalNews.enclosure.link }}
+                    style={newsStyles.newsImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View style={newsStyles.newsImage}>
                     <Text style={[newsStyles.newsDate, { color: theme.text }]}>
-                      {modalNews.pubDate}
+                      Kein Bild
                     </Text>
                   </View>
-                </View>
-                <ScrollView style={{ maxHeight: 500 }}>
-                  <Text style={[newsStyles.newsDescription, { color: theme.text }]}>
-                    {modalNews.content.replace(/<[^>]+>/g, "")}
+                )}
+                <View style={newsStyles.newsHeader}>
+                  <Text style={newsStyles.newsTitle}>{modalNews.title}</Text>
+                  <Text style={[newsStyles.newsDate, { color: theme.text }]}>
+                    {modalNews.pubDate}
                   </Text>
-                </ScrollView>
-                <View style={{ marginTop: 8, alignItems: "center" }}>
-                  <Button
-                    onPress={() => setModalNews(null)}
-                    title="Schließen"
-                    type="primary"
-                    size="medium"
-                    style={{ width: 150 }}
-                  />
                 </View>
-              </Card>
+              </View>
+              <ScrollView style={{ maxHeight: 500 }}>
+                <Text
+                  style={[newsStyles.newsDescription, { color: theme.text }]}
+                >
+                  {modalNews.content.replace(/<[^>]+>/g, "")}
+                </Text>
+              </ScrollView>
+              <View style={{ marginTop: 8, alignItems: "center" }}>
+                <Button
+                  onPress={() => setModalNews(null)}
+                  title="Schließen"
+                  type="primary"
+                  size="medium"
+                  style={{ width: 150 }}
+                />
+              </View>
             </View>
-          </Modal>
+          </CustomModal>
         )}
       </View>
     </SafeAreaView>
