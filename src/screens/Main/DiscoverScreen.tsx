@@ -108,7 +108,7 @@ export default function CryptoNews() {
                       </Text>
                     </ScrollView>
                   ) : (
-                    <Text style={newsStyles.newsDescription} numberOfLines={5}>
+                    <Text style={newsStyles.newsDescription} numberOfLines={6}>
                       {item.content.replace(/<[^>]+>/g, "")}
                     </Text>
                   )}
@@ -214,7 +214,7 @@ export default function CryptoNews() {
               backdropFilter: "blur(5px)",
             }}>
               <Card style={{
-                width: 400,
+                width: 748,
                 padding: 16,
                 
               }}>
@@ -240,7 +240,7 @@ export default function CryptoNews() {
                     </Text>
                   </View>
                 </View>
-                <ScrollView style={{ maxHeight: 400 }}>
+                <ScrollView style={{ maxHeight: 500 }}>
                   <Text style={[newsStyles.newsDescription, { color: theme.text }]}>
                     {modalNews.content.replace(/<[^>]+>/g, "")}
                   </Text>
@@ -338,7 +338,7 @@ export default function CryptoNews() {
               alignItems: "center",
             }}>
               <Card style={{
-                width: 400,
+                width: 650,
                 padding: 16,
               }}>
                 {/* Modal-Inhalt */}
@@ -363,7 +363,7 @@ export default function CryptoNews() {
                     </Text>
                   </View>
                 </View>
-                <ScrollView style={{ maxHeight: 400 }}>
+                <ScrollView style={{ maxHeight: 500 }}>
                   <Text style={[newsStyles.newsDescription, { color: theme.text }]}>
                     {modalNews.content.replace(/<[^>]+>/g, "")}
                   </Text>

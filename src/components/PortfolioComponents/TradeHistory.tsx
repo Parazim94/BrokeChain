@@ -80,58 +80,100 @@ export default function TradeHistory({ theme, tradeHistory = [], isLoggedIn = fa
               marginHorizontal: screenWidth < 1024 ? "auto" : (Platform.OS === "web" ? 0 : "auto")
             }}
           >
-            {/* Rest des Codes bleibt gleich */}
-            <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
-              <View style={{ justifyContent: 'center' }}>
-                <Text style={[styles.marketName, { color: theme.text }]}>
-                  {item.symbol.toUpperCase()}
-                </Text>
-                <Text style={{ 
-                  color: theme.text, 
-                  fontSize: 12,
-                  marginTop: 4
-                }}>
-                  {item.order ? "Order ausgeführt" : "Direkter Handel"}
-                </Text>
+            {Platform.OS === "web" && window.innerWidth >= 768 ? (
+              <View style={{ flexDirection: "row", alignItems: "center", padding: 10 }}>
+                {/* Linkes Segment: Symbol und Preis (hervorgehoben) */}
+                <View style={{ flex: 3, alignItems: "flex-start" }}>
+                  <Text style={{ fontWeight: "bold", fontSize: 16, color: theme.accent, marginBottom: 4 }}>
+                    {item.symbol.toUpperCase()}
+                  </Text>
+                  <Text style={{ fontWeight: "bold", fontSize: 14, color: theme.accent }}>
+                    @ {formatCurrency(item.price)}
+                  </Text>
+                </View>
+                {/* Mittleres Segment: Labeltexte + Amount, Order-Info und Total in einer Zeile */}
+                <View style={{ flexGrow: 1, flexShrink: 1, flexDirection: "row", justifyContent: "space-evenly", alignItems: "center" }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", marginHorizontal: 8 }}>
+                    <Text style={{ fontWeight: "bold", color: theme.text }}>Amount: </Text>
+                    <Text style={{ fontFamily: "monospace", fontSize: 16, color: theme.text }}>
+                      {item.amount > 0 ? "+" : ""}{item.amount}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row", alignItems: "center", marginHorizontal: 8 }}>
+                    <Text style={{ fontWeight: "bold", color: theme.text }}>Order: </Text>
+                    <Text style={{ fontSize: 12, color: theme.text }}>
+                      {item.order ? "Order ausgeführt" : "Direkter Handel"}
+                    </Text>
+                  </View>
+                  <View style={{ flexDirection: "row", alignItems: "center", marginHorizontal: 8 }}>
+                    <Text style={{ fontWeight: "bold", color: theme.text }}>Total: </Text>
+                    <Text style={{ fontFamily: "monospace", fontWeight: "bold", fontSize: 14, color: theme.text }}>
+                      {formatCurrency(item.price * Math.abs(item.amount))}
+                    </Text>
+                  </View>
+                </View>
+                {/* Rechtes Segment: Datum, rechtsbündig */}
+                <View style={{ flex: 3, alignItems: "flex-end" }}>
+                  <Text style={{ fontSize: 12, color: theme.text }}>
+                    {new Date(item.date).toLocaleString()}
+                  </Text>
+                </View>
               </View>
-              
-              <View style={{ alignItems: 'flex-end' }}>
-                <Text style={{ 
-                  color: item.amount > 0 ? 'green' : 'red',
-                  fontWeight: 'bold',
-                  fontFamily: "monospace",
-                  fontSize: 16
+            ) : (
+              <>
+                <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
+                  <View style={{ justifyContent: 'center' }}>
+                    <Text style={[styles.marketName, { color: theme.text }]}>
+                      {item.symbol.toUpperCase()}
+                    </Text>
+                    <Text style={{ 
+                      color: theme.text, 
+                      fontSize: 12,
+                      marginTop: 4
+                    }}>
+                      {item.order ? "Order ausgeführt" : "Direkter Handel"}
+                    </Text>
+                  </View>
+                  
+                  <View style={{ alignItems: 'flex-end' }}>
+                    <Text style={{ 
+                      color: item.amount > 0 ? 'green' : 'red',
+                      fontWeight: 'bold',
+                      fontFamily: "monospace",
+                      fontSize: 16
+                    }}>
+                      {item.amount > 0 ? '+' : ''}{item.amount}
+                    </Text>
+                    <Text style={{ 
+                      color: theme.text, 
+                      fontFamily: "monospace"
+                    }}>
+                      @ {formatCurrency(item.price)}
+                    </Text>
+                  </View>
+                </View>
+                
+                <View style={{ 
+                  flexDirection: 'row', 
+                  justifyContent: 'space-between',
+                  marginTop: 8,
+                  borderTopWidth: 1,
+                  borderTopColor: theme.border,
+                  paddingTop: 8
                 }}>
-                  {item.amount > 0 ? '+' : ''}{item.amount}
-                </Text>
-                <Text style={{ 
-                  color: theme.text, 
-                  fontFamily: "monospace"
-                }}>
-                  @ {formatCurrency(item.price)}
-                </Text>
-              </View>
-            </View>
-            
-            <View style={{ 
-              flexDirection: 'row', 
-              justifyContent: 'space-between',
-              marginTop: 8,
-              borderTopWidth: 1,
-              borderTopColor: theme.border,
-              paddingTop: 8
-            }}>
-              <Text style={{ color: theme.text, fontSize: 12 }}>
-                {new Date(item.date).toLocaleString()}
-              </Text>
-              <Text style={{ 
-                fontFamily: "monospace", 
-                color: theme.text,
-                fontWeight: 'bold'
-              }}>
-                {formatCurrency(item.price * Math.abs(item.amount))}
-              </Text>
-            </View>
+                  <Text style={{ color: theme.text, fontSize: 12 }}>
+                    {new Date(item.date).toLocaleString()}
+                  </Text>
+                  <Text style={{ 
+                    fontFamily: "monospace", 
+                    color: theme.text,
+                    fontWeight: 'bold'
+                  }}>
+                    {formatCurrency(item.price * Math.abs(item.amount))}
+                  </Text>
+                </View>
+              </>
+            )}
           </Card>
         </Animated.View>
       )}

@@ -23,10 +23,9 @@ export default function Sorting({
   return (
     <View
       style={{
-        maxWidth: 1024,
         margin: "auto",
-        width: "100%",
-        paddingLeft: 10,
+        maxWidth: 1024,
+        width: "95%",
         backgroundColor: styles.background,
       }}
     >
