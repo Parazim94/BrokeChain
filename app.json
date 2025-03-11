@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "TradeYoMama",
-    "slug": "tradeyomama",
+    "name": "Broke-Chain",
+    "slug": "Broke-Chain",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/Brokechain3.png",
+    "icon": "./assets/images/logo2.png",
     "splash": {
-      "image": "./assets/images/Brokechain3.png",
+      "image": "./assets/images/logo2.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,15 +17,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/images/logo2.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/Brokechain3.png",
+        "foregroundImage": "./assets/images/logo2.png",
         "backgroundColor": "#ffffff"
       }
     },
-    "web": {},
+    "web": {
+      "favicon": "./assets/images/favicon.png",
+      "build": {
+        "favicon": {
+          "src": "./assets/images/favicon.png",
+          "sizes": [96, 192, 512]
+        }
+      }
+    },
     "extra": {
       "eas": {
         "projectId": "6119d9da-901c-4534-9dd1-fceeb2607562"

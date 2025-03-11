@@ -7,11 +7,11 @@ import { ThemeProvider, ThemeContext } from "./src/context/ThemeContext";
 import { AuthProvider, AuthContext } from "./src/context/AuthContext";
 import { DataProvider } from "./src/context/DataContext";
 import { AlertProvider } from "./src/context/AlertContext";
-import * as Linking from 'expo-linking'; // NEUER IMPORT
+import * as Linking from 'expo-linking'; 
 
 // NEUE Linking-Konfiguration mit NETLIFY Domain:
 const linking = {
-	prefixes: ['https://broke-chain.netlify.app', 'broke-chain://'], // GEÄNDERT: netlify.app statt vercel.app
+	prefixes: ['https://broke-chain.netlify.app', 'broke-chain://'],
 	config: {
 		screens: {
 			LandingPage: '',

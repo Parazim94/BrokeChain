@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState, useMemo, useEffect } from "react";
 import {
   View,
   Text,
@@ -21,9 +21,11 @@ import AppearanceCard from "@/src/components/SettingsComponents/AppearanceCard";
 import EmailCard from "@/src/components/SettingsComponents/EmailCard";
 import PasswordCard from "@/src/components/SettingsComponents/PasswordCard";
 import FavoritesCard from "@/src/components/SettingsComponents/FavoritesCard";
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function SettingsScreen() {
+  const navigation = useNavigation();
   const { colorTheme, setColorTheme, accent, setAccent, theme } =
     useContext(ThemeContext);
   const { user, setUser } = useContext(AuthContext);
@@ -31,6 +33,13 @@ export default function SettingsScreen() {
   const { showAlert } = useAlert();
   const styles = createStyles();
   const [isSaving, setIsSaving] = useState(false);
+
+  // Überprüfung, ob Benutzer eingeloggt ist
+  useEffect(() => {
+    if (!user) {
+      navigation.navigate('Login' as never);
+    }
+  }, [user, navigation]);
 
   // States for favorites management
   const [searchQuery, setSearchQuery] = useState("");
@@ -432,6 +441,11 @@ export default function SettingsScreen() {
       fontStyle: "italic",
     },
   });
+
+  // Falls Benutzer nicht eingeloggt ist, zeigen wir nichts an (Navigation wird im useEffect übernommen)
+  if (!user) {
+    return null;
+  }
 
   return (
     <View
