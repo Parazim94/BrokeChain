@@ -8,19 +8,38 @@ import { useContext } from 'react';
 import { ThemeContext } from '@/src/context/ThemeContext';
 import { Video, ResizeMode } from 'expo-av';
 import AnimatedLogo from '@/src/components/AnimatedLogo';
+import { AuthContext } from '../context/AuthContext';
+import { fetchPost } from '../hooks/useFetch';
 
 const { width, height } = Dimensions.get('window');
 
 export default function LandingPage() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { theme } = useContext(ThemeContext);
+  const { user, setUser, logout } = useContext(AuthContext);
   const opacity = useRef(new Animated.Value(1)).current;
   const scale = useRef(new Animated.Value(0.8)).current;
   
   useEffect(() => {
-    // Start-Animation für das Logo
+    const verifyUser = async () => {
+      if (user && user.token) {
+        try {
+          const updatedUser = await fetchPost("user", { token: user.token });
+          if (!updatedUser || updatedUser.error) {
+            logout();
+          } else {
+            setUser(updatedUser);
+          }
+        } catch (error) {
+          logout();
+        }
+      }
+    };
+    verifyUser();
+  }, [user, logout, setUser]);
+
+  useEffect(() => {
     Animated.sequence([
-      // Logo einblenden mit leichtem Zoom
       Animated.parallel([
         Animated.timing(opacity, {
           toValue: 1,
@@ -33,16 +52,13 @@ export default function LandingPage() {
           useNativeDriver: false,
         }),
       ]),
-      // Kurz warten
       Animated.delay(1000),
-      // Logo ausblenden
       Animated.timing(opacity, {
         toValue: 0,
         duration: 1000,
         useNativeDriver: false,
       }),
     ]).start(() => {
-      // Nach Abschluss der Animation zur Main-Seite navigieren
       navigation.reset({
         index: 0,
         routes: [{ name: 'Main' }],
@@ -52,10 +68,9 @@ export default function LandingPage() {
   }, [navigation, opacity, scale]);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={[styles.container, { backgroundColor: "#000" }]}>
       <StatusBar hidden />
       
-      {/* Hintergrundvideo */}
       <Video
         source={require('../../assets/videos/intro.mp4')}
         style={styles.backgroundVideo}
