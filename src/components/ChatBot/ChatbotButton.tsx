@@ -222,11 +222,6 @@ const ChatbotButton: React.FC<ChatbotButtonProps> = ({ onPress }) => {
         tintColor="#FFFFFF"
         resizeMode="contain"
       />
-      {isDragging && (
-        <View style={styles.dragIndicator}>
-          <Ionicons name="move" size={14} color="#FFFFFF" />
-        </View>
-      )}
     </Animated.View>
   );
 };
@@ -252,6 +247,7 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35,
   },
+  // You can keep or remove this style as it won't be used anymore
   dragIndicator: {
     position: "absolute",
     top: 5,
