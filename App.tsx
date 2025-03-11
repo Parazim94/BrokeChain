@@ -7,6 +7,32 @@ import { ThemeProvider, ThemeContext } from "./src/context/ThemeContext";
 import { AuthProvider, AuthContext } from "./src/context/AuthContext";
 import { DataProvider } from "./src/context/DataContext";
 import { AlertProvider } from "./src/context/AlertContext";
+import * as Linking from 'expo-linking'; // NEUER IMPORT
+
+// NEUE Linking-Konfiguration mit NETLIFY Domain:
+const linking = {
+	prefixes: ['https://broke-chain.netlify.app', 'broke-chain://'], // GEÄNDERT: netlify.app statt vercel.app
+	config: {
+		screens: {
+			LandingPage: '',
+			Main: {
+				path: 'main',
+				screens: {
+					Markets: 'markets',
+					Share: 'share',
+					Trade: 'trade',
+					Discover: 'discover',
+					Portfolio: 'portfolio'
+				}
+			},
+			Login: 'login',
+			Register: 'register',
+			Settings: 'settings',
+            Verified: 'auth/verify/:token', // NEUER ROUTE
+			NotFound: '*'
+		}
+	}
+};
 
 function AppContent() {
   const { user, isLoggedIn } = useContext(AuthContext);
@@ -33,7 +59,7 @@ function AppContent() {
         backgroundColor="transparent"
         translucent={true}
       />
-      <NavigationContainer>
+      <NavigationContainer linking={linking}> {/* Linking hinzugefügt */}
         <StackNavigator />
       </NavigationContainer>
     </>

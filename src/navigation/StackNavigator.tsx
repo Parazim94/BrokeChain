@@ -22,6 +22,8 @@ import LandingPage from "../screens/LandingPage";
 import { RootStackParamList } from "../types/types";
 import WebTabTextMenu from "./WebTabTextMenu";
 import Chatbot from "../components/ChatBot/Chatbot";
+import NotFoundScreen from "../screens/NotFoundScreen";
+import VerifiedScreen from "../screens/VerifiedScreen";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -183,6 +185,17 @@ export default function StackNavigator() {
           name="Register"
           component={RegisterScreen}
           options={{ title: "Registrieren" }}
+        />
+       
+        <Stack.Screen
+          name="NotFound"
+          component={NotFoundScreen}
+          options={{ title: "Seite nicht gefunden" }}
+        />
+        <Stack.Screen
+          name="Verified"
+          component={VerifiedScreen}
+          options={{ title: "E-Mail Verifizierung" }}
         />
       </Stack.Navigator>
 

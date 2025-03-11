@@ -24,6 +24,8 @@ export type RootStackParamList = {
   Auth: undefined;
   Login: undefined;
   Register: undefined;
+  Verified: undefined;
+  NotFound: undefined;
 };
 
 export type StackParamList = {
