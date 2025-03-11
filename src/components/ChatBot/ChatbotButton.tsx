@@ -8,15 +8,18 @@ import {
   PanResponder,
   Dimensions,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { ThemeContext } from "../../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface ChatbotButtonProps {
   onPress: () => void;
+  onPositionChange?: (position: { x: number; y: number }) => void;
 }
 
-const ChatbotButton: React.FC<ChatbotButtonProps> = ({ onPress }) => {
+const ChatbotButton: React.FC<ChatbotButtonProps> = ({
+  onPress,
+  onPositionChange,
+}) => {
   const { theme } = useContext(ThemeContext);
   const bounceAnimation = useRef(new Animated.Value(1)).current;
 
@@ -131,6 +134,13 @@ const ChatbotButton: React.FC<ChatbotButtonProps> = ({ onPress }) => {
     loadSavedPosition();
   }, [screenWidth, screenHeight]);
 
+  // Notify parent of position changes
+  useEffect(() => {
+    if (onPositionChange) {
+      onPositionChange(position);
+    }
+  }, [position, onPositionChange]);
+
   // PanResponder zur Handhabung des Drag & Drop
   const panResponder = useRef(
     PanResponder.create({
@@ -177,6 +187,11 @@ const ChatbotButton: React.FC<ChatbotButtonProps> = ({ onPress }) => {
           setPosition(newPos);
           lastPosition.current = newPos;
           translatePosition.setValue(newPos);
+
+          // Notify parent of position changes
+          if (onPositionChange) {
+            onPositionChange(newPos);
+          }
 
           // Speichere die neue Position in AsyncStorage
           try {
