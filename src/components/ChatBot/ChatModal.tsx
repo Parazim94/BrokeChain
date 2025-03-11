@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions,
+  Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
@@ -45,6 +46,76 @@ interface ChatModalProps {
   onClose: () => void;
 }
 
+// New LoadingDots component for the typing indicator
+const LoadingDots = () => {
+  const [dot1] = useState(new Animated.Value(0));
+  const [dot2] = useState(new Animated.Value(0));
+  const [dot3] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    const animateDots = () => {
+      // Reset values
+      dot1.setValue(0);
+      dot2.setValue(0);
+      dot3.setValue(0);
+
+      // Sequence animations with delays
+      Animated.stagger(200, [
+        Animated.timing(dot1, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(dot2, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(dot3, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        // Repeat animation
+        setTimeout(animateDots, 800);
+      });
+    };
+
+    animateDots();
+    return () => {
+      // Cleanup animations
+      dot1.stopAnimation();
+      dot2.stopAnimation();
+      dot3.stopAnimation();
+    };
+  }, [dot1, dot2, dot3]);
+
+  return (
+    <View style={styles.loadingContainer}>
+      {[dot1, dot2, dot3].map((dot, index) => (
+        <Animated.View
+          key={index}
+          style={[
+            styles.loadingDot,
+            {
+              opacity: dot,
+              transform: [
+                {
+                  scale: dot.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.8, 1],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+      ))}
+    </View>
+  );
+};
+
 const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
   const { theme } = useContext(ThemeContext);
   const { user, setUser } = useContext(AuthContext);
@@ -78,69 +149,6 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
     };
     fetchNews();
   }, []);
-
-  // // Bereite Nachrichten für den Kontext vor
-  // const prepareNewsContext = useCallback(() => {
-  //   if (!news || news.length === 0) return "";
-
-  //   // Erstelle einen kurzen Überblick über die letzten 5 Nachrichten
-  //   const recentNews = news.slice(0, 5);
-  //   let newsContext = "Hier sind aktuelle Krypto-Nachrichten:\n\n";
-
-  //   recentNews.forEach((item, index) => {
-  //     newsContext += `${index + 1}. ${item.title}\n`;
-  //     // Beschränke den Inhalt auf 100 Zeichen für einen kurzen Überblick
-  //     const cleanContent =
-  //       item.content.replace(/<[^>]+>/g, "").substring(0, 100) + "...";
-  //     newsContext += `${cleanContent}\n\n`;
-  //   });
-
-  //   return newsContext;
-  // }, [news]);
-  // Generate AI response using Google's Generative AI
-  // const generateAIResponse = useCallback(
-  //   async (userPrompt: string): Promise<string> => {
-  //     console.log("user", user);
-  //     try {
-  //       const response = await fetch("https://broke-end.vercel.app/ai", {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ message: userPrompt, token: user.token }),
-  //       });
-  //       if (!response.ok) {
-  //         const errorText = await response.text();
-
-  //         console.error(
-  //           `[POST] Error response (${response.status}):`,
-  //           errorText
-  //         );
-  //         throw new Error(`Error ${response.status}: ${errorText}`);
-  //       }
-  //       // const newsContext = prepareNewsContext();
-  //       // let fullPrompt = userPrompt;
-
-  //       // // Füge Nachrichtenkontext hinzu, wenn Nachrichten verfügbar sind
-  //       // if (newsContext) {
-  //       //   fullPrompt = `Ich stelle dir eine Frage, aber bevor du antwortest, hier sind aktuelle Krypto-Nachrichten, die du in deine Antwort einbeziehen kannst, wenn relevant:\n\n${newsContext}\n\nMeine Frage ist: ${userPrompt}`;
-  //       // }
-
-  //       // const result = await model.generateContent(fullPrompt);
-  //       const responseData = await response.json();
-
-  //       if (setUser && user) {
-  //         console.log(responseData.token);
-  //         setUser({ ...user, token: responseData.token });
-  //         // AsyncStorage.setItem("userToken", responseData.token);
-  //       }
-  //       console.log(user);
-  //       return responseData.message;
-  //     } catch (error) {
-  //       console.error("Error generating AI response:", error);
-  //       return "Sorry, I couldn't process that request. Please try again later.";
-  //     }
-  //   },
-  //   [user, setUser]
-  // );
 
   //ohne useCallback
   const generateAIResponse = async (userPrompt: string): Promise<string> => {
@@ -265,6 +273,19 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
               </Text>
             </View>
           )}
+          ListFooterComponent={() =>
+            isLoading ? (
+              <View
+                style={[
+                  styles.messageBubble,
+                  styles.botMessage,
+                  { backgroundColor: "transparent" },
+                ]}
+              >
+                <LoadingDots />
+              </View>
+            ) : null
+          }
         />
 
         <KeyboardAvoidingView
@@ -369,6 +390,19 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+  },
+  loadingDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#FFFFFF",
+    marginHorizontal: 3,
   },
 });
 
