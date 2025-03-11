@@ -11,12 +11,19 @@ import { Platform } from "react-native";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { RootStackParamList } from "@/src/types/types"; 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = createBottomTabNavigator<RootStackParamList>(); // geändert
 
 export default function TabNavigator() {
   const styles = createStyles();
   const { theme } = useContext(ThemeContext);
+
+  // Funktion zum Speichern des aktuellen Screens
+  const saveCurrentScreen = (screenName: string) => {
+    AsyncStorage.setItem('lastScreen', screenName);
+  };
+  
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: styles.container.backgroundColor }}
@@ -64,6 +71,15 @@ export default function TabNavigator() {
             );
           },
         })}
+        screenListeners={{
+          state: (e) => {
+            const state = e.data?.state;
+            if (state) {
+              const currentRouteName = state.routes[state.index].name;
+              saveCurrentScreen(currentRouteName);
+            }
+          }
+        }}
       >
         <Tab.Screen
           name="Markets"

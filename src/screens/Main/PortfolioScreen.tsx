@@ -18,10 +18,10 @@ import { fetchPost } from "../../hooks/useFetch";
 const filterOptions = ["Holding", "Favorites", "TradeHistory", "Orders"]; // "New" zu "TradeHistory" geändert
 
 export default function PortfolioScreen() {
+  const { isLoggedIn, isAuthLoading, user, setUser } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
   const styles = createStyles(theme);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { isLoggedIn, user, setUser } = useContext(AuthContext);
   const { marketData } = useData();
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [sortedAscending, setSortedAscending] = useState(true);
@@ -48,10 +48,11 @@ export default function PortfolioScreen() {
   };
 
   useEffect(() => {
+    if (isAuthLoading) return; // Warte, bis der Auth-Status geladen ist
     if (!isLoggedIn) {
       navigation.navigate("Login");
     }
-  }, [isLoggedIn, navigation]);
+  }, [isAuthLoading, isLoggedIn, navigation]);
 
   // useEffect zum Abrufen des aktuellen Benutzers via POST mit Token
   useEffect(() => {

@@ -21,8 +21,5 @@ export const AccentColors = [
   "#ff00ff", // " #ff00ff"
   "#00ffff", // " #004f4f"
   "#ff4500", // " #ff4500"
-  "#ff8c00", // " #ff8c00"
-  "#00ff00", // " #00ff00"
-
   
 ];

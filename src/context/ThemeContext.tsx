@@ -1,6 +1,7 @@
 import React, { createContext, useState } from "react";
 import Colors from "../constants/colors";
 import { AccentColors } from "../constants/accentColors";
+import { View } from "react-native";
 
 type Style = {
   text: string;
@@ -45,7 +46,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <ThemeContext.Provider value={{ colorTheme, setColorTheme, theme, accent, setAccent }}>
-      {children}
+      <View style={{ flex: 1 }}>
+        {children}
+      </View>
     </ThemeContext.Provider>
   );
 };

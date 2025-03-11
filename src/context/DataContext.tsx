@@ -78,6 +78,29 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     expectJson: true,
   });
 
+  // Neuer State für Fallback-MarketData
+  const [fallbackMarketData, setFallbackMarketData] = React.useState<MarketData[]>([]);
+
+  // Speichere aktuelle Marktdaten in AsyncStorage als Cache
+  React.useEffect(() => {
+    if (Array.isArray(marketData) && marketData.length > 0) {
+      AsyncStorage.setItem('marketDataCache', JSON.stringify(marketData));
+    }
+  }, [marketData]);
+
+  // Lade gecachte Marktdaten, falls Fetch fehlschlägt oder keine Daten liefert
+  React.useEffect(() => {
+    const loadCachedData = async () => {
+      if ((!marketData || !Array.isArray(marketData) || marketData.length === 0) && errorMarketData) {
+        const cached = await AsyncStorage.getItem('marketDataCache');
+        if (cached) {
+          setFallbackMarketData(JSON.parse(cached));
+        }
+      }
+    };
+    loadCachedData();
+  }, [errorMarketData, marketData]);
+
   // Sicherstellen, dass wir nur einen gültigen Token für die Positionsabfrage verwenden
   const positionsEndpoint = React.useMemo(() => {
     if (user?.token) {
@@ -223,7 +246,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   );
 
   const value: DataContextType = {
-    marketData: Array.isArray(marketData) ? marketData : [],
+    marketData: Array.isArray(marketData) && marketData.length > 0 ? marketData : fallbackMarketData,
     loadingMarketData,
     errorMarketData,
     refreshMarketData,

@@ -127,7 +127,10 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   return (
     <AlertContext.Provider value={{ showAlert, hideAlert }}>
-      {children}
+      <View style={{ flex: 1 }}>
+        {/* Falls Sie Test- oder Debug-Strings verwenden, achten Sie darauf, sie in <Text> zu verpacken */}
+        {children}
+      </View>
       {isWeb && (
         <Modal
           ref={modalRef}

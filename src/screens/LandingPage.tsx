@@ -1,22 +1,22 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import { View, StyleSheet, Animated, Dimensions, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '@/src/types/types';
 import { StatusBar } from 'expo-status-bar';
-import { useContext } from 'react';
 import { ThemeContext } from '@/src/context/ThemeContext';
 import { Video, ResizeMode } from 'expo-av';
 import AnimatedLogo from '@/src/components/AnimatedLogo';
 import { AuthContext } from '../context/AuthContext';
 import { fetchPost } from '../hooks/useFetch';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
 export default function LandingPage() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { theme } = useContext(ThemeContext);
-  const { user, setUser, logout, isLoggedIn } = useContext(AuthContext);
+  const { user, setUser, logout, isLoggedIn, isAuthLoading } = useContext(AuthContext);
   const opacity = useRef(new Animated.Value(1)).current;
   const scale = useRef(new Animated.Value(0.8)).current;
   
@@ -39,33 +39,66 @@ export default function LandingPage() {
   }, [user, logout, setUser]);
 
   useEffect(() => {
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 1800,
-          useNativeDriver: false,
-        }),
-        Animated.timing(scale, {
-          toValue: 1,
-          duration: 800,
-          useNativeDriver: false,
-        }),
-      ]),
-      Animated.delay(1000),
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 1000,
-        useNativeDriver: false,
-      }),
-    ]).start(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Main' }],
-      });
-    });
+    // Navigation erst auslösen, wenn der Auth-Status geladen ist
+    if (isAuthLoading) return;
     
-  }, [navigation, opacity, scale]);
+    const navigateToLastScreen = async () => {
+      let targetRoute = { name: 'Main' as keyof RootStackParamList };
+      
+      // Wenn eingeloggt, prüfe auf letzten besuchten Screen
+      if (isLoggedIn) {
+        try {
+          const lastScreen = await AsyncStorage.getItem('lastScreen');
+          // Falls der letzte Screen "Login" ist, auf Portfolio umstellen
+          if (lastScreen && lastScreen !== "Login") {
+            targetRoute = { 
+              name: 'Main',
+              params: {
+                screen: lastScreen
+              }
+            };
+          } else {
+            targetRoute = { 
+              name: 'Main',
+              params: {
+                screen: 'Portfolio'
+              }
+            };
+          }
+        } catch (error) {
+          console.error('Fehler beim Abrufen des letzten Screens:', error);
+        }
+      }
+      
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 1800,
+            useNativeDriver: false,
+          }),
+          Animated.timing(scale, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: false,
+          }),
+        ]),
+        Animated.delay(1000),
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+      ]).start(() => {
+        navigation.reset({
+          index: 0,
+          routes: [targetRoute],
+        });
+      });
+    };
+    
+    navigateToLastScreen();
+  }, [navigation, opacity, scale, isLoggedIn, isAuthLoading]);
 
   // Hintergrundfarbe basierend auf Login-Status wählen
   const backgroundColor = isLoggedIn ? theme.background : "#000";

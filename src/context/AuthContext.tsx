@@ -7,6 +7,7 @@ interface AuthContextType {
   setIsLoggedIn: (value: boolean) => void;
   setUser: (user: any) => void;
   logout: () => void;
+  isAuthLoading: boolean; // Neuer Wert
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -15,6 +16,7 @@ export const AuthContext = createContext<AuthContextType>({
   setIsLoggedIn: () => {},
   setUser: () => {},
   logout: () => {},
+  isAuthLoading: true,
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -22,6 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isLoggedIn, setIsLoggedInState] = useState(false);
   const [user, setUserState] = useState<any>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true); // Neuer State
 
   const setIsLoggedIn = (value: boolean) => {
     setIsLoggedInState(value);
@@ -64,6 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch (error) {
         console.error("Fehler beim Laden des Auth-Status:", error);
       }
+      setIsAuthLoading(false); // Auth-Status geladen
     }
 
     loadAuthState();
@@ -109,6 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsLoggedIn,
         setUser,
         logout,
+        isAuthLoading,
       }}
     >
       {children}

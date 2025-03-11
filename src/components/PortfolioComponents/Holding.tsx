@@ -75,16 +75,20 @@ export default function Holding({ data, theme }: HoldingProps) {
                       style={{
                         fontFamily: "monospace",
                         fontSize: 14,
-                        color: item.marketInfo.price_change_percentage_24h < 0 ? "red" : "green"
+                        color: item.marketInfo?.price_change_percentage_24h !== undefined
+                          ? item.marketInfo.price_change_percentage_24h < 0 ? "red" : "green"
+                          : "grey"
                       }}
                     >
-                      {item.marketInfo.price_change_percentage_24h.toFixed(2)}%
+                      {item.marketInfo?.price_change_percentage_24h !== undefined
+                        ? `${item.marketInfo.price_change_percentage_24h.toFixed(2)}%`
+                        : 'N/A'}
                     </Text>
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", marginHorizontal: 8 }}>
                     <Text style={{ fontWeight: "bold", color: theme.text }}>Value: </Text>
                     <Text style={{ fontFamily: "monospace", fontWeight: "bold", fontSize: 14, color: theme.text }}>
-                      {formatCurrency(item.amount * item.marketInfo.current_price)}
+                      {formatCurrency(item.amount * (item.marketInfo?.current_price || 0))}
                     </Text>
                   </View>
                 </View>
@@ -177,10 +181,9 @@ export default function Holding({ data, theme }: HoldingProps) {
                               fontFamily: "monospace",
                             }}
                           >
-                            {item.marketInfo.price_change_percentage_24h.toFixed(
-                              2
-                            )}
-                            %
+                            {item.marketInfo?.price_change_percentage_24h !== undefined
+                              ? `${item.marketInfo.price_change_percentage_24h.toFixed(2)}%`
+                              : 'N/A'}
                           </Text>
                         </View>
                         <View style={styles.gridCol3}>
@@ -188,7 +191,7 @@ export default function Holding({ data, theme }: HoldingProps) {
                             style={[styles.value, { fontFamily: "monospace" }]}
                           >
                             {formatCurrency(
-                              item.amount * item.marketInfo.current_price
+                              item.amount * (item.marketInfo?.current_price || 0)
                             )}
                           </Text>
                         </View>

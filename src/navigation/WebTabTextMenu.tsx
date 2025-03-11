@@ -4,6 +4,7 @@ import { useNavigation, useNavigationState, CommonActions } from "@react-navigat
 import { ThemeContext } from "../context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import Card from "../components/Card";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const tabs = [
   { name: "Markets", label: "Markets", icon: "trending-up" },
@@ -39,14 +40,20 @@ export default function WebTabTextMenu() {
         const drawerState = currentState.routes[0].state;
         const activeIndex = drawerState.index || 0;
         if (drawerState.routeNames?.[activeIndex]) {
-          setActiveTab(drawerState.routeNames[activeIndex]);
+          const screenName = drawerState.routeNames[activeIndex];
+          setActiveTab(screenName);
+          // Aktuellen Screen im AsyncStorage speichern
+          AsyncStorage.setItem('lastScreen', screenName);
         }
       } 
       // Falls wir einen TabNavigator haben
       else if (currentState.routeNames) {
         const activeIndex = currentState.index || 0;
         if (currentState.routeNames?.[activeIndex]) {
-          setActiveTab(currentState.routeNames[activeIndex]);
+          const screenName = currentState.routeNames[activeIndex];
+          setActiveTab(screenName);
+          // Aktuellen Screen im AsyncStorage speichern
+          AsyncStorage.setItem('lastScreen', screenName);
         }
       }
     };
@@ -57,6 +64,9 @@ export default function WebTabTextMenu() {
   const handleNavigation = (screenName: string) => {
     // Aktualisiere den aktiven Tab sofort für bessere UX
     setActiveTab(screenName);
+    
+    // Screen-Namen für spätere Navigation speichern
+    AsyncStorage.setItem('lastScreen', screenName);
     
     // Navigiere zum ausgewählten Screen
     navigation.dispatch(
