@@ -16,7 +16,7 @@ const { width, height } = Dimensions.get('window');
 export default function LandingPage() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { theme } = useContext(ThemeContext);
-  const { user, setUser, logout } = useContext(AuthContext);
+  const { user, setUser, logout, isLoggedIn } = useContext(AuthContext);
   const opacity = useRef(new Animated.Value(1)).current;
   const scale = useRef(new Animated.Value(0.8)).current;
   
@@ -67,8 +67,11 @@ export default function LandingPage() {
     
   }, [navigation, opacity, scale]);
 
+  // Hintergrundfarbe basierend auf Login-Status wählen
+  const backgroundColor = isLoggedIn ? theme.background : "#000";
+
   return (
-    <View style={[styles.container, { backgroundColor: "#000" }]}>
+    <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <StatusBar hidden />
       
       <Video

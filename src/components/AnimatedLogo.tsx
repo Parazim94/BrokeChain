@@ -1,13 +1,22 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import { Animated } from "react-native";
 import Svg, { Rect, Text as SvgText } from "react-native-svg";
 import { Path } from "react-native-svg";
+import { ThemeContext } from "../context/ThemeContext";
+import { AuthContext } from "../context/AuthContext";
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 export default function AnimatedLogo() {
   const dashLength = 300;
   const dashAnim = useRef(new Animated.Value(dashLength)).current;
+  const { theme } = useContext(ThemeContext);
+  const { isLoggedIn } = useContext(AuthContext);
+
+  // Farbwerte basierend auf Login-Status
+  const strokeColor = isLoggedIn ? theme.accent : "#00a9d7";
+  const textColor = isLoggedIn ? theme.accent : "#00a9d7";
+  const textColor2 = isLoggedIn ? theme.accent : "#00AEEF";
 
   useEffect(() => {
     Animated.timing(dashAnim, {
@@ -19,8 +28,8 @@ export default function AnimatedLogo() {
 
   return (
     <Svg
-      width="420"    // geändert von 110
-      height="210"   // geändert von 55
+      width="420"
+      height="210"
       viewBox="0 0 220 100"
       preserveAspectRatio="xMidYMid meet"
     >
@@ -41,7 +50,7 @@ export default function AnimatedLogo() {
           Z
         "
         fill="none"
-        stroke="#00a9d7"
+        stroke={strokeColor}
         strokeWidth="8"
         transform="rotate(180,70,50)"
         strokeDasharray={dashLength}
@@ -62,7 +71,7 @@ export default function AnimatedLogo() {
           Z
         "
         fill="none"
-        stroke="#00a9d7"
+        stroke={strokeColor}
         strokeWidth="8"
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
@@ -73,7 +82,7 @@ export default function AnimatedLogo() {
         y="55"
         fontFamily="Arial, sans-serif"
         fontSize="14"
-        fill="#00a9d7"
+        fill={textColor}
         textAnchor="middle"
       >
         BROKE
@@ -84,7 +93,7 @@ export default function AnimatedLogo() {
         y="55"
         fontFamily="Arial, sans-serif"
         fontSize="14"
-        fill="#00AEEF"
+        fill={textColor2}
         textAnchor="middle"
       >
         CHAIN

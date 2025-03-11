@@ -49,7 +49,7 @@ export default function TradeScreen() {
   const [coin, setCoin] = useState<any>(routeCoin);
   const [marketPrice, setMarketPrice] = useState<number | null>(null);
   const [selectedRange, setSelectedRange] =
-    useState<keyof typeof timeIntervals>("1h");
+    useState<keyof typeof timeIntervals>("1m");
   const [chartData, setChartData] = useState<
     { label: string; value: number }[]
   >([]);
