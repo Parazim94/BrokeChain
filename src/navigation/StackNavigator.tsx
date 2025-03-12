@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigation, DrawerActions } from "@react-navigation/native";
+import { NavigationProp, useNavigation, DrawerActions } from "@react-navigation/native";
 import ResponsiveNavigator from "./ResponsiveNavigator";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
 // import AuthScreen from "../screens/Auth/AuthScreen";
@@ -31,7 +31,8 @@ export default function StackNavigator() {
   const { width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
   const { isLoggedIn } = useContext(AuthContext);
-  const navigation = useNavigation();
+  // Explizite Typisierung der Navigation:
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
     <>
@@ -68,12 +69,18 @@ export default function StackNavigator() {
                         marginTop: Platform.OS === "ios" ? 15 : 0,
                       }}
                     >
-                      <Image
-                        source={require("../../assets/images/Brokechain3.png")}
-                        tintColor={theme.accent}
-                        style={{ width: 120, height: 45 }}
-                        resizeMode="contain"
-                      />
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate("LandingPage", { fromLogo: true })
+                        }
+                      >
+                        <Image
+                          source={require("../../assets/images/Brokechain3.png")}
+                          tintColor={theme.accent}
+                          style={{ width: 120, height: 45 }}
+                          resizeMode="contain"
+                        />
+                      </TouchableOpacity>
                       {width >= 1024 && <WebTabTextMenu />}
                     </View>
                   )
@@ -82,26 +89,32 @@ export default function StackNavigator() {
               Platform.OS === "web"
                 ? () => null
                 : () => (
-                    <View
-                      style={{
-                        width: "auto",
-                        marginLeft: 15,
-                        alignItems: "flex-start",
-                        justifyContent: "flex-start",
-                        margin: "auto",
-                      }}
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("LandingPage", { fromLogo: true })
+                      }
                     >
-                      <Image
-                        source={require("../../assets/images/Brokechain3.png")}
-                        tintColor={theme.accent}
+                      <View
                         style={{
-                          width: 110,
-                          height: 45,
-                          marginTop: Platform.OS === "ios" ? 0 : 5,
+                          width: "auto",
+                          marginLeft: 15,
+                          alignItems: "flex-start",
+                          justifyContent: "flex-start",
+                          margin: "auto",
                         }}
-                        resizeMode="contain"
-                      />
-                    </View>
+                      >
+                        <Image
+                          source={require("../../assets/images/Brokechain3.png")}
+                          tintColor={theme.accent}
+                          style={{
+                            width: 110,
+                            height: 45,
+                            marginTop: Platform.OS === "ios" ? 0 : 5,
+                          }}
+                          resizeMode="contain"
+                        />
+                      </View>
+                    </TouchableOpacity>
                   ),
             headerRight: () => (
               <View

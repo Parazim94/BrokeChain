@@ -8,6 +8,7 @@ import {
   Platform,
 } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
+import { useNotification } from "../../context/NotificationContext";
 
 interface ChatbotNotificationProps {
   buttonPosition: { x: number; y: number };
@@ -21,11 +22,15 @@ const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
   visible,
 }) => {
   const { theme } = useContext(ThemeContext);
+  const { aibotNotificationsEnabled } = useNotification(); // Neuer globaler State
+  if (!aibotNotificationsEnabled) return null; // Notification nicht anzeigen, wenn deaktiviert
   const opacity = useRef(new Animated.Value(0)).current;
   const [dimensions, setDimensions] = useState({
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
   });
+  // Neue Ref um zu prüfen, ob bereits angezeigt:
+  const hasDisplayed = useRef(false);
 
   // Update dimensions on resize (for web)
   useEffect(() => {
@@ -53,6 +58,21 @@ const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
     }).start();
   }, [visible]);
 
+  // Neue Logik: Wenn visible true und noch nicht angezeigt, nach 3 Sek. ausblenden
+  useEffect(() => {
+    if (visible && !hasDisplayed.current) {
+      hasDisplayed.current = true;
+      const timer = setTimeout(() => {
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [visible, opacity]);
+
   // Calculate the position of the notification bubble
   const getBubblePosition = () => {
     const bubbleWidth = 200;
@@ -60,7 +80,7 @@ const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
     const padding = 10;
 
     // Default position (to the right of the button)
-    let positionStyle = {
+    let positionStyle: { left?: number; right?: number; top?: number; bottom?: number } = {
       left: buttonPosition.x + buttonSize.width + 10,
       top: buttonPosition.y,
     };

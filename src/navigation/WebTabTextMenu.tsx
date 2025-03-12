@@ -17,42 +17,38 @@ const tabs = [
 export default function WebTabTextMenu() {
   const navigation = useNavigation();
   const { theme } = useContext(ThemeContext);
-  // State für den aktiven Tab
+  // Default initial state nun aus AsyncStorage lesen
   const [activeTab, setActiveTab] = useState("Markets");
   
-  // Get active route name with improved navigation state detection
+  // Initialer Effekt: setze activeTab aus AsyncStorage, falls vorhanden
+  useEffect(() => {
+    AsyncStorage.getItem("lastScreen").then((value) => {
+      if (value) setActiveTab(value);
+    });
+  }, []);
+  
+  // Erhalte NavigationState wie gehabt
   const navigationState = useNavigationState(state => state);
 
-  // Verbesserte Logik zum Finden des aktiven Tabs
   useEffect(() => {
     const findActiveRoute = () => {
       if (!navigationState?.routes) return;
-      
-      // Finde den Main-Route
       const mainRoute = navigationState.routes.find(route => route.name === "Main");
       if (!mainRoute?.state) return;
-      
-      // Navigiere durch die verschachtelten Navigator-Zustände
       let currentState = mainRoute.state;
-      
-      // Falls wir einen DrawerNavigator haben
       if (currentState.routes?.[0]?.state?.routeNames) {
         const drawerState = currentState.routes[0].state;
         const activeIndex = drawerState.index || 0;
         if (drawerState.routeNames?.[activeIndex]) {
           const screenName = drawerState.routeNames[activeIndex];
           setActiveTab(screenName);
-          // Aktuellen Screen im AsyncStorage speichern
           AsyncStorage.setItem('lastScreen', screenName);
         }
-      } 
-      // Falls wir einen TabNavigator haben
-      else if (currentState.routeNames) {
+      } else if (currentState.routeNames) {
         const activeIndex = currentState.index || 0;
         if (currentState.routeNames?.[activeIndex]) {
           const screenName = currentState.routeNames[activeIndex];
           setActiveTab(screenName);
-          // Aktuellen Screen im AsyncStorage speichern
           AsyncStorage.setItem('lastScreen', screenName);
         }
       }
@@ -62,13 +58,8 @@ export default function WebTabTextMenu() {
   }, [navigationState]);
 
   const handleNavigation = (screenName: string) => {
-    // Aktualisiere den aktiven Tab sofort für bessere UX
     setActiveTab(screenName);
-    
-    // Screen-Namen für spätere Navigation speichern
     AsyncStorage.setItem('lastScreen', screenName);
-    
-    // Navigiere zum ausgewählten Screen
     navigation.dispatch(
       CommonActions.navigate({
         name: "Main",

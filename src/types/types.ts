@@ -13,8 +13,8 @@ export type Ticker = {
 };
 
 export type RootStackParamList = {
-  LandingPage: undefined;
-  Main: undefined;
+  LandingPage: { fromLogo: boolean } | undefined;
+  Main: { screen: "Markets" | "Share" | "Trade" | "Discover" | "Portfolio" } | undefined;
   Markets: undefined;
   Share: undefined;
   Trade: { coin: any };

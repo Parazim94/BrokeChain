@@ -242,7 +242,7 @@ export default function CryptoNews() {
                   </Text>
                 </View>
               </View>
-              <ScrollView style={{ maxHeight: 500 }}>
+              <ScrollView>
                 <Text style={[newsStyles.newsDescription, { color: "white" }]}>
                   {modalNews.content.replace(/<[^>]+>/g, "")}
                 </Text>
@@ -362,7 +362,7 @@ export default function CryptoNews() {
                   </Text>
                 </View>
               </View>
-              <ScrollView style={{ maxHeight: 500 }}>
+              <ScrollView>
                 <Text
                   style={[newsStyles.newsDescription, { color: theme.text }]}
                 >

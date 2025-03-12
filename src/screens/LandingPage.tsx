@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useContext } from 'react';
 import { View, StyleSheet, Animated, Dimensions, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '@/src/types/types';
 import { StatusBar } from 'expo-status-bar';
@@ -15,12 +15,17 @@ const { width, height } = Dimensions.get('window');
 
 export default function LandingPage() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const route = useRoute();
   const { theme } = useContext(ThemeContext);
   const { user, setUser, logout, isLoggedIn, isAuthLoading } = useContext(AuthContext);
+  const didVerify = useRef(false);
   const opacity = useRef(new Animated.Value(1)).current;
   const scale = useRef(new Animated.Value(0.8)).current;
   
   useEffect(() => {
+    if (didVerify.current) return;
+    didVerify.current = true;
+    
     const verifyUser = async () => {
       if (user && user.token) {
         try {
@@ -36,69 +41,76 @@ export default function LandingPage() {
       }
     };
     verifyUser();
-  }, [user, logout, setUser]);
+  }, [logout, setUser]);
 
   useEffect(() => {
-    // Navigation erst auslösen, wenn der Auth-Status geladen ist
     if (isAuthLoading) return;
     
     const navigateToLastScreen = async () => {
       let targetRoute = { name: 'Main' as keyof RootStackParamList };
+      const isFromLogo = (route.params as { fromLogo?: boolean } | undefined)?.fromLogo;
       
-      // Wenn eingeloggt, prüfe auf letzten besuchten Screen
-      if (isLoggedIn) {
-        try {
-          const lastScreen = await AsyncStorage.getItem('lastScreen');
-          // Falls der letzte Screen "Login" ist, auf Portfolio umstellen
-          if (lastScreen && lastScreen !== "Login") {
-            targetRoute = { 
-              name: 'Main',
-              params: {
-                screen: lastScreen
-              }
-            };
-          } else {
-            targetRoute = { 
-              name: 'Main',
-              params: {
-                screen: 'Portfolio'
-              }
-            };
+      if (isFromLogo) {
+        // Bei Klick aufs Logo: Wenn eingeloggt -> zu Portfolio, sonst zu Markets
+        targetRoute = isLoggedIn 
+          ? { name: 'Main', params: { screen: 'Portfolio' } } 
+          : { name: 'Main', params: { screen: 'Markets' } };
+      } else {
+        // Alte Logik: Wenn eingeloggt, prüfe auf letzten besuchten Screen
+        if (isLoggedIn) {
+          try {
+            const lastScreen = await AsyncStorage.getItem('lastScreen');
+            if (lastScreen && lastScreen !== "Login") {
+              targetRoute = { 
+                name: 'Main',
+                params: { screen: lastScreen }
+              };
+            } else {
+              targetRoute = { 
+                name: 'Main',
+                params: { screen: 'Portfolio' }
+              };
+            }
+          } catch (error) {
+            console.error('Fehler beim Abrufen des letzten Screens:', error);
           }
-        } catch (error) {
-          console.error('Fehler beim Abrufen des letzten Screens:', error);
         }
       }
       
-      Animated.sequence([
-        Animated.parallel([
+      const initialDelay = isLoggedIn ? 500 : 0;
+      const middleDelay = isLoggedIn ? 1500 : 1000;
+      
+      setTimeout(() => {
+        Animated.sequence([
+          Animated.parallel([
+            Animated.timing(opacity, {
+              toValue: 1,
+              duration: 1000,
+              useNativeDriver: false,
+            }),
+            Animated.timing(scale, {
+              toValue: 1,
+              duration: 800,
+              useNativeDriver: false,
+            }),
+          ]),
+          Animated.delay(middleDelay),
           Animated.timing(opacity, {
-            toValue: 1,
-            duration: 1800,
+            toValue: 0,
+            duration: 1000,
             useNativeDriver: false,
           }),
-          Animated.timing(scale, {
-            toValue: 1,
-            duration: 800,
-            useNativeDriver: false,
-          }),
-        ]),
-        Animated.delay(1000),
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 1000,
-          useNativeDriver: false,
-        }),
-      ]).start(() => {
-        navigation.reset({
-          index: 0,
-          routes: [targetRoute],
+        ]).start(() => {
+          navigation.reset({
+            index: 0,
+            routes: [targetRoute],
+          });
         });
-      });
+      }, initialDelay);
     };
     
     navigateToLastScreen();
-  }, [navigation, opacity, scale, isLoggedIn, isAuthLoading]);
+  }, [navigation, opacity, scale, isLoggedIn, isAuthLoading, route]);
 
   // Hintergrundfarbe basierend auf Login-Status wählen
   const backgroundColor = isLoggedIn ? theme.background : "#000";

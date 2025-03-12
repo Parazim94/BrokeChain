@@ -240,8 +240,8 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
               {newsLoaded ? "Mit aktuellen News-Daten" : "Lade News-Daten..."}
             </Text>
           </View>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={24} color={"white"} />
+          <TouchableOpacity onPress={onClose} >
+            <Ionicons name="close-circle" size={24} color="red" />
           </TouchableOpacity>
         </View>
 
