@@ -123,10 +123,8 @@ export default function UserInfo({
       padding: 16,
       backgroundColor: theme.background,
       borderRadius: 8,
-      overflow: "hidden",
-      // More subtle themed box shadow
-      // boxShadow: `0px 0px 11px ${theme.accent}`,
-      // More subtle themed border
+      overflow: "hidden",    
+      // boxShadow: `0px 0px 11px ${theme.accent}`,    
       // borderWidth: 1.5,
       // borderColor: theme.accent,
     },

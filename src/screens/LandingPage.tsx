@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden', 
   },
   logoContainer: {
     justifyContent: 'center',
@@ -146,13 +147,10 @@ const styles = StyleSheet.create({
     height: 450,
   },
   backgroundVideo: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    width: width,
-    height: height,
+    position: "absolute",
+    width: "100%",
+    height: "100%",  
     opacity: 0.3,
+    transform: [{ scale: 2 }],
   },
 });
