@@ -8,29 +8,84 @@ import {
   Platform,
 } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
-import { useNotification } from "../../context/NotificationContext";
 
 interface ChatbotNotificationProps {
   buttonPosition: { x: number; y: number };
   buttonSize: { width: number; height: number };
   visible: boolean;
+  onButtonPress?: boolean; // Track when chat button is pressed
 }
 
 const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
   buttonPosition,
   buttonSize,
   visible,
+  onButtonPress = false,
 }) => {
   const { theme } = useContext(ThemeContext);
-  const { aibotNotificationsEnabled } = useNotification(); // Neuer globaler State
-  if (!aibotNotificationsEnabled) return null; // Notification nicht anzeigen, wenn deaktiviert
   const opacity = useRef(new Animated.Value(0)).current;
   const [dimensions, setDimensions] = useState({
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
   });
-  // Neue Ref um zu prüfen, ob bereits angezeigt:
-  const hasDisplayed = useRef(false);
+  const [shouldShow, setShouldShow] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Handle button press reset
+  useEffect(() => {
+    if (onButtonPress) {
+      // Hide notification immediately
+      setShouldShow(false);
+
+      // Clear any pending timeouts/intervals
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
+      // Set new interval for next reminder
+      intervalRef.current = setInterval(() => {
+        setShouldShow(true);
+
+        // Hide after 10 seconds
+        timeoutRef.current = setTimeout(() => {
+          setShouldShow(false);
+        }, 10000);
+      }, 60000); // Show every minute
+    }
+  }, [onButtonPress]);
+
+  // Initialize timing system
+  useEffect(() => {
+    // Initial display after 10 seconds of page load
+    const initialDelay = setTimeout(() => {
+      setShouldShow(true);
+
+      // Hide after 10 seconds
+      timeoutRef.current = setTimeout(() => {
+        setShouldShow(false);
+      }, 10000);
+    }, 10000);
+
+    // Set up recurring display every minute
+    intervalRef.current = setInterval(() => {
+      setShouldShow(true);
+
+      // Hide after 10 seconds
+      timeoutRef.current = setTimeout(() => {
+        setShouldShow(false);
+      }, 10000);
+    }, 60000); // 60000ms = 1 minute
+
+    return () => {
+      clearTimeout(initialDelay);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   // Update dimensions on resize (for web)
   useEffect(() => {
@@ -52,26 +107,11 @@ const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
   // Animate the appearance and disappearance of the notification
   useEffect(() => {
     Animated.timing(opacity, {
-      toValue: visible ? 1 : 0,
+      toValue: visible && shouldShow ? 1 : 0,
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }, [visible]);
-
-  // Neue Logik: Wenn visible true und noch nicht angezeigt, nach 3 Sek. ausblenden
-  useEffect(() => {
-    if (visible && !hasDisplayed.current) {
-      hasDisplayed.current = true;
-      const timer = setTimeout(() => {
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [visible, opacity]);
+  }, [visible, shouldShow]);
 
   // Calculate the position of the notification bubble
   const getBubblePosition = () => {
@@ -80,7 +120,7 @@ const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
     const padding = 10;
 
     // Default position (to the right of the button)
-    let positionStyle: { left?: number; right?: number; top?: number; bottom?: number } = {
+    let positionStyle = {
       left: buttonPosition.x + buttonSize.width + 10,
       top: buttonPosition.y,
     };

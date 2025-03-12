@@ -44,7 +44,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
 
   const defaultHeight =
     Platform.OS === "web"
-      ? Math.min(500, screenHeight * 0.7)
+      ? "auto"
       : screenHeight * 0.7;
 
   return (
@@ -62,13 +62,14 @@ const CustomModal: React.FC<CustomModalProps> = ({
             {
               width: width || defaultWidth,
               height: height || defaultHeight,
+              maxHeight: screenHeight * 0.8,
             },
             modalStyle,
           ])}
         >
           {showCloseButton && (
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color={"white"} />
+              <Ionicons name="close-circle" size={24} color={"red"} />
             </TouchableOpacity>
           )}
 

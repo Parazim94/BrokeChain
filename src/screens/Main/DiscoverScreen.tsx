@@ -236,7 +236,9 @@ export default function CryptoNews() {
                   </View>
                 )}
                 <View style={newsStyles.newsHeader}>
-                  <Text style={newsStyles.newsTitle}>{modalNews.title}</Text>
+                  <Text style={[newsStyles.newsTitle, { color: "white" }]}>
+                    {modalNews.title}
+                  </Text>
                   <Text style={[newsStyles.newsDate, { color: "white" }]}>
                     {modalNews.pubDate}
                   </Text>
@@ -247,15 +249,7 @@ export default function CryptoNews() {
                   {modalNews.content.replace(/<[^>]+>/g, "")}
                 </Text>
               </ScrollView>
-              <View style={{ marginTop: 8, alignItems: "center" }}>
-                <Button
-                  onPress={() => setModalNews(null)}
-                  title="Schließen"
-                  type="primary"
-                  size="medium"
-                  style={{ width: 150 }}
-                />
-              </View>
+              
             </View>
           </CustomModal>
         )}
@@ -350,34 +344,25 @@ export default function CryptoNews() {
                   />
                 ) : (
                   <View style={newsStyles.newsImage}>
-                    <Text style={[newsStyles.newsDate, { color: theme.text }]}>
+                    <Text style={[newsStyles.newsDate, { color: "white" }]}>
                       Kein Bild
                     </Text>
                   </View>
                 )}
                 <View style={newsStyles.newsHeader}>
-                  <Text style={newsStyles.newsTitle}>{modalNews.title}</Text>
-                  <Text style={[newsStyles.newsDate, { color: theme.text }]}>
+                  <Text style={[newsStyles.newsTitle, { color: "white" }]}>
+                    {modalNews.title}
+                  </Text>
+                  <Text style={[newsStyles.newsDate, { color: "white" }]}>
                     {modalNews.pubDate}
                   </Text>
                 </View>
               </View>
               <ScrollView>
-                <Text
-                  style={[newsStyles.newsDescription, { color: theme.text }]}
-                >
+                <Text style={[newsStyles.newsDescription, { color: "white" }]}>
                   {modalNews.content.replace(/<[^>]+>/g, "")}
                 </Text>
-              </ScrollView>
-              <View style={{ marginTop: 8, alignItems: "center" }}>
-                <Button
-                  onPress={() => setModalNews(null)}
-                  title="Schließen"
-                  type="primary"
-                  size="medium"
-                  style={{ width: 150 }}
-                />
-              </View>
+              </ScrollView>         
             </View>
           </CustomModal>
         )}

@@ -221,7 +221,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
 
   const { width } = Dimensions.get("window");
   const modalWidth =
-    Platform.OS === "web" ? Math.min(400, width * 0.9) : width * 0.9;
+    Platform.OS === "web" ? Math.min(600, width * 0.9) : width * 0.9;
 
   return (
     <CustomModal
@@ -322,6 +322,7 @@ const styles = StyleSheet.create({
     flex: 1,
     display: "flex",
     flexDirection: "column",
+    minHeight: 450,
   },
   header: {
     flexDirection: "row",
