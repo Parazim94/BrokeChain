@@ -13,12 +13,14 @@ interface ChatbotNotificationProps {
   buttonPosition: { x: number; y: number };
   buttonSize: { width: number; height: number };
   visible: boolean;
+  onButtonPress?: boolean; // Track when chat button is pressed
 }
 
 const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
   buttonPosition,
   buttonSize,
   visible,
+  onButtonPress = false,
 }) => {
   const { theme } = useContext(ThemeContext);
   const opacity = useRef(new Animated.Value(0)).current;
@@ -26,6 +28,64 @@ const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
   });
+  const [shouldShow, setShouldShow] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Handle button press reset
+  useEffect(() => {
+    if (onButtonPress) {
+      // Hide notification immediately
+      setShouldShow(false);
+
+      // Clear any pending timeouts/intervals
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
+      // Set new interval for next reminder
+      intervalRef.current = setInterval(() => {
+        setShouldShow(true);
+
+        // Hide after 10 seconds
+        timeoutRef.current = setTimeout(() => {
+          setShouldShow(false);
+        }, 10000);
+      }, 60000); // Show every minute
+    }
+  }, [onButtonPress]);
+
+  // Initialize timing system
+  useEffect(() => {
+    // Initial display after 10 seconds of page load
+    const initialDelay = setTimeout(() => {
+      setShouldShow(true);
+
+      // Hide after 10 seconds
+      timeoutRef.current = setTimeout(() => {
+        setShouldShow(false);
+      }, 10000);
+    }, 10000);
+
+    // Set up recurring display every minute
+    intervalRef.current = setInterval(() => {
+      setShouldShow(true);
+
+      // Hide after 10 seconds
+      timeoutRef.current = setTimeout(() => {
+        setShouldShow(false);
+      }, 10000);
+    }, 60000); // 60000ms = 1 minute
+
+    return () => {
+      clearTimeout(initialDelay);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   // Update dimensions on resize (for web)
   useEffect(() => {
@@ -47,11 +107,11 @@ const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
   // Animate the appearance and disappearance of the notification
   useEffect(() => {
     Animated.timing(opacity, {
-      toValue: visible ? 1 : 0,
+      toValue: visible && shouldShow ? 1 : 0,
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }, [visible]);
+  }, [visible, shouldShow]);
 
   // Calculate the position of the notification bubble
   const getBubblePosition = () => {
