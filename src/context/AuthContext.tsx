@@ -31,17 +31,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     AsyncStorage.setItem("isLoggedIn", JSON.stringify(value));
   };
 
-  const setUser = (userData: any) => {
+  const setUser = async (userData: any) => {
     setUserState(userData);
-    AsyncStorage.setItem("user", JSON.stringify(userData));
-
-    // Speichere auch den Token separat im AsyncStorage für einfacheren Zugriff
-    if (userData && userData.token) {
-      console.log("Token im AsyncStorage gespeichert:", userData.token);
-      AsyncStorage.setItem("userToken", userData.token);
-    } else if (userData === null) {
-      // Wenn der Benutzer auf null gesetzt wird, auch Token entfernen
-      AsyncStorage.removeItem("userToken");
+    try {
+      await AsyncStorage.setItem("user", JSON.stringify(userData));
+      if (userData && userData.token) {
+        console.log("Token im AsyncStorage gespeichert:", userData.token);
+        await AsyncStorage.setItem("userToken", userData.token);
+      } else if (userData === null) {
+        await AsyncStorage.removeItem("userToken");
+      }
+    } catch (error) {
+      console.error("Error saving user data to AsyncStorage:", error);
     }
   };
 
@@ -61,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
           // Stelle sicher, dass der Token auch separat gespeichert ist
           if (parsedUser && parsedUser.token) {
-            AsyncStorage.setItem("userToken", parsedUser.token);
+            await AsyncStorage.setItem("userToken", parsedUser.token);
           }
         }
       } catch (error) {
