@@ -137,7 +137,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   }, [rawPositions, marketData]);
 
   // Aktualisierte executeTrade Funktion mit verbessertem Error-Handling
-  const executeTrade = useCallback(
+  const executeTrade = 
     async (trade: Trade, mode: "spot" | "order" = "spot") => {
       try {
         // Versuche zuerst den Token aus dem Kontext zu bekommen
@@ -165,6 +165,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
         // Verwende die richtige Route basierend auf dem Modus
         const endpoint = mode === "order" ? "trade/order" : "trade";
         const result = await fetchPost(endpoint, payload);
+        console.log("payload:", payload);
+        console.log("endpoint:", endpoint);
+        console.log("trade:", trade);
+        
+                
 
         // Logge die Serverantwort nach jedem Trade
         console.log("Server response after trade:", result);
@@ -197,9 +202,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
         
         throw error;
       }
-    },
-    [user, refreshPositions, setUser, showAlert]
-  );
+    }
+   
 
   // Historische Daten – erstmal von Binance, mit Fallback auf Marktdaten
   const getHistoricalData = useCallback(
