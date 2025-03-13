@@ -25,7 +25,7 @@ export function useFetch<T>(endpoint: string, options: UseFetchOptions = {}) {
 		}
 		try {
 			setLoading(true);
-			const url = `https://broke.dev-space.vip${endpoint}`;
+			const url = `https://broke.dev-space.vip/${endpoint}`;
 			console.log(`[GET] Fetching from: ${url}`);
 			const response = await fetch(url);
 			if (!response.ok) throw new Error(`Error ${response.status}`);

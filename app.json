@@ -1,5 +1,6 @@
 {
   "expo": {
+    "sdkVersion": "52.0.0",
     "name": "Broke-Chain",
     "slug": "Broke-Chain",
     "version": "1.0.0",

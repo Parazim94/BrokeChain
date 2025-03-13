@@ -11,7 +11,7 @@ import * as Linking from 'expo-linking';
 
 // NEUE Linking-Konfiguration mit NETLIFY Domain:
 const linking = {
-	prefixes: ['https://broke.dev-space.vip', 'broke-chain://'],
+	prefixes: ['https://broke-chain.netlify.app/', 'broke-chain://'],
 	config: {
 		screens: {
 			LandingPage: '',
