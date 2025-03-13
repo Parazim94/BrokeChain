@@ -5,9 +5,9 @@
     "slug": "Broke-Chain",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo2.png",
+    "icon": "public/favicon.png",
     "splash": {
-      "image": "./assets/images/logo2.png",
+      "image": "public/favicon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,19 +19,19 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/images/logo2.png"
+      "icon": "public/favicon.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo2.png",
+        "foregroundImage": "public/favicon.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/images/favicon.png",
+      "favicon": "public/favicon.png",
       "build": {
         "favicon": {
-          "src": "./assets/images/favicon.png",
+          "src": "public/favicon.png",
           "sizes": [96, 192, 512]
         }
       }
