@@ -34,7 +34,7 @@ export default function RegisterScreen() {
       showAlert({
         type: "success",
         title: "Success",
-        message: "Registration successful! <b>Please Check your mails!</b>",
+        message: "Please Check your mails! Registration successful!",
         onConfirm: () => navigation.navigate("Login" as never)
       });
     } catch (error) {

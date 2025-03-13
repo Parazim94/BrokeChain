@@ -92,14 +92,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     restoreToken();
   }, []);
 
-  // Logout-Funktion aktualisieren, um auch den gespeicherten Token zu löschen
+  // Logout-Funktion aktualisieren, um auch den gespeicherten Token zu löschen und alle Storage-Daten zu clearen
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem("userToken");
-      await AsyncStorage.removeItem("user");
-      await AsyncStorage.setItem("isLoggedIn", JSON.stringify(false));
+      await AsyncStorage.clear(); // alle Daten löschen
     } catch (error) {
-      console.error("Fehler beim Löschen der Benutzerdaten:", error);
+      console.error("Fehler beim Clearen des AsyncStorage:", error);
     }
     setUserState(null);
     setIsLoggedInState(false);
