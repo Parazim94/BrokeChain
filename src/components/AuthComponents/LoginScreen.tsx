@@ -9,6 +9,14 @@ import Button from "@/src/components/Button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAlert } from "@/src/context/AlertContext";
 import Card from "@/src/components/Card";
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri } from 'expo-auth-session';
+import { useAuthRequest } from 'expo-auth-session/providers/google';
+
+// Konfiguriere den Google Login (Client-ID anpassen!)
+const googleClientId = 'DEINE_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const styles = createStyles();
@@ -23,10 +31,62 @@ export default function LoginScreen() {
   
   const isMobile = Platform.OS !== "web"; // Mobile-Check
 
+  // Google-Auth-Request initialisieren
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: googleClientId,
+      iosClientId: googleClientId,
+      androidClientId: googleClientId,
+      webClientId: googleClientId,
+      redirectUri: makeRedirectUri(),
+    }
+  );
+  
+  // Bei erfolgter Google-Antwort den Token verarbeiten
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      if (authentication?.accessToken) {
+        handleGoogleLogin(authentication.accessToken);
+      }
+    }
+  }, [response]);
+  
+  // Funktion zum Login mit Google
+  const handleGoogleLogin = async (accessToken: string) => {
+    try {
+      // Übergib den Google-Token an dein Backend zur Validierung / Registrierung
+      const googleLoginResponse = await fetch("https://broke.dev-space.vip/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accessToken }),
+      });
+      if (!googleLoginResponse.ok) {
+        throw new Error("Google Login fehlgeschlagen");
+      }
+      const userData = await googleLoginResponse.json();
+      
+      // Token speichern, User-Daten setzen etc.
+      if (userData.token) {
+        await AsyncStorage.setItem('userToken', userData.token);
+        console.log("Google-Token gespeichert:", userData.token.substring(0, 15) + "...");
+      }
+      setUser(userData);
+      setIsLoggedIn(true);
+      navigation.navigate("Main", { screen: "Portfolio" });
+    } catch (error) {
+      showAlert({
+        type: "error",
+        title: "Google Login Error",
+        message: error instanceof Error ? error.message : "Unexpected error occurred"
+      });
+    }
+  };
+
   const handleLogin = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("https://broke-end.vercel.app/auth/login", {
+      const response = await fetch("https://broke.dev-space.vip/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -87,6 +147,18 @@ export default function LoginScreen() {
             marginTop: 12, 
             ...(isMobile ? { width: "100%", alignItems: "center" } : {})
           }}
+        />
+        {/* Neuer Button für Login with Google */}
+        <Button
+          onPress={() => promptAsync()}
+          title="Login with Google"
+          fullWidth
+          style={{ 
+            marginTop: 12, 
+            backgroundColor: "#DB4437", 
+            ...(isMobile ? { width: "100%", alignItems: "center" } : {})
+          }}
+          textStyle={{ textAlign: "center" }}
         />
         <View style={auth.linkContainer}>
           <Text style={auth.infoText}>New here? </Text>
