@@ -165,7 +165,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
         // Verwende die richtige Route basierend auf dem Modus
         const endpoint = mode === "order" ? "trade/order" : "trade";
         const result = await fetchPost(endpoint, payload);
-        
+
+        // Logge die Serverantwort nach jedem Trade
+        console.log("Server response after trade:", result);
+
         // Benutzeraktualisierung
         if (result) {
           console.log("Trade successful, updating user");
