@@ -11,7 +11,7 @@ import { AlertProvider } from "./src/context/AlertContext";
 
 // NEUE Linking-Konfiguration mit NETLIFY Domain:
 const linking = {
-	prefixes: ['https://broke-chain.netlify.app/', 'broke-chain://'],
+	prefixes: ['https://broke.dev-space.vip/', 'broke-chain://'],
 	config: {
 		screens: {
 			LandingPage: '',
