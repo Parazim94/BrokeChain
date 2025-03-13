@@ -49,7 +49,7 @@ export default function CryptoNews() {
     const fetchNews = async () => {
       try {
         const response = await fetch(
-          "https://broke-end.vercel.app/marketData/news"
+          "https://https://broke.dev-space.vip/marketData/news"
         );
         const data = await response.json();
         setNews(data.items);

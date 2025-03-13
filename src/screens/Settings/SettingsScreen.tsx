@@ -94,7 +94,7 @@ export default function SettingsScreen() {
 
     try {
       const response = await fetch(
-        "https://broke-end.vercel.app/user/settings",
+        "https://broke.dev-space.vip/user/settings",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -149,7 +149,7 @@ export default function SettingsScreen() {
 
     try {
       const response = await fetch(
-        "https://broke-end.vercel.app/user/settings",
+        "https://broke.dev-space.vip/user/settings",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -205,7 +205,7 @@ export default function SettingsScreen() {
     try {
       // Implement password change API call here
       const response = await fetch(
-        "https://broke-end.vercel.app/user/change_password",
+        "https://broke.dev-space.vip/user/change_password",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -261,7 +261,7 @@ export default function SettingsScreen() {
       
       // Implement email change API call here
       const response = await fetch(
-        "https://broke-end.vercel.app/user/change_email",
+        "https://broke.dev-space.vip/user/change_email",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -309,7 +309,7 @@ export default function SettingsScreen() {
 
     try {
       const response = await fetch(
-        "https://broke-end.vercel.app/user/settings",
+        "https://broke.dev-space.vip/user/settings",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

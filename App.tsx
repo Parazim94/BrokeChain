@@ -7,7 +7,7 @@ import { ThemeProvider, ThemeContext } from "./src/context/ThemeContext";
 import { AuthProvider, AuthContext } from "./src/context/AuthContext";
 import { DataProvider } from "./src/context/DataContext";
 import { AlertProvider } from "./src/context/AlertContext";
-import * as Linking from 'expo-linking'; 
+// import * as Linking from 'expo-linking'; 
 
 // NEUE Linking-Konfiguration mit NETLIFY Domain:
 const linking = {
@@ -28,7 +28,7 @@ const linking = {
 			Login: 'login',
 			Register: 'register',
 			Settings: 'settings',
-            Verified: 'auth/verify/:token', // NEUER ROUTE
+            Verified: 'auth/verify/:token', 
 			NotFound: '*'
 		}
 	}
