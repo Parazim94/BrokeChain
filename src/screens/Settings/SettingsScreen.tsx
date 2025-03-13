@@ -119,13 +119,16 @@ export default function SettingsScreen() {
       // Serverantwort parsen und neues Token extrahieren
       const responseData = await response.json();
       const newToken = responseData.token;
+      console.log("Neues Token:", newToken);
+      
       
       // Aktualisiere User mit neuem Token und Theme-Einstellungen
       const updatedUser = { 
         ...user, 
         prefTheme: [colorTheme, accent],
-        token: newToken || user.token // Verwende neues Token oder behalte altes, falls keins zurückkommt
+        token: newToken // Verwende neues Token oder behalte altes, falls keins zurückkommt
       };
+      console.log("Updated User:", updatedUser);
       
       setUser(updatedUser);
 
