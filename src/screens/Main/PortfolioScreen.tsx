@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
+import React, { useContext, useState, useEffect, useMemo, useRef } from "react";
 import { SafeAreaView, View, Text, SectionList } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import { createStyles } from "../../components/PortfolioComponents/portfolioStyles";
@@ -55,21 +55,31 @@ export default function PortfolioScreen() {
     }
   }, [isAuthLoading, isLoggedIn, navigation, logout]);
 
-  // useEffect zum Abrufen des aktuellen Benutzers via POST mit Token
+  // Prevent infinite loop by running fetch only once per mount
+  const hasFetchedUserRef = useRef(false);
   useEffect(() => {
+    if (!user || !user.token || hasFetchedUserRef.current) return;
+    
     const fetchUserData = async () => {
-      if (user && user.token) {
-        try {
-          const updatedUser = await fetchPost("user", { token: user.token });
-          console.log("Benutzerdaten aktualisiert:", updatedUser); // Debugging-Ausgabe hinzufügen
+      try {
+        const updatedUser = await fetchPost("user", { token: user.token });
+        if (updatedUser && updatedUser.error) {
+          console.error("Token ungültig, User wird ausgeloggt:", updatedUser.error);
+          logout();
+          navigation.navigate("Login");
+        } else {
           setUser(updatedUser);
-        } catch (err) {
-          console.error("Fehler beim Abrufen des Benutzers:", err);
+          console.log("Benutzerdaten erfolgreich aktualisiert:", updatedUser);
         }
+      } catch (err) {
+        console.error("Fehler beim Abrufen des Benutzers:", err);
+        logout();
+        navigation.navigate("Login");
       }
+      hasFetchedUserRef.current = true;
     };
     fetchUserData();
-  }, [Orders]); // Optionale Verkettung hinzugefügt
+  }, [Orders]); // Dependency auf token statt user
 
   // Absicherung für neue Benutzer ohne positions
   const userPositionsArray = Object.entries(userData.positions || {}).map(

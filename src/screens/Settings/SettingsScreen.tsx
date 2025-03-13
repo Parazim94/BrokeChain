@@ -92,6 +92,9 @@ export default function SettingsScreen() {
     if (!user) return;
     setIsUpdatingAppearance(true);
 
+    // Log das aktuelle Token
+    console.log("Appearance Update - aktueller Token:", user?.token);
+
     try {
       const response = await fetch(
         "https://broke.dev-space.vip/user/settings",
@@ -243,6 +246,9 @@ export default function SettingsScreen() {
 
   // Handle email change
   const handleEmailChange = async () => {
+    // Log das aktuelle Token
+    console.log("Email Change - aktueller Token:", user?.token, "New Email:", newEmail);
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(newEmail)) {
@@ -300,6 +306,10 @@ export default function SettingsScreen() {
   const handleSave = async () => {
     if (!user) return;
     setIsSaving(true);
+
+    // Log das aktuelle Token vor dem Speichern aller Settings
+    console.log("Save Settings - aktueller Token:", user?.token);
+
     const updatedUserData = {
       ...user,
       prefTheme: [colorTheme, accent],
