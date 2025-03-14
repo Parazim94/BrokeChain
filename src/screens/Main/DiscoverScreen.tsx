@@ -244,12 +244,24 @@ export default function CryptoNews() {
                   </Text>
                 </View>
               </View>
-              <ScrollView>
-                <Text style={[newsStyles.newsDescription, { color: "white" }]}>
+              {/* Vertikal scrollbarer Content */}
+              <ScrollView 
+                horizontal={false}
+                showsHorizontalScrollIndicator={false}
+                style={{ marginVertical: 8, maxHeight: 400, overflow: "scroll" }}
+              >
+                <Text style={[newsStyles.newsDescription, { color: "white" }]}> 
                   {modalNews.content.replace(/<[^>]+>/g, "")}
                 </Text>
               </ScrollView>
-              
+              {/* Button um den Link aufzurufen */}
+              <Button
+                onPress={() => Linking.openURL(modalNews.link)}
+                title="Link öffnen"
+                type="primary"
+                size="medium"
+                style={{ width: 150 }}
+              />
             </View>
           </CustomModal>
         )}
@@ -305,11 +317,11 @@ export default function CryptoNews() {
                 </View>
 
                 {/* Content unterhalb */}
-                <View style={newsStyles.newsContent}>
+                <ScrollView style={newsStyles.newsContent}>
                   <Text style={newsStyles.newsDescription} numberOfLines={5}>
                     {item.content.replace(/<[^>]+>/g, "")}
                   </Text>
-                </View>
+                </ScrollView>
               </Card>
             )}
           />

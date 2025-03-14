@@ -535,14 +535,7 @@ export default function SettingsScreen() {
 
           <FavoritesCard
             favorites={favorites}
-            filteredCoins={useMemo(() => {
-              if (!searchQuery) return [];
-              return marketData.filter(
-                (item) =>
-                  (item.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  (item.symbol || "").toLowerCase().includes(searchQuery.toLowerCase())
-              );
-            }, [searchQuery, marketData])}
+            filteredCoins={filteredCoins}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
             isSearchActive={isSearchActive}

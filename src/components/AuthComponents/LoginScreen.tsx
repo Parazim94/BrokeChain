@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, Text, TextInput, Platform } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { StackParamList } from "@/src/types/types";
@@ -22,7 +22,7 @@ export default function LoginScreen() {
   const styles = createStyles();
   const auth = authStyles();
   const navigation = useNavigation<NavigationProp<StackParamList>>();
-  const { setIsLoggedIn, setUser } = useContext(AuthContext);
+  const { setIsLoggedIn, setUser, logout } = useContext(AuthContext);
   const { showAlert } = useAlert();   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,6 +52,11 @@ export default function LoginScreen() {
     }
   }, [response]);
   
+  // Logout beim Laden der Login-Seite ausführen
+  useEffect(() => {
+    logout();
+  }, []);
+
   // Funktion zum Login mit Google
   const handleGoogleLogin = async (accessToken: string) => {
     try {

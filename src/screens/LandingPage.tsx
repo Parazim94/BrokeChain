@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useContext } from 'react';
-import { View, StyleSheet, Animated, Dimensions, Image } from 'react-native';
+import { View, StyleSheet, Animated, Dimensions, Image, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '@/src/types/types';
@@ -119,14 +119,16 @@ export default function LandingPage() {
     <View style={[styles.container, { backgroundColor: backgroundColor }]}>
       <StatusBar hidden />
       
-      <Video
-        source={require('../../assets/videos/intro.mp4')}
-        style={styles.backgroundVideo}
-        resizeMode={ResizeMode.COVER}
-        shouldPlay
-        isLooping={false}
-        isMuted={true}
-      />
+      {Platform.OS === "web" && (
+        <Video
+          source={require('../../assets/videos/intro.mp4')}
+          style={styles.backgroundVideo}
+          resizeMode={ResizeMode.COVER}
+          shouldPlay
+          isLooping={false}
+          isMuted={true}
+        />
+      )}
       
       <Animated.View 
         style={[
