@@ -67,9 +67,20 @@ export default function LoginScreen() {
         body: JSON.stringify({ accessToken }),
       });
       if (!googleLoginResponse.ok) {
-        throw new Error("Google Login fehlgeschlagen");
+        // Lese den Antworttext und werfe einen Fehler
+        const errorText = await googleLoginResponse.text();
+        throw new Error(`Google Login fehlgeschlagen: ${errorText}`);
       }
-      const userData = await googleLoginResponse.json();
+      // Versuche, die Antwort als JSON zu parsen
+      let userData;
+      try {
+        userData = await googleLoginResponse.json();
+        console.log("Google-Login erfolgreich:", userData);
+        
+      } catch (parseError) {
+        const responseText = await googleLoginResponse.text();
+        throw new Error(`Ungültige Serverantwort: ${responseText}`);
+      }
       
       // Token speichern, User-Daten setzen etc.
       if (userData.token) {
