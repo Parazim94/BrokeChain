@@ -69,7 +69,15 @@ export default function LoginScreen() {
         const errorText = await googleLoginResponse.text();
         throw new Error(`Google Login fehlgeschlagen: ${errorText}`);
       }
-      // Klonen der Response, um sie mehrfach auszulesen
+      
+      // Prüfe, ob die Antwort den erwarteten JSON-Content-Type besitzt
+      const contentType = googleLoginResponse.headers.get('Content-Type');
+      if (contentType && !contentType.includes('application/json')) {
+        const errorText = await googleLoginResponse.text();
+        throw new Error(`Ungültige Serverantwort (kein JSON): ${errorText}`);
+      }
+      
+      // Klonen der Response, um mehrfach auszulesen
       const responseClone = googleLoginResponse.clone();
       let userData;
       try {
