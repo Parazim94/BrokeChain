@@ -32,13 +32,18 @@ export default function LoginScreen() {
   const isMobile = Platform.OS !== "web"; // Mobile-Check
 
   // Google-Auth-Request initialisieren
+  const redirectUri =
+      Platform.OS === "web"
+        ? window.location.origin
+        : makeRedirectUri();
+
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: googleClientId,
       iosClientId: googleClientId,
       androidClientId: googleClientId,
       webClientId: googleClientId,
-      redirectUri: makeRedirectUri({ useProxy: true } as any), // useProxy aktiviert
+      redirectUri, // angepasst
     }
   );
   
