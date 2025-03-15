@@ -1,0 +1,43 @@
+// oder für einen React-basierten Redirect-Screen:
+(function() {
+  // Loggen Sie die komplette URL, um zu prüfen, welche Daten übergeben werden
+  console.log("Full URL:", window.location.href);
+  console.log("URL hash:", window.location.hash);
+
+  // Funktion, um den access_token aus dem URL-Fragment zu extrahieren
+  function extractAccessToken() {
+    const hash = window.location.hash;
+    const params = new URLSearchParams(hash.slice(1)); // Entfernt das führende '#'
+    return params.get('access_token');
+  }
+
+  const accessToken = extractAccessToken();
+  console.log("Extracted access_token:", accessToken);
+
+  if (accessToken) {
+    // Sende den Token per POST an Ihr Backend
+    fetch("https://broke.dev-space.vip/auth/google", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accessToken })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Backend-Antwort:", data);
+      // Benachrichtigen Sie das Parent-Fenster über den Erfolg und schließen Sie das Popup
+      if (window.opener) {
+        window.opener.postMessage({ type: "GOOGLE_LOGIN_SUCCESS", payload: data }, "*");
+      }
+      window.close();
+    })
+    .catch(error => {
+      console.error("Fehler beim Senden des Tokens:", error);
+      if (window.opener) {
+        window.opener.postMessage({ type: "GOOGLE_LOGIN_ERROR", error: error.message }, "*");
+      }
+      window.close();
+    });
+  } else {
+    console.error("Kein access_token im URL-Fragment gefunden.");
+  }
+})();

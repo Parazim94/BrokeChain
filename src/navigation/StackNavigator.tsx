@@ -32,7 +32,6 @@ export default function StackNavigator() {
   const { width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
   const { isLoggedIn } = useContext(AuthContext);
-  // Explizite Typisierung der Navigation:
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
