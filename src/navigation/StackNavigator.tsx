@@ -24,6 +24,7 @@ import WebTabTextMenu from "./WebTabTextMenu";
 import Chatbot from "../components/ChatBot/Chatbot";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import VerifiedScreen from "../screens/VerifiedScreen";
+import GoogleAuthRedirectScreen from "../screens/GoogleAuthRedirectScreen"; // neuer Import
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -199,7 +200,11 @@ export default function StackNavigator() {
           component={RegisterScreen}
           options={{ title: "Registrieren" }}
         />
-       
+        <Stack.Screen
+          name="redirect" // geaendert von "Redirect" zu "redirect"
+          component={GoogleAuthRedirectScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="NotFound"
           component={NotFoundScreen}

@@ -26,6 +26,7 @@ export type RootStackParamList = {
   Register: undefined;
   Verified: undefined;
   NotFound: undefined;
+  redirect: { token: string };
 };
 
 export type StackParamList = {
