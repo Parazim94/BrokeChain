@@ -60,25 +60,23 @@ export default function LoginScreen() {
   // Funktion zum Login mit Google
   const handleGoogleLogin = async (accessToken: string) => {
     try {
-      // Übergib den Google-Token an dein Backend zur Validierung / Registrierung
       const googleLoginResponse = await fetch("https://broke.dev-space.vip/auth/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accessToken }),
       });
       if (!googleLoginResponse.ok) {
-        // Lese den Antworttext und werfe einen Fehler
         const errorText = await googleLoginResponse.text();
         throw new Error(`Google Login fehlgeschlagen: ${errorText}`);
       }
-      // Versuche, die Antwort als JSON zu parsen
+      // Klonen der Response, um sie mehrfach auszulesen
+      const responseClone = googleLoginResponse.clone();
       let userData;
       try {
         userData = await googleLoginResponse.json();
         console.log("Google-Login erfolgreich:", userData);
-        
       } catch (parseError) {
-        const responseText = await googleLoginResponse.text();
+        const responseText = await responseClone.text();
         throw new Error(`Ungültige Serverantwort: ${responseText}`);
       }
       
