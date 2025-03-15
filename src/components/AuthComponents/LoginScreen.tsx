@@ -14,7 +14,7 @@ import { makeRedirectUri } from 'expo-auth-session';
 import { useAuthRequest } from 'expo-auth-session/providers/google';
 
 // Konfiguriere den Google Login (Client-ID anpassen!)
-const googleClientId = 'DEINE_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+const googleClientId = '670521686381-ati6l0d79l8qi1i7d9a8rqu76s8jh53h.apps.googleusercontent.com';
 
 WebBrowser.maybeCompleteAuthSession();
 

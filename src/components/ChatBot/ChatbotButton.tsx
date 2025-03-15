@@ -246,8 +246,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
@@ -263,14 +263,7 @@ const styles = StyleSheet.create({
     height: 35,
   },
   // You can keep or remove this style as it won't be used anymore
-  dragIndicator: {
-    position: "absolute",
-    top: 5,
-    right: 5,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    borderRadius: 10,
-    padding: 2,
-  },
+
 });
 
 export default ChatbotButton;
