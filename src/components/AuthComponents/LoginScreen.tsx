@@ -141,6 +141,19 @@ export default function LoginScreen() {
     }
   };
 
+  useEffect(() => {
+    if (Platform.OS === "web" && window.location.hash && window.location.hash.includes("access_token")) {
+      const hash = window.location.hash;
+      const params = new URLSearchParams(hash.slice(1)); // Entferne führendes '#'
+      const token = params.get("access_token");
+      if (token) {
+        console.log("Extrahierter access_token:", token);
+        handleGoogleLogin(token);
+        window.location.hash = ""; // optional: URL-Hash leeren
+      }
+    }
+  }, []);
+
   return (
     <View style={[styles.container, auth.center]}>
       <Card onPress={() => {}} style={{ padding: cardPadding  }}>
