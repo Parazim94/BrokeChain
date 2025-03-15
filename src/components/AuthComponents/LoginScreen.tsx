@@ -38,7 +38,7 @@ export default function LoginScreen() {
       iosClientId: googleClientId,
       androidClientId: googleClientId,
       webClientId: googleClientId,
-      redirectUri: makeRedirectUri(),
+      redirectUri: makeRedirectUri({ useProxy: true } as any), // useProxy aktiviert
     }
   );
   
