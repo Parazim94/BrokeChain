@@ -447,7 +447,7 @@ const TutorialOverlay: React.FC = () => {
             <Text
               style={[
                 styles.tooltipDescription,
-                { color: theme.textSecondary },
+                { color: theme.text }, // Changed from theme.textSecondary to theme.text
               ]}
             >
               {currentStep.description}
@@ -456,7 +456,7 @@ const TutorialOverlay: React.FC = () => {
             {/* Navigation */}
             <View style={styles.tooltipFooter}>
               <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-                <Text style={[styles.skipText, { color: theme.textSecondary }]}>
+                <Text style={[styles.skipText, { color: theme.text }]}>
                   Skip
                 </Text>
               </TouchableOpacity>
