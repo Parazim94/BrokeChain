@@ -10,6 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAlert } from "@/src/context/AlertContext";
 import Card from "@/src/components/Card";
 import * as WebBrowser from "expo-web-browser";
+import { makeRedirectUri } from "expo-auth-session";
 
 export default function LoginScreen() {
   const styles = createStyles();
@@ -70,17 +71,15 @@ export default function LoginScreen() {
   };
 
   async function googleAuth(): Promise<void> {
-    // Replace with your app's deep link redirect URL as configured in app.json bzw. in den Linking-Einstellungen
-    const redirectUrl = "yourapp://redirect"; 
+    const redirectUrl = makeRedirectUri();
+    console.log("Redirect URL:", redirectUrl);
     const result = await WebBrowser.openAuthSessionAsync("https://broke.dev-space.vip/auth/google", redirectUrl);
-    if (result.type === "success") {
-      // Beispiel: Token wird als Query-Parameter 'token' zurückgegeben
+    if (result.type === "success" && result.url) {
       const tokenMatch = result.url.match(/[\?&]token=([^&]+)/);
       if (tokenMatch) {
         const token = tokenMatch[1];
         await AsyncStorage.setItem("userToken", token);
         console.log("Token gespeichert:", token.substring(0, 15) + "...");
-        // Setze den User mit minimalen Daten; erweitern falls nötig
         setUser({ token });
         setIsLoggedIn(true);
         navigation.navigate("Main", { screen: "Portfolio" });
