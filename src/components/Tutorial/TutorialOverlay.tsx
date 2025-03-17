@@ -422,7 +422,7 @@ const TutorialOverlay: React.FC = () => {
               tooltipPosition,
               {
                 backgroundColor: theme.background,
-                borderColor: theme.text,
+                borderColor: theme.accent,
                 opacity,
                 transform: [{ scale }],
               },
