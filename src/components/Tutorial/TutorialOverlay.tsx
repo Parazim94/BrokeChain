@@ -456,7 +456,7 @@ const TutorialOverlay: React.FC = () => {
             {/* Navigation */}
             <View style={styles.tooltipFooter}>
               <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-                <Text style={[styles.skipText, { color: theme.text }]}>
+                <Text style={[styles.skipText, { color: theme.accent}]}>
                   Skip
                 </Text>
               </TouchableOpacity>
@@ -509,7 +509,6 @@ const styles = StyleSheet.create({
     width: 300,
     padding: 20,
     borderRadius: 12,
-    borderWidth: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
