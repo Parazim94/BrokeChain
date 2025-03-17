@@ -11,7 +11,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { AuthContext } from "../context/AuthContext";
-import { NavigationProp, useNavigation, DrawerActions } from "@react-navigation/native";
+import {
+  NavigationProp,
+  useNavigation,
+  DrawerActions,
+} from "@react-navigation/native";
 import ResponsiveNavigator from "./ResponsiveNavigator";
 import SettingsScreen from "../screens/Settings/SettingsScreen";
 // import AuthScreen from "../screens/Auth/AuthScreen";
@@ -24,6 +28,7 @@ import WebTabTextMenu from "./WebTabTextMenu";
 import Chatbot from "../components/ChatBot/Chatbot";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import VerifiedScreen from "../screens/VerifiedScreen";
+import InteractiveFlagButtons from "../components/InteractiveFlagButtons";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -197,7 +202,7 @@ export default function StackNavigator() {
           name="Register"
           component={RegisterScreen}
           options={{ title: "Registrieren" }}
-        />      
+        />
         <Stack.Screen
           name="NotFound"
           component={NotFoundScreen}
@@ -209,9 +214,12 @@ export default function StackNavigator() {
           options={{ title: "E-Mail Verifizierung" }}
         />
       </Stack.Navigator>
-      
-      {/* Add Chatbot component here, outside of Navigator but inside the main container */}
+
+      {/* Add Chatbot component here */}
       <Chatbot />
+
+      {/* Add InteractiveFlagButtons component */}
+      <InteractiveFlagButtons />
     </>
   );
 }
