@@ -70,29 +70,8 @@ export default function LoginScreen() {
   };
 
   async function googleAuth(): Promise<void> {
-    try {
-      const response = await fetch("https://broke.dev-space.vip/auth/google");
-      if (!response.ok) throw new Error("Google Auth fehlgeschlagen");
-      const googleUserData = await response.json();
-      console.log("Google User Data:", googleUserData);
-      if (googleUserData.token) {
-        await AsyncStorage.setItem("userToken", googleUserData.token);
-        console.log(
-          "Token gespeichert:",
-          googleUserData.token.substring(0, 15) + "..."
-        );
-      }
-      setUser(googleUserData);
-      setIsLoggedIn(true);
-      navigation.navigate("Main", { screen: "Portfolio" });
-    } catch (error) {
-      showAlert({
-        type: "error",
-        title: "Google Login Error",
-        message:
-          error instanceof Error ? error.message : "Unexpected error occurred"
-      });
-    }
+    // Direkte Navigation zur Google Auth-URL
+    await WebBrowser.openBrowserAsync("https://broke.dev-space.vip/auth/google");
   }
 
   return (
