@@ -11,6 +11,9 @@ import { useAlert } from "@/src/context/AlertContext";
 import Card from "@/src/components/Card";
 import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri } from "expo-auth-session";
+import * as Google from "expo-auth-session/providers/google";
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const styles = createStyles();
@@ -70,24 +73,28 @@ export default function LoginScreen() {
     }
   };
 
-  // Neuer Google Login
-  const handleGoogleLogin = async () => {
-    try {
-      setIsLoading(true);
-      const redirectUri = makeRedirectUri({ useProxy: Platform.OS !== "web" } as any);
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=profile%20email`;
-      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
-      if (result.type === "success" && result.url) {
-        const tokenMatch = /access_token=([^&]+)/.exec(result.url);
-        if (tokenMatch && tokenMatch[1]) {
-          const googleToken = tokenMatch[1];
-          const response = await fetch("https://broke.dev-space.vip/auth/google", {
+  // Initialisiere den Google Auth Request
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: 'YOUR_EXPO_CLIENT_ID',
+    iosClientId: 'YOUR_IOS_CLIENT_ID',
+    androidClientId: 'YOUR_ANDROID_CLIENT_ID',
+    webClientId: process.env.ID,
+    scopes: ['profile', 'email'],
+  });
+
+  // Verarbeite die Google Antwort
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { id_token } = response.params;
+      (async () => {
+        try {
+          const resp = await fetch("https://broke.dev-space.vip/auth/google", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: googleToken }),
+            body: JSON.stringify({ token: id_token }),
           });
-          if (!response.ok) throw new Error("Google Login fehlgeschlagen");
-          const userData = await response.json();
+          if (!resp.ok) throw new Error("Google Login fehlgeschlagen");
+          const userData = await resp.json();
           if (userData.token) {
             await AsyncStorage.setItem("userToken", userData.token);
             console.log("Token gespeichert:", userData.token.substring(0, 15) + "...");
@@ -95,22 +102,16 @@ export default function LoginScreen() {
           setUser(userData);
           setIsLoggedIn(true);
           navigation.navigate("Main", { screen: "Portfolio" });
-        } else {
-          throw new Error("Kein Google Token erhalten");
+        } catch (error) {
+          showAlert({
+            type: "error",
+            title: "Google Login Error",
+            message: error instanceof Error ? error.message : "Unerwarteter Fehler",
+          });
         }
-      } else {
-        throw new Error("Google Login abgebrochen");
-      }
-    } catch (error) {
-      showAlert({
-        type: "error",
-        title: "Google Login Error",
-        message: error instanceof Error ? error.message : "Unerwarteter Fehler",
-      });
-    } finally {
-      setIsLoading(false);
+      })();
     }
-  };
+  }, [response]);
 
   return (
     <View style={[styles.container, auth.center]}>
@@ -146,7 +147,7 @@ export default function LoginScreen() {
         />     
         {/* Neuer Button für Google Login */}
         <Button
-          onPress={handleGoogleLogin}
+          onPress={() => promptAsync()}
           title="Login with Google"
           loading={isLoading}
           fullWidth
