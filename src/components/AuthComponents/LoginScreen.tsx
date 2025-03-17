@@ -9,6 +9,7 @@ import Button from "@/src/components/Button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAlert } from "@/src/context/AlertContext";
 import Card from "@/src/components/Card";
+import * as WebBrowser from "expo-web-browser";
 
 
 export default function LoginScreen() {
@@ -66,6 +67,25 @@ export default function LoginScreen() {
     }
   };
 
+  async function googleAuth(): Promise<void> {
+   const newGoogleUser = await fetch("https://broke.dev-space.vip/auth/google", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const googleUserData = await newGoogleUser.json();
+    console.log(googleUserData);
+    if (googleUserData) {
+      await AsyncStorage.setItem('userToken', googleUserData.token);
+      console.log("Token gespeichert:", googleUserData.token.substring(0, 15) + "...");
+    }
+    setUser(googleUserData);
+    setIsLoggedIn(true);
+    setTimeout(() => {
+      navigation.navigate("Main", { screen: "Portfolio" });
+    }, 300);
+  }
+
+
   return (
     <View style={[styles.container, auth.center]}>
       <Card onPress={() => {}} style={{ padding: cardPadding  }}>
@@ -96,8 +116,8 @@ export default function LoginScreen() {
           }}
         />
         {/* Neuer Button für Login with Google */}
-        {/* <Button
-          onPress={() => promptAsync()}
+        <Button
+          onPress={() => googleAuth()}
           title="Login with Google"
           fullWidth
           style={{ 
@@ -106,7 +126,7 @@ export default function LoginScreen() {
             ...(isMobile ? { width: "100%", alignItems: "center" } : {})
           }}
           textStyle={{ textAlign: "center" }}
-        /> */}
+        />
         <View style={auth.linkContainer}>
           <Text style={auth.infoText}>New here? </Text>
           <Text 
