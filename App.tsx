@@ -1,38 +1,41 @@
 import React, { useEffect, useContext } from "react";
 import { registerRootComponent } from "expo";
 import { NavigationContainer } from "@react-navigation/native";
-import { StatusBar, Platform } from "react-native";
+import { StatusBar, Platform, View } from "react-native";
 import StackNavigator from "./src/navigation/StackNavigator";
 import { ThemeProvider, ThemeContext } from "./src/context/ThemeContext";
 import { AuthProvider, AuthContext } from "./src/context/AuthContext";
 import { DataProvider } from "./src/context/DataContext";
 import { AlertProvider } from "./src/context/AlertContext";
-// import * as Linking from 'expo-linking'; 
+import { TutorialProvider } from "./src/context/TutorialContext";
+import TutorialOverlay from "./src/components/Tutorial/TutorialOverlay";
+import ElementTagger from "./src/components/Tutorial/ElementTagger";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // NEUE Linking-Konfiguration mit NETLIFY Domain:
 const linking = {
-	prefixes: ['https://broke.dev-space.vip/', 'broke-chain://'],
-	config: {
-		screens: {
-			LandingPage: '',
-			Main: {
-				path: 'main',
-				screens: {
-					Markets: 'markets',
-					Share: 'share',
-					Trade: 'trade',
-					Discover: 'discover',
-					Portfolio: 'portfolio'
-				}
-			},
-			Login: 'login',
-			Register: 'register',
-			Settings: 'settings',
-            Verified: 'auth/verify/:token', 
-			redirect: 'redirect', // Neue Route für Google Auth Redirect
-			NotFound: '*'
-		}
-	}
+  prefixes: ["https://broke.dev-space.vip/", "broke-chain://"],
+  config: {
+    screens: {
+      LandingPage: "",
+      Main: {
+        path: "main",
+        screens: {
+          Markets: "markets",
+          Share: "share",
+          Trade: "trade",
+          Discover: "discover",
+          Portfolio: "portfolio",
+        },
+      },
+      Login: "login",
+      Register: "register",
+      Settings: "settings",
+      Verified: "auth/verify/:token",
+      redirect: "redirect", // Neue Route für Google Auth Redirect
+      NotFound: "*",
+    },
+  },
 };
 
 function AppContent() {
@@ -60,8 +63,12 @@ function AppContent() {
         backgroundColor="transparent"
         translucent={true}
       />
-      <NavigationContainer linking={linking}> {/* Linking hinzugefügt */}
+      <NavigationContainer linking={linking}>
         <StackNavigator />
+        {/* Add ElementTagger to tag DOM elements on web */}
+        <ElementTagger />
+        {/* Add the TutorialOverlay which will be shown when tutorial is active */}
+        <TutorialOverlay />
       </NavigationContainer>
     </>
   );
@@ -69,15 +76,19 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <DataProvider>
-        <AuthProvider>
-          <AlertProvider>
-            <AppContent />
-          </AlertProvider>
-        </AuthProvider>
-      </DataProvider>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <DataProvider>
+          <AuthProvider>
+            <AlertProvider>
+              <TutorialProvider>
+                <AppContent />
+              </TutorialProvider>
+            </AlertProvider>
+          </AuthProvider>
+        </DataProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
 
