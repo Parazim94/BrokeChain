@@ -5,24 +5,23 @@ import { StackParamList } from "@/src/types/types";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "@/src/components/AuthComponents/authStyles";
-import Button from "@/src/components/Button"; 
+import Button from "@/src/components/Button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAlert } from "@/src/context/AlertContext";
 import Card from "@/src/components/Card";
 import * as WebBrowser from "expo-web-browser";
-
 
 export default function LoginScreen() {
   const styles = createStyles();
   const auth = authStyles();
   const navigation = useNavigation<NavigationProp<StackParamList>>();
   const { setIsLoggedIn, setUser, logout } = useContext(AuthContext);
-  const { showAlert } = useAlert();   
+  const { showAlert } = useAlert();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const cardPadding = Platform.OS === "web" ? 32 : 16;
-  
+
   const isMobile = Platform.OS !== "web";
 
   // Logout beim Laden der Login-Seite ausführen
@@ -41,13 +40,16 @@ export default function LoginScreen() {
       });
       if (!response.ok) throw new Error("Login fehlgeschlagen");
       const userData = await response.json();
-      
+
       // Token im AsyncStorage speichern für persistenten Zugriff
       if (userData.token) {
-        await AsyncStorage.setItem('userToken', userData.token);
-        console.log("Token gespeichert:", userData.token.substring(0, 15) + "...");
+        await AsyncStorage.setItem("userToken", userData.token);
+        console.log(
+          "Token gespeichert:",
+          userData.token.substring(0, 15) + "..."
+        );
       }
-      
+
       setUser(userData);
       setIsLoggedIn(true);
 
@@ -55,12 +57,12 @@ export default function LoginScreen() {
       setTimeout(() => {
         navigation.navigate("Main", { screen: "Portfolio" });
       }, 100);
-    
     } catch (error) {
       showAlert({
         type: "error",
         title: "Login Error",
-        message: error instanceof Error ? error.message : "Unexpected error occurred"
+        message:
+          error instanceof Error ? error.message : "Unexpected error occurred",
       });
     } finally {
       setIsLoading(false);
@@ -68,15 +70,21 @@ export default function LoginScreen() {
   };
 
   async function googleAuth(): Promise<void> {
-   const newGoogleUser = await fetch("https://broke.dev-space.vip/auth/google", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
+    const newGoogleUser = await fetch(
+      "https://broke.dev-space.vip/auth/google",
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
     const googleUserData = await newGoogleUser.json();
     console.log(googleUserData);
     if (googleUserData) {
-      await AsyncStorage.setItem('userToken', googleUserData.token);
-      console.log("Token gespeichert:", googleUserData.token.substring(0, 15) + "...");
+      await AsyncStorage.setItem("userToken", googleUserData.token);
+      console.log(
+        "Token gespeichert:",
+        googleUserData.token.substring(0, 15) + "..."
+      );
     }
     setUser(googleUserData);
     setIsLoggedIn(true);
@@ -85,17 +93,19 @@ export default function LoginScreen() {
     }, 300);
   }
 
-
   return (
     <View style={[styles.container, auth.center]}>
-      <Card onPress={() => {}} style={{ padding: cardPadding  }}>
+      <Card onPress={() => {}} style={{ padding: cardPadding }}>
         <Text style={auth.headerText}>Login</Text>
         <TextInput
           placeholder="E-Mail"
           placeholderTextColor={styles.defaultText.color}
           value={email}
           onChangeText={setEmail}
-          style={[styles.input, isMobile && { width: "100%", textAlign: "left" }]}
+          style={[
+            styles.input,
+            isMobile && { width: "100%", textAlign: "left" },
+          ]}
         />
         <TextInput
           placeholder="Passwort"
@@ -110,9 +120,9 @@ export default function LoginScreen() {
           title="Login"
           loading={isLoading}
           fullWidth
-          style={{ 
-            marginTop: 12, 
-            ...(isMobile ? { width: "100%", alignItems: "center" } : {})
+          style={{
+            marginTop: 12,
+            ...(isMobile ? { width: "100%", alignItems: "center" } : {}),
           }}
         />
         {/* Neuer Button für Login with Google */}
@@ -120,20 +130,28 @@ export default function LoginScreen() {
           onPress={() => googleAuth()}
           title="Login with Google"
           fullWidth
-          style={{ 
-            marginTop: 12, 
-            backgroundColor: "#DB4437", 
-            ...(isMobile ? { width: "100%", alignItems: "center" } : {})
+          style={{
+            marginTop: 12,
+            backgroundColor: "#DB4437",
+            ...(isMobile ? { width: "100%", alignItems: "center" } : {}),
           }}
           textStyle={{ textAlign: "center" }}
         />
         <View style={auth.linkContainer}>
           <Text style={auth.infoText}>New here? </Text>
-          <Text 
-            style={auth.linkText} 
+          <Text
+            style={auth.linkText}
             onPress={() => navigation.navigate("Register" as never)}
           >
             Register
+          </Text>
+        </View>{" "}
+        <View style={auth.linkContainer}>
+          <Text
+            style={auth.linkText}
+            onPress={() => navigation.navigate("ForgotPassword" as never)}
+          >
+            Forgot Password?
           </Text>
         </View>
       </Card>
