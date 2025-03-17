@@ -75,41 +75,35 @@ export default function LoginScreen() {
 
   // Initialisiere den Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: 'YOUR_EXPO_CLIENT_ID',
-    iosClientId: 'YOUR_IOS_CLIENT_ID',
-    androidClientId: 'YOUR_ANDROID_CLIENT_ID',
+    // clientId: process.env.ID,
+    // iosClientId: "YOUR_IOS_CLIENT_ID",
+    androidClientId: "YOUR_ANDROID_CLIENT_ID",
     webClientId: process.env.ID,
-    scopes: ['profile', 'email'],
+    // scopes: ['profile', 'email'],
   });
 
   // Verarbeite die Google Antwort
   useEffect(() => {
-    if (response?.type === 'success') {
-      const { id_token } = response.params;
-      (async () => {
+    if (response?.type === "success" && response.authentication) {
+      // Get user info using the access token
+      console.log(response.authentication.accessToken);
+      async function fetchUser(token: String) {
         try {
-          const resp = await fetch("https://broke.dev-space.vip/auth/google", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: id_token }),
-          });
-          if (!resp.ok) throw new Error("Google Login fehlgeschlagen");
-          const userData = await resp.json();
-          if (userData.token) {
-            await AsyncStorage.setItem("userToken", userData.token);
-            console.log("Token gespeichert:", userData.token.substring(0, 15) + "...");
-          }
+          const response = await fetch(
+            "https://broke.dev-space.vip/auth/google",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(token),
+            }
+          );
+          const userData = await response.json();
           setUser(userData);
-          setIsLoggedIn(true);
-          navigation.navigate("Main", { screen: "Portfolio" });
         } catch (error) {
-          showAlert({
-            type: "error",
-            title: "Google Login Error",
-            message: error instanceof Error ? error.message : "Unerwarteter Fehler",
-          });
+          throw new Error("fehler google user fetch");
         }
-      })();
+      }
+      fetchUser(response.authentication.accessToken);
     }
   }, [response]);
 
@@ -144,7 +138,7 @@ export default function LoginScreen() {
             marginTop: 12,
             ...(isMobile ? { width: "100%", alignItems: "center" } : {}),
           }}
-        />     
+        />
         {/* Neuer Button für Google Login */}
         <Button
           onPress={() => promptAsync()}
@@ -154,7 +148,7 @@ export default function LoginScreen() {
           style={{
             marginTop: 12,
             ...(isMobile ? { width: "100%", alignItems: "center" } : {}),
-            backgroundColor: "#db4437"
+            backgroundColor: "#db4437",
           }}
         />
         <View style={auth.linkContainer}>
