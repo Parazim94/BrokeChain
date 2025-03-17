@@ -70,8 +70,34 @@ export default function LoginScreen() {
   };
 
   async function googleAuth(): Promise<void> {
-    // Direkte Navigation zur Google Auth-URL
-    await WebBrowser.openBrowserAsync("https://broke.dev-space.vip/auth/google");
+    // Replace with your app's deep link redirect URL as configured in app.json bzw. in den Linking-Einstellungen
+    const redirectUrl = "yourapp://redirect"; 
+    const result = await WebBrowser.openAuthSessionAsync("https://broke.dev-space.vip/auth/google", redirectUrl);
+    if (result.type === "success") {
+      // Beispiel: Token wird als Query-Parameter 'token' zurückgegeben
+      const tokenMatch = result.url.match(/[\?&]token=([^&]+)/);
+      if (tokenMatch) {
+        const token = tokenMatch[1];
+        await AsyncStorage.setItem("userToken", token);
+        console.log("Token gespeichert:", token.substring(0, 15) + "...");
+        // Setze den User mit minimalen Daten; erweitern falls nötig
+        setUser({ token });
+        setIsLoggedIn(true);
+        navigation.navigate("Main", { screen: "Portfolio" });
+      } else {
+        showAlert({
+          type: "error",
+          title: "Google Login Error",
+          message: "Kein Token gefunden"
+        });
+      }
+    } else {
+      showAlert({
+        type: "error",
+        title: "Google Login Error",
+        message: "Authentifizierung abgebrochen"
+      });
+    }
   }
 
   return (
