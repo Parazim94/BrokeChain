@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useContext } from "react";
 import Colors from "../constants/colors";
 import { AccentColors } from "../constants/accentColors";
 import { View } from "react-native";
@@ -36,7 +36,9 @@ export const ThemeContext = createContext<ThemeContextType>({
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [colorTheme, setColorTheme] = useState<"light" | "dark" | null | undefined>("light");
+  const [colorTheme, setColorTheme] = useState<
+    "light" | "dark" | null | undefined
+  >("light");
   const [accent, setAccent] = useState(AccentColors[0]);
 
   const theme = {
@@ -45,10 +47,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <ThemeContext.Provider value={{ colorTheme, setColorTheme, theme, accent, setAccent }}>
-      <View style={{ flex: 1 }}>
-        {children}
-      </View>
+    <ThemeContext.Provider
+      value={{ colorTheme, setColorTheme, theme, accent, setAccent }}
+    >
+      <View style={{ flex: 1 }}>{children}</View>
     </ThemeContext.Provider>
   );
 };
+
+export const useTheme = () => useContext(ThemeContext);

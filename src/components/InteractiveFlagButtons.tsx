@@ -12,6 +12,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { ThemeContext } from "../context/ThemeContext";
+import { useTutorial } from "../context/TutorialContext";
 
 interface FlagButtonProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -68,9 +69,11 @@ const FlagButton = ({ icon, label, onPress }: FlagButtonProps) => {
 };
 
 export default function InteractiveFlagButtons() {
+  const { startTutorial } = useTutorial();
+
   const handleTutorialPress = () => {
-    // Handle tutorial navigation or action
-    console.log("Tutorial pressed");
+    // Start the tutorial when the button is pressed
+    startTutorial();
   };
 
   const handleQuizPress = () => {
