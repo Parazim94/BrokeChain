@@ -29,6 +29,7 @@ const linking = {
 			Register: 'register',
 			Settings: 'settings',
             Verified: 'auth/verify/:token', 
+			redirect: 'redirect', // Neue Route für Google Auth Redirect
 			NotFound: '*'
 		}
 	}
