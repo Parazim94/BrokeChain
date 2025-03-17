@@ -70,34 +70,47 @@ export default function LoginScreen() {
     }
   };
 
-  async function googleAuth(): Promise<void> {
-    const redirectUrl = makeRedirectUri();
-    console.log("Redirect URL:", redirectUrl);
-    const result = await WebBrowser.openAuthSessionAsync("https://broke.dev-space.vip/auth/google", redirectUrl);
-    if (result.type === "success" && result.url) {
-      const tokenMatch = result.url.match(/[\?&]token=([^&]+)/);
-      if (tokenMatch) {
-        const token = tokenMatch[1];
-        await AsyncStorage.setItem("userToken", token);
-        console.log("Token gespeichert:", token.substring(0, 15) + "...");
-        setUser({ token });
-        setIsLoggedIn(true);
-        navigation.navigate("Main", { screen: "Portfolio" });
+  // Neuer Google Login
+  const handleGoogleLogin = async () => {
+    try {
+      setIsLoading(true);
+      const redirectUri = makeRedirectUri({ useProxy: Platform.OS !== "web" } as any);
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=profile%20email`;
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+      if (result.type === "success" && result.url) {
+        const tokenMatch = /access_token=([^&]+)/.exec(result.url);
+        if (tokenMatch && tokenMatch[1]) {
+          const googleToken = tokenMatch[1];
+          const response = await fetch("https://broke.dev-space.vip/auth/google", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: googleToken }),
+          });
+          if (!response.ok) throw new Error("Google Login fehlgeschlagen");
+          const userData = await response.json();
+          if (userData.token) {
+            await AsyncStorage.setItem("userToken", userData.token);
+            console.log("Token gespeichert:", userData.token.substring(0, 15) + "...");
+          }
+          setUser(userData);
+          setIsLoggedIn(true);
+          navigation.navigate("Main", { screen: "Portfolio" });
+        } else {
+          throw new Error("Kein Google Token erhalten");
+        }
       } else {
-        showAlert({
-          type: "error",
-          title: "Google Login Error",
-          message: "Kein Token gefunden"
-        });
+        throw new Error("Google Login abgebrochen");
       }
-    } else {
+    } catch (error) {
       showAlert({
         type: "error",
         title: "Google Login Error",
-        message: "Authentifizierung abgebrochen"
+        message: error instanceof Error ? error.message : "Unerwarteter Fehler",
       });
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <View style={[styles.container, auth.center]}>
@@ -130,18 +143,18 @@ export default function LoginScreen() {
             marginTop: 12,
             ...(isMobile ? { width: "100%", alignItems: "center" } : {}),
           }}
-        />
-        {/* Neuer Button für Login with Google */}
+        />     
+        {/* Neuer Button für Google Login */}
         <Button
-          onPress={() => googleAuth()}
+          onPress={handleGoogleLogin}
           title="Login with Google"
+          loading={isLoading}
           fullWidth
           style={{
             marginTop: 12,
-            backgroundColor: "#DB4437",
             ...(isMobile ? { width: "100%", alignItems: "center" } : {}),
+            backgroundColor: "#db4437"
           }}
-          textStyle={{ textAlign: "center" }}
         />
         <View style={auth.linkContainer}>
           <Text style={auth.infoText}>New here? </Text>
