@@ -421,8 +421,8 @@ const TutorialOverlay: React.FC = () => {
               styles.tooltip,
               tooltipPosition,
               {
-                backgroundColor: theme.card,
-                borderColor: theme.border,
+                backgroundColor: theme.background,
+                borderColor: theme.text,
                 opacity,
                 transform: [{ scale }],
               },
@@ -465,7 +465,7 @@ const TutorialOverlay: React.FC = () => {
                 {!isFirstStep && (
                   <TouchableOpacity
                     onPress={goToPrevStep}
-                    style={[styles.navButton, { borderColor: theme.border }]}
+                    style={[styles.navButton, { borderColor: theme.text }]}
                   >
                     <Ionicons
                       name="chevron-back"
