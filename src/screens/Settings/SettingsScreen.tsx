@@ -194,8 +194,7 @@ export default function SettingsScreen() {
             displayedTools: formattedDisplayTools 
           }),
         }
-      );
-      console.log("Response:", await response.json());
+      );      
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Display tools update failed");
@@ -204,7 +203,7 @@ export default function SettingsScreen() {
       // Serverantwort parsen und neues Token extrahieren
       const responseData = await response.json();
       const newToken = responseData.token || user.token;
-      
+      console.log("response Data:", responseData);
       // Aktualisiere User mit neuem Token und Display-Tools-Einstellungen
       const updatedUser = { 
         ...user, 
