@@ -7,7 +7,7 @@ import { createStyles } from "@/src/styles/style";
 import QuizComponent from "../../components/QuizComponent";
 import Card from "@/src/components/Card";
 import { QuizCategoryKey } from "@/src/data/quizData";
-import { useQuiz } from "@/src/context/Quizcontext";
+import { useQuiz } from "@/src/context/QuizzContext";
 import { useNavigation } from "@react-navigation/native";
 
 export default function QuizScreen() {

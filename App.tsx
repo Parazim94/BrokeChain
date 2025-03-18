@@ -11,7 +11,7 @@ import { TutorialProvider } from "./src/context/TutorialContext";
 import TutorialOverlay from "./src/components/Tutorial/TutorialOverlay";
 import ElementTagger from "./src/components/Tutorial/ElementTagger";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { QuizProvider } from "./src/context/Quizcontext";
+import { QuizProvider } from "./src/context/QuizzContext";
 
 // NEUE Linking-Konfiguration mit NETLIFY Domain:
 const linking = {
