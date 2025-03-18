@@ -74,7 +74,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
     refetch: refreshMarketData,
   } = useFetch<MarketData[]>("marketData", {
     autoRefetch: true,
-    refetchInterval: 3000,
+    refetchInterval: 10000,
     expectJson: true,
   });
 
