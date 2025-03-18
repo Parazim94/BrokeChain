@@ -69,7 +69,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
         >
           {showCloseButton && (
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close-circle" size={24} color={"red"} />
+              <Ionicons name="close-circle" size={32} color={"red"} />
             </TouchableOpacity>
           )}
 
@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     borderRadius: 20,
+    padding: 20,
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
