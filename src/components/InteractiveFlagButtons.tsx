@@ -204,9 +204,10 @@ export default function InteractiveFlagButtons() {
   const { user } = useContext(AuthContext);
 
   // Check which tools to display based on user settings
-  const showChatAi = user?.displayTools?.[0]?.chatAi !== false;
-  const showTutorial = user?.displayTools?.[1]?.tutorial !== false;
-  const showQuiz = user?.displayTools?.[2]?.quiz !== false;
+  // Angepasst für das richtige Schema
+  const showChatAi = user?.displayedTools?.chatAi !== false;
+  const showTutorial = user?.displayedTools?.tutorial !== false;
+  const showQuiz = user?.displayedTools?.quiz !== false;
 
   // Don't render anything if no tools are visible
   if (!showChatAi && !showTutorial && !showQuiz) {

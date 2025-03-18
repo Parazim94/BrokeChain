@@ -62,9 +62,9 @@ export default function SettingsScreen() {
 
   // States for display tools
   const [displayTools, setDisplayTools] = useState({
-    chatAi: user?.displayTools?.[0]?.chatAi !== false,
-    tutorial: user?.displayTools?.[1]?.tutorial !== false,
-    quiz: user?.displayTools?.[2]?.quiz !== false,
+    chatAi: user?.displayedTools?.chatAi !== false,
+    tutorial: user?.displayedTools?.tutorial !== false,
+    quiz: user?.displayedTools?.quiz !== false,
   });
   const [isUpdatingDisplayTools, setIsUpdatingDisplayTools] = useState(false);
 
@@ -176,11 +176,12 @@ export default function SettingsScreen() {
     setIsUpdatingDisplayTools(true);
 
     try {
-      const formattedDisplayTools = [
-        { chatAi: displayTools.chatAi },
-        { tutorial: displayTools.tutorial },
-        { quiz: displayTools.quiz }
-      ];
+    
+      const formattedDisplayTools = {
+        chatAi: displayTools.chatAi,
+        tutorial: displayTools.tutorial,
+        quiz: displayTools.quiz
+      };
 
       const response = await fetch(
         "https://broke.dev-space.vip/user/settings",
@@ -189,7 +190,7 @@ export default function SettingsScreen() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             token: user?.token,
-            displayTools: formattedDisplayTools
+            displayedTools: formattedDisplayTools 
           }),
         }
       );
@@ -206,7 +207,7 @@ export default function SettingsScreen() {
       // Aktualisiere User mit neuem Token und Display-Tools-Einstellungen
       const updatedUser = { 
         ...user, 
-        displayTools: formattedDisplayTools,
+        displayedTools: formattedDisplayTools, // Hier displayedTools benutzen
         token: newToken
       };
       
@@ -393,19 +394,19 @@ export default function SettingsScreen() {
     // Log das aktuelle Token vor dem Speichern aller Settings
     console.log("Save Settings - aktueller Token:", user?.token);
 
-    // Format display tools as array of objects
-    const formattedDisplayTools = [
-      { chatAi: displayTools.chatAi },
-      { tutorial: displayTools.tutorial },
-      { quiz: displayTools.quiz }
-    ];
+    // Format display tools as a single object, not array
+    const formattedDisplayTools = {
+      chatAi: displayTools.chatAi,
+      tutorial: displayTools.tutorial,
+      quiz: displayTools.quiz
+    };
 
     const updatedUserData = {
       token: user?.token,
       prefTheme: [colorTheme, accent],
       favorites: favorites,
       email: newEmail,
-      displayTools: formattedDisplayTools
+      displayedTools: formattedDisplayTools // Hier displayedTools benutzen
     };
 
     try {
@@ -429,7 +430,7 @@ export default function SettingsScreen() {
         prefTheme: [colorTheme, accent],
         favorites: favorites,
         email: newEmail,
-        displayTools: formattedDisplayTools
+        displayedTools: formattedDisplayTools // Hier displayedTools benutzen
       };
       setUser(updatedUser);
 
