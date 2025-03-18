@@ -195,7 +195,7 @@ export default function SettingsScreen() {
           }),
         }
       );
-      console.log("Response:", response.json());
+      console.log("Response:", await response.json());
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Display tools update failed");
