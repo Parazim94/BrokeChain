@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export interface TutorialStepData {
@@ -11,7 +11,14 @@ export interface TutorialStepData {
   icon?: keyof typeof Ionicons.glyphMap;
   targetElementStyle?: StyleProp<ViewStyle>;
   onlyShowOn?: "mobile" | "tablet" | "desktop" | "all";
+  webSelector?: string; // CSS-Selektor für Web-Ansicht
+  nativeOnly?: boolean; // Nur in nativer Umgebung anzeigen
+  webOnly?: boolean; // Nur im Web anzeigen
 }
+
+// Plattformerkennung verbessern
+export const isNativeMobile = Platform.OS !== "web";
+export const isWeb = Platform.OS === "web";
 
 // Define tutorial steps for different screen sizes
 export const getMobileSteps = (): TutorialStepData[] => [
@@ -175,15 +182,32 @@ export const getCommonSteps = (): TutorialStepData[] => [
   },
 ];
 
-// Get appropriate tutorial steps based on screen width
+// Get appropriate tutorial steps based on screen width and platform
 export const getTutorialSteps = (width: number): TutorialStepData[] => {
   const commonSteps = getCommonSteps();
+  let steps: TutorialStepData[] = [];
 
   if (width < 768) {
-    return [...getMobileSteps(), ...commonSteps];
+    steps = [...getMobileSteps(), ...commonSteps];
   } else if (width >= 768 && width < 1024) {
-    return [...getTabletSteps(), ...commonSteps];
+    steps = [...getTabletSteps(), ...commonSteps];
   } else {
-    return [...getDesktopSteps(), ...commonSteps];
+    steps = [...getDesktopSteps(), ...commonSteps];
   }
+
+  // Filtere Schritte basierend auf Plattform
+  return steps.filter(step => {
+    // Wenn nativeOnly und wir sind im Web, überspringen
+    if (step.nativeOnly && isWeb) return false;
+    
+    // Wenn webOnly und wir sind nativ, überspringen
+    if (step.webOnly && isNativeMobile) return false;
+    
+    // Prüfe die "onlyShowOn"-Eigenschaft
+    if (step.onlyShowOn === "all") return true;
+    if (width < 768 && step.onlyShowOn === "mobile") return true;
+    if (width >= 768 && width < 1024 && step.onlyShowOn === "tablet") return true;
+    if (width >= 1024 && step.onlyShowOn === "desktop") return true;
+    return false;
+  });
 };

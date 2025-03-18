@@ -12,7 +12,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useTutorial } from "../../context/TutorialContext";
 import { useTheme } from "../../context/ThemeContext";
-import { getTutorialSteps, TutorialStepData } from "./TutorialStep";
+import { getTutorialSteps, TutorialStepData, isWeb } from "./TutorialStep";
 
 // Helper function to measure element position
 const measureElement = (
@@ -44,62 +44,77 @@ const measureElement = (
   });
 };
 
-const findElementByTarget = async (targetId: string): Promise<any> => {
-  // 1) Try direct ID
+const findElementByTarget = async (targetId: string, currentStep?: TutorialStepData): Promise<any> => {
+  if (!isWeb) {
+    // Return null for native platforms, as we'll use simulated positions
+    return null;
+  }
+
+  // 1) Versuche mit angegebenem Web-Selektor (neue Eigenschaft)
+  if (currentStep?.webSelector) {
+    try {
+      const element = document.querySelector(currentStep.webSelector);
+      if (element) {
+        element.id = targetId;
+        const rect = element.getBoundingClientRect();
+        return {
+          x: rect.left,
+          y: rect.top,
+          width: rect.width,
+          height: rect.height,
+        };
+      }
+    } catch (e) {
+      console.log("Error with webSelector:", e);
+    }
+  }
+
+  // 2) Try direct ID
   let position = await measureElement(targetId);
   if (position) return position;
 
-  // 2) For profile and settings buttons, measure the entire button
+  // 3) Erweiterte Selektor-Strategie für Web
   if (targetId === "profile-button" || targetId === "settings-button") {
     try {
-      // Attempt to find the header area (where these buttons are located)
-      const headerRight = document.querySelector(
-        "header .r-flexDirection-row:last-child"
-      );
-      if (headerRight) {
-        const headerButtons = headerRight.querySelectorAll("button");
+      // Versuche mehrere mögliche Selektoren
+      const selectors = [
+        `header .r-flexDirection-row:last-child`, // Original
+        `header [role="navigation"]`,
+        `nav[role="navigation"]`,
+        `.header-right`,
+        `header > div:last-child`
+      ];
+      
+      let headerElement = null;
+      for (const selector of selectors) {
+        headerElement = document.querySelector(selector);
+        if (headerElement) break;
+      }
 
-        // Check for profile button
-        if (targetId === "profile-button") {
-          for (let i = 0; i < headerButtons.length; i++) {
-            if (
-              headerButtons[i].innerHTML.toLowerCase().includes("person-circle")
-            ) {
-              const button = headerButtons[i];
-              button.id = targetId;
-
-              // Measure the entire button instead of the icon
-              const rect = button.getBoundingClientRect();
-              return {
-                x: rect.left,
-                y: rect.top,
-                width: rect.width,
-                height: rect.height,
-              };
-            }
-          }
-        }
-
-        // Check for settings button
-        if (targetId === "settings-button") {
-          for (let i = 0; i < headerButtons.length; i++) {
-            if (
-              headerButtons[i].innerHTML
-                .toLowerCase()
-                .includes("settings-outline")
-            ) {
-              const button = headerButtons[i];
-              button.id = targetId;
-
-              // Measure the entire button
-              const rect = button.getBoundingClientRect();
-              return {
-                x: rect.left,
-                y: rect.top,
-                width: rect.width,
-                height: rect.height,
-              };
-            }
+      if (headerElement) {
+        // Jetzt suche nach passenden Buttons innerhalb des Headers
+        const buttons = [...headerElement.querySelectorAll('button, [role="button"]')];
+        
+        const profileSelectors = ["person", "profile", "user", "account"];
+        const settingsSelectors = ["settings", "gear", "cog"];
+        
+        const targetSelectors = targetId === "profile-button" ? 
+          profileSelectors : settingsSelectors;
+          
+        // Suche nach Button mit passendem Text oder Icon
+        for (const button of buttons) {
+          const buttonContent = button.textContent?.toLowerCase() || 
+                               button.innerHTML.toLowerCase();
+          
+          if (targetSelectors.some(selector => buttonContent.includes(selector))) {
+            button.id = targetId;
+            const rect = button.getBoundingClientRect();
+            return {
+              x: rect.left,
+              y: rect.top,
+              width: rect.width,
+              height: rect.height,
+            };
           }
         }
       }
@@ -108,7 +123,7 @@ const findElementByTarget = async (targetId: string): Promise<any> => {
     }
   }
 
-  // 3) Try alternative selectors for navigation items
+  // 4) Try alternative selectors for navigation items
   if (
     targetId.includes("tab-") ||
     targetId === "markets-button" ||
@@ -150,7 +165,7 @@ const findElementByTarget = async (targetId: string): Promise<any> => {
     }
   }
 
-  // 4) Return null if element not found
+  // 5) Return null if element not found
   return null;
 };
 
@@ -235,20 +250,51 @@ const getSimulatedPosition = (
   }
   // Desktop layout
   else {
+    // Layout Konstanten
+    const logoWidth = 165;   // Geschätzte Breite des Logos
+    const navStartX = logoWidth -20;  // Navigation beginnt nach dem Logo + Abstand
+    const navItemWidth = 85;  // Breite eines Navigationselements
+    const navItemGap = 5;    // Abstand zwischen Navigationselementen
+    
+    // Position für die Elemente berechnen
     if (targetId === "markets-button" || targetId === "tab-markets") {
-      return { x: width * 0.35, y: 30, width: 100, height: 40 };
+      return { 
+        x: navStartX, 
+        y: 10, 
+        width: navItemWidth, 
+        height: 40 
+      };
     } else if (targetId === "share-button" || targetId === "tab-share") {
-      return { x: width * 0.42, y: 30, width: 100, height: 40 };
+      return { 
+        x: navStartX + navItemWidth + navItemGap, 
+        y: 10, 
+        width: navItemWidth, 
+        height: 40 
+      };
     } else if (targetId === "trade-button" || targetId === "tab-trade") {
-      return { x: width * 0.49, y: 30, width: 100, height: 40 };
+      return { 
+        x: navStartX + (navItemWidth + navItemGap) * 2, 
+        y: 10, 
+        width: navItemWidth, 
+        height: 40 
+      };
     } else if (targetId === "discover-button" || targetId === "tab-discover") {
-      return { x: width * 0.56, y: 30, width: 100, height: 40 };
-    } else if (
-      targetId === "portfolio-button" ||
-      targetId === "tab-portfolio"
-    ) {
-      return { x: width * 0.63, y: 30, width: 100, height: 40 };
-    } else if (targetId === "settings-button") {
+      return { 
+        x: navStartX + (navItemWidth + navItemGap) * 3, 
+        y: 10, 
+        width: navItemWidth, 
+        height: 40 
+      };
+    } else if (targetId === "portfolio-button" || targetId === "tab-portfolio") {
+      return { 
+        x: navStartX + (navItemWidth + navItemGap) * 4, 
+        y: 10, 
+        width: navItemWidth, 
+        height: 40 
+      };
+    } 
+    // Settings und Profile buttons bleiben rechts fixiert
+    else if (targetId === "settings-button") {
       const x = width - 60 + 15;
       const y = 30;
       return {
@@ -289,6 +335,14 @@ const TutorialOverlay: React.FC = () => {
   const highlightOffsetY = 0; // Passe diesen Wert an
   const tooltipOffsetX = 0; // Offset für das Tooltip horizontal
   const tooltipOffsetY = 0; // Offset für das Tooltip vertikal
+  
+  // Dynamische Berechnung der Desktop-Offsets basierend auf der Bildschirmbreite
+  const getDesktopOffsets = (screenWidth: number) => {
+    const xOffset = -10;   // Leicht nach links verschoben vom jeweiligen Element
+    const yOffset = -10;   // Nach oben verschoben
+    
+    return { x: xOffset, y: yOffset };
+  };
 
   // Load steps based on screen size
   useEffect(() => {
@@ -320,8 +374,8 @@ const TutorialOverlay: React.FC = () => {
     }
 
     try {
-      // Attempt to find the element in the DOM
-      const position = await findElementByTarget(currentStep.targetElementId);
+      // Pass current step to improve element finding
+      const position = await findElementByTarget(currentStep.targetElementId, currentStep);
       if (position) {
         setTargetPosition(position);
       } else {
@@ -412,18 +466,28 @@ const TutorialOverlay: React.FC = () => {
     // Definiere hier ggf. Offset-Werte für das Tooltip
     const tooltipWidth = width < 768 ? Math.min(300, width - 40) : 300;
     const tooltipHeight = 180; // Approximate height
+    
+    // Desktop-spezifische Offsets - dynamisch berechnen
+    let currentOffsetX = tooltipOffsetX;
+    let currentOffsetY = tooltipOffsetY;
+    
+    if (width >= 1024) {
+      const desktopOffsets = getDesktopOffsets(width);
+      currentOffsetX = desktopOffsets.x;
+      currentOffsetY = desktopOffsets.y;
+    }
 
     if (!targetPosition || !currentStep.position) {
       return {
-        top: height / 2 - 100 + tooltipOffsetY,
-        left: width / 2 - 150 + tooltipOffsetX,
+        top: height / 2 - 100 + currentOffsetY,
+        left: width / 2 - 150 + currentOffsetX,
       };
     }
 
     switch (currentStep.position) {
       case "top":
         return {
-          bottom: Math.max(10, height - targetPosition.y + 15) + tooltipOffsetY,
+          bottom: Math.max(10, height - targetPosition.y + 15) + currentOffsetY,
           left:
             Math.max(
               10,
@@ -431,7 +495,7 @@ const TutorialOverlay: React.FC = () => {
                 width - tooltipWidth - 10,
                 targetPosition.x + targetPosition.width / 2 - tooltipWidth / 2
               )
-            ) + tooltipOffsetX,
+            ) + currentOffsetX,
         };
       case "bottom":
         return {
@@ -439,7 +503,7 @@ const TutorialOverlay: React.FC = () => {
             Math.min(
               height - tooltipHeight - 10,
               targetPosition.y + targetPosition.height + 15
-            ) + tooltipOffsetY,
+            ) + currentOffsetY,
           left:
             Math.max(
               10,
@@ -447,7 +511,7 @@ const TutorialOverlay: React.FC = () => {
                 width - tooltipWidth - 10,
                 targetPosition.x + targetPosition.width / 2 - tooltipWidth / 2
               )
-            ) + tooltipOffsetX,
+            ) + currentOffsetX,
         };
       case "left":
         return {
@@ -455,8 +519,8 @@ const TutorialOverlay: React.FC = () => {
             Math.max(
               10,
               targetPosition.y + targetPosition.height / 2 - tooltipHeight / 2
-            ) + tooltipOffsetY,
-          right: Math.max(10, width - targetPosition.x + 15) + tooltipOffsetX,
+            ) + currentOffsetY,
+          right: Math.max(10, width - targetPosition.x + 15) + (-currentOffsetX), // Hier invertieren wir das Vorzeichen für "right"
         };
       case "right":
         return {
@@ -464,17 +528,17 @@ const TutorialOverlay: React.FC = () => {
             Math.max(
               10,
               targetPosition.y + targetPosition.height / 2 - tooltipHeight / 2
-            ) + tooltipOffsetY,
+            ) + currentOffsetY,
           left:
             Math.min(
               width - tooltipWidth - 10,
               targetPosition.x + targetPosition.width + 15
-            ) + tooltipOffsetX,
+            ) + currentOffsetX,
         };
       default:
         return {
-          top: height / 2 - 100 + tooltipOffsetY,
-          left: width / 2 - 150 + tooltipOffsetX,
+          top: height / 2 - 100 + currentOffsetY,
+          left: width / 2 - 150 + currentOffsetX,
         };
     }
   };
