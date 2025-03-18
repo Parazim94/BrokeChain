@@ -29,6 +29,7 @@ import Chatbot from "../components/ChatBot/Chatbot";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import VerifiedScreen from "../screens/VerifiedScreen";
 import InteractiveFlagButtons from "../components/InteractiveFlagButtons";
+import QuizScreen from "../screens/Main/QuizScreen"; // <-- Neuer Import
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -212,6 +213,12 @@ export default function StackNavigator() {
           name="Verified"
           component={VerifiedScreen}
           options={{ title: "E-Mail Verifizierung" }}
+        />
+        {/* Neuer Screen für Quiz */}
+        <Stack.Screen
+          name="Quiz"
+          component={QuizScreen}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
 

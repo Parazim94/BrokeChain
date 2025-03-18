@@ -27,6 +27,7 @@ export type RootStackParamList = {
   Verified: undefined;
   NotFound: undefined;
   redirect: { token: string };
+  Quiz: undefined; // <-- Neuer Schlüssel hinzugefügt
 };
 
 export type StackParamList = {

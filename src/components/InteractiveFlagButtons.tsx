@@ -11,8 +11,16 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
+import { NavigationProp } from "@react-navigation/native";
 import { ThemeContext } from "../context/ThemeContext";
 import { useTutorial } from "../context/TutorialContext";
+import QuizComponent from "./QuizComponent";
+import { useNavigation } from "@react-navigation/native";
+
+type RootStackParamList = {
+  Quiz: undefined;
+  // Add other screens as needed
+};
 
 interface FlagButtonProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -37,12 +45,7 @@ const FlagButton = ({ icon, label, onPress }: FlagButtonProps) => {
         animatedStyle,
         { backgroundColor: theme.accent },
       ]}
-      onMouseEnter={
-        Platform.OS === "web" ? () => setIsHovered(true) : undefined
-      }
-      onMouseLeave={
-        Platform.OS === "web" ? () => setIsHovered(false) : undefined
-      }
+      {...(Platform.OS === "web" ? { onMouseEnter: () => setIsHovered(true), onMouseLeave: () => setIsHovered(false) } : {})}
     >
       <TouchableOpacity
         style={styles.flagButton}
@@ -70,6 +73,7 @@ const FlagButton = ({ icon, label, onPress }: FlagButtonProps) => {
 
 export default function InteractiveFlagButtons() {
   const { startTutorial } = useTutorial();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const handleTutorialPress = () => {
     // Start the tutorial when the button is pressed
@@ -77,8 +81,8 @@ export default function InteractiveFlagButtons() {
   };
 
   const handleQuizPress = () => {
-    // Handle quiz navigation or action
-    console.log("Quiz pressed");
+    // Beim Klick auf den Quiz-Button navigiere zur Quiz-Seite
+    navigation.navigate("Quiz");
   };
 
   return (
