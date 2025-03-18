@@ -60,7 +60,7 @@ export default function LoginScreen() {
       // Kurze Verzögerung vor der Navigation, damit der Kontext aktualisiert wird
       setTimeout(() => {
         navigation.navigate("Main", { screen: "Portfolio" });
-      }, 100);
+      }, 1000);
     } catch (error) {
       showAlert({
         type: "error",

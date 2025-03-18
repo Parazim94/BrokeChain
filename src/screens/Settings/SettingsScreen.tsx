@@ -430,7 +430,7 @@ export default function SettingsScreen() {
         prefTheme: [colorTheme, accent],
         favorites: favorites,
         email: newEmail,
-        displayedTools: formattedDisplayTools // Hier displayedTools benutzen
+        displayedTools: formattedDisplayTools 
       };
       setUser(updatedUser);
 
@@ -465,7 +465,7 @@ export default function SettingsScreen() {
       marginBottom: 30,
       marginTop: 10,
       color: theme.accent,
-      backgroundColor: "transparent", // falls nötig
+      backgroundColor: "transparent", 
     },
     sectionContainer: {
       marginBottom: 30,
