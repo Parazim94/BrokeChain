@@ -7,13 +7,9 @@ import {
   Modal,
   Platform,
   useWindowDimensions,
-  findNodeHandle,
-  UIManager,
-  Button,
   Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
 import { useTutorial } from "../../context/TutorialContext";
 import { useTheme } from "../../context/ThemeContext";
 import { getTutorialSteps, TutorialStepData } from "./TutorialStep";
@@ -49,11 +45,70 @@ const measureElement = (
 };
 
 const findElementByTarget = async (targetId: string): Promise<any> => {
-  // First try direct ID
+  // 1) Try direct ID
   let position = await measureElement(targetId);
   if (position) return position;
 
-  // Try alternative selectors for navigation items
+  // 2) For profile and settings buttons, measure the entire button
+  if (targetId === "profile-button" || targetId === "settings-button") {
+    try {
+      // Attempt to find the header area (where these buttons are located)
+      const headerRight = document.querySelector(
+        "header .r-flexDirection-row:last-child"
+      );
+      if (headerRight) {
+        const headerButtons = headerRight.querySelectorAll("button");
+
+        // Check for profile button
+        if (targetId === "profile-button") {
+          for (let i = 0; i < headerButtons.length; i++) {
+            if (
+              headerButtons[i].innerHTML.toLowerCase().includes("person-circle")
+            ) {
+              const button = headerButtons[i];
+              button.id = targetId;
+
+              // Measure the entire button instead of the icon
+              const rect = button.getBoundingClientRect();
+              return {
+                x: rect.left,
+                y: rect.top,
+                width: rect.width,
+                height: rect.height,
+              };
+            }
+          }
+        }
+
+        // Check for settings button
+        if (targetId === "settings-button") {
+          for (let i = 0; i < headerButtons.length; i++) {
+            if (
+              headerButtons[i].innerHTML
+                .toLowerCase()
+                .includes("settings-outline")
+            ) {
+              const button = headerButtons[i];
+              button.id = targetId;
+
+              // Measure the entire button
+              const rect = button.getBoundingClientRect();
+              return {
+                x: rect.left,
+                y: rect.top,
+                width: rect.width,
+                height: rect.height,
+              };
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.log(`Error finding ${targetId}:`, e);
+    }
+  }
+
+  // 3) Try alternative selectors for navigation items
   if (
     targetId.includes("tab-") ||
     targetId === "markets-button" ||
@@ -87,24 +142,6 @@ const findElementByTarget = async (targetId: string): Promise<any> => {
         console.log("Selector failed:", selector);
       }
     }
-  }
-  // Try for header buttons
-  else if (targetId === "profile-button") {
-    const profileIcon = document.querySelector(
-      'button:has(svg[name="person-circle"])'
-    );
-    if (profileIcon) {
-      profileIcon.id = targetId;
-      return await measureElement(targetId);
-    }
-  } else if (targetId === "settings-button") {
-    const settingsIcon = document.querySelector(
-      'button:has(svg[name="settings-outline"])'
-    );
-    if (settingsIcon) {
-      settingsIcon.id = targetId;
-      return await measureElement(targetId);
-    }
   } else if (targetId === "burger-menu") {
     const burgerIcon = document.querySelector('button:has(svg[name="menu"])');
     if (burgerIcon) {
@@ -113,7 +150,7 @@ const findElementByTarget = async (targetId: string): Promise<any> => {
     }
   }
 
-  // Return null if element not found
+  // 4) Return null if element not found
   return null;
 };
 
@@ -123,6 +160,10 @@ const getSimulatedPosition = (
   width: number,
   height: number
 ) => {
+  // For the profile and settings buttons, make the highlight smaller or circular
+  const iconSize = 28; // Matches your typical icon size
+  const paddingAround = 10; // Space around the icon in the highlight
+
   // Mobile layout (bottom tabs)
   if (width < 768) {
     if (targetId === "tab-markets") {
@@ -135,23 +176,49 @@ const getSimulatedPosition = (
       return { x: width * 0.7, y: height - 60, width: width * 0.2, height: 60 };
     } else if (targetId === "tab-portfolio") {
       return { x: width * 0.9, y: height - 60, width: width * 0.2, height: 60 };
-    } else if (targetId === "profile-button") {
-      return { x: width - 60, y: 30, width: 40, height: 40 };
     } else if (targetId === "settings-button") {
-      return { x: width - 110, y: 30, width: 40, height: 40 };
+      const x = width - 60 + 15;
+      const y = 30;
+      return {
+        x: x - paddingAround,
+        y: y - paddingAround,
+        width: iconSize + 2 * paddingAround,
+        height: iconSize + 2 * paddingAround,
+      };
+    } else if (targetId === "profile-button") {
+      const x = width - 110 + 15;
+      const y = 30;
+      return {
+        x: x - paddingAround,
+        y: y - paddingAround,
+        width: iconSize + 2 * paddingAround,
+        height: iconSize + 2 * paddingAround,
+      };
     }
   }
   // Tablet layout
   else if (width >= 768 && width < 1024) {
     if (targetId === "burger-menu") {
       return { x: width - 60, y: 30, width: 40, height: 40 };
-    } else if (targetId === "profile-button") {
-      return { x: width - 110, y: 30, width: 40, height: 40 };
     } else if (targetId === "settings-button") {
-      return { x: width - 160, y: 30, width: 40, height: 40 };
-    }
-    // Tab positions for tablet
-    else if (targetId === "markets-button" || targetId === "tab-markets") {
+      const x = width - 110 + 15;
+      const y = 30;
+      return {
+        x: x - paddingAround,
+        y: y - paddingAround,
+        width: iconSize + 2 * paddingAround,
+        height: iconSize + 2 * paddingAround,
+      };
+    } else if (targetId === "profile-button") {
+      const x = width - 160 + 15;
+      const y = 30;
+      return {
+        x: x - paddingAround,
+        y: y - paddingAround,
+        width: iconSize + 2 * paddingAround,
+        height: iconSize + 2 * paddingAround,
+      };
+    } else if (targetId === "markets-button" || targetId === "tab-markets") {
       return { x: width * 0.2, y: 30, width: 100, height: 40 };
     } else if (targetId === "share-button" || targetId === "tab-share") {
       return { x: width * 0.3, y: 30, width: 100, height: 40 };
@@ -181,14 +248,28 @@ const getSimulatedPosition = (
       targetId === "tab-portfolio"
     ) {
       return { x: width * 0.63, y: 30, width: 100, height: 40 };
-    } else if (targetId === "profile-button") {
-      return { x: width - 60, y: 30, width: 40, height: 40 };
     } else if (targetId === "settings-button") {
-      return { x: width - 110, y: 30, width: 40, height: 40 };
+      const x = width - 60 + 15;
+      const y = 30;
+      return {
+        x: x - paddingAround,
+        y: y - paddingAround,
+        width: iconSize + 2 * paddingAround,
+        height: iconSize + 2 * paddingAround,
+      };
+    } else if (targetId === "profile-button") {
+      const x = width - 110 + 15;
+      const y = 30;
+      return {
+        x: x - paddingAround,
+        y: y - paddingAround,
+        width: iconSize + 2 * paddingAround,
+        height: iconSize + 2 * paddingAround,
+      };
     }
   }
 
-  // Default fallback position
+  // Default fallback
   return { x: width / 2 - 50, y: height / 2 - 25, width: 100, height: 50 };
 };
 
@@ -203,7 +284,13 @@ const TutorialOverlay: React.FC = () => {
   const scale = useRef(new Animated.Value(0.9)).current;
   const highlightOpacity = useRef(new Animated.Value(0)).current;
 
-  // Initialize steps based on screen width
+  // Offset-Konstanten definieren
+  const highlightOffsetX = 0; // Passe diesen Wert an (z.B. -2, +2, ...)
+  const highlightOffsetY = 0; // Passe diesen Wert an
+  const tooltipOffsetX = 0; // Offset für das Tooltip horizontal
+  const tooltipOffsetY = 0; // Offset für das Tooltip vertikal
+
+  // Load steps based on screen size
   useEffect(() => {
     const tutorialSteps = getTutorialSteps(width).filter((step) => {
       if (step.onlyShowOn === "all") return true;
@@ -216,17 +303,16 @@ const TutorialOverlay: React.FC = () => {
     setSteps(tutorialSteps);
   }, [width]);
 
-  // Reset to first step when tutorial is activated
+  // Reset to first step on tutorial start
   useEffect(() => {
     if (isTutorialActive) {
       setCurrentStepIndex(0);
     }
   }, [isTutorialActive]);
 
-  // Get current step
   const currentStep = steps[currentStepIndex];
 
-  // Function to check web element positions
+  // Update the highlight position
   const updateTargetPosition = async () => {
     if (!currentStep || !currentStep.targetElementId) {
       setTargetPosition(null);
@@ -234,13 +320,12 @@ const TutorialOverlay: React.FC = () => {
     }
 
     try {
-      // Try to find element through DOM
+      // Attempt to find the element in the DOM
       const position = await findElementByTarget(currentStep.targetElementId);
-
       if (position) {
         setTargetPosition(position);
       } else {
-        // Use fallback simulated position
+        // Fallback
         const simulatedPosition = getSimulatedPosition(
           currentStep.targetElementId,
           width,
@@ -250,7 +335,7 @@ const TutorialOverlay: React.FC = () => {
       }
     } catch (error) {
       console.error("Error updating target position:", error);
-      // Use fallback simulated position on error
+      // Use fallback if there's an error
       const simulatedPosition = getSimulatedPosition(
         currentStep.targetElementId,
         width,
@@ -260,10 +345,10 @@ const TutorialOverlay: React.FC = () => {
     }
   };
 
-  // Update position when step changes or when screen size changes
+  // Re-run when step changes or on screen resize
   useEffect(() => {
     if (isTutorialActive && currentStep) {
-      // Fade out
+      // Fade out old highlight
       Animated.parallel([
         Animated.timing(opacity, {
           toValue: 0,
@@ -276,9 +361,9 @@ const TutorialOverlay: React.FC = () => {
           useNativeDriver: true,
         }),
       ]).start(() => {
-        // Update position
+        // Re-measure
         updateTargetPosition().then(() => {
-          // Fade in
+          // Fade in new highlight
           Animated.parallel([
             Animated.timing(opacity, {
               toValue: 1,
@@ -301,7 +386,7 @@ const TutorialOverlay: React.FC = () => {
     }
   }, [currentStep, isTutorialActive, width, height]);
 
-  // Handle navigation
+  // Navigation
   const goToNextStep = () => {
     if (currentStepIndex < steps.length - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
@@ -309,13 +394,11 @@ const TutorialOverlay: React.FC = () => {
       endTutorial();
     }
   };
-
   const goToPrevStep = () => {
     if (currentStepIndex > 0) {
       setCurrentStepIndex(currentStepIndex - 1);
     }
   };
-
   const handleSkip = () => {
     endTutorial();
   };
@@ -324,68 +407,74 @@ const TutorialOverlay: React.FC = () => {
     return null;
   }
 
-  // Calculate tooltip position based on target position and step position
+  // Determine tooltip position
   const getTooltipPosition = () => {
+    // Definiere hier ggf. Offset-Werte für das Tooltip
+    const tooltipWidth = width < 768 ? Math.min(300, width - 40) : 300;
+    const tooltipHeight = 180; // Approximate height
+
     if (!targetPosition || !currentStep.position) {
-      // Center in screen if no target
       return {
-        top: height / 2 - 100,
-        left: width / 2 - 150,
+        top: height / 2 - 100 + tooltipOffsetY,
+        left: width / 2 - 150 + tooltipOffsetX,
       };
     }
-
-    const tooltipWidth = width < 768 ? Math.min(300, width - 40) : 300;
-    const tooltipHeight = 180; // Approximate height of tooltip
 
     switch (currentStep.position) {
       case "top":
         return {
-          bottom: Math.max(10, height - targetPosition.y + 15),
-          left: Math.max(
-            10,
-            Math.min(
-              width - tooltipWidth - 10,
-              targetPosition.x + targetPosition.width / 2 - tooltipWidth / 2
-            )
-          ),
+          bottom: Math.max(10, height - targetPosition.y + 15) + tooltipOffsetY,
+          left:
+            Math.max(
+              10,
+              Math.min(
+                width - tooltipWidth - 10,
+                targetPosition.x + targetPosition.width / 2 - tooltipWidth / 2
+              )
+            ) + tooltipOffsetX,
         };
       case "bottom":
         return {
-          top: Math.min(
-            height - tooltipHeight - 10,
-            targetPosition.y + targetPosition.height + 15
-          ),
-          left: Math.max(
-            10,
+          top:
             Math.min(
-              width - tooltipWidth - 10,
-              targetPosition.x + targetPosition.width / 2 - tooltipWidth / 2
-            )
-          ),
+              height - tooltipHeight - 10,
+              targetPosition.y + targetPosition.height + 15
+            ) + tooltipOffsetY,
+          left:
+            Math.max(
+              10,
+              Math.min(
+                width - tooltipWidth - 10,
+                targetPosition.x + targetPosition.width / 2 - tooltipWidth / 2
+              )
+            ) + tooltipOffsetX,
         };
       case "left":
         return {
-          top: Math.max(
-            10,
-            targetPosition.y + targetPosition.height / 2 - tooltipHeight / 2
-          ),
-          right: Math.max(10, width - targetPosition.x + 15),
+          top:
+            Math.max(
+              10,
+              targetPosition.y + targetPosition.height / 2 - tooltipHeight / 2
+            ) + tooltipOffsetY,
+          right: Math.max(10, width - targetPosition.x + 15) + tooltipOffsetX,
         };
       case "right":
         return {
-          top: Math.max(
-            10,
-            targetPosition.y + targetPosition.height / 2 - tooltipHeight / 2
-          ),
-          left: Math.min(
-            width - tooltipWidth - 10,
-            targetPosition.x + targetPosition.width + 15
-          ),
+          top:
+            Math.max(
+              10,
+              targetPosition.y + targetPosition.height / 2 - tooltipHeight / 2
+            ) + tooltipOffsetY,
+          left:
+            Math.min(
+              width - tooltipWidth - 10,
+              targetPosition.x + targetPosition.width + 15
+            ) + tooltipOffsetX,
         };
       default:
         return {
-          top: height / 2 - 100,
-          left: width / 2 - 150,
+          top: height / 2 - 100 + tooltipOffsetY,
+          left: width / 2 - 150 + tooltipOffsetX,
         };
     }
   };
@@ -394,126 +483,216 @@ const TutorialOverlay: React.FC = () => {
   const isFirstStep = currentStepIndex === 0;
   const isLastStep = currentStepIndex === steps.length - 1;
 
+  // Decide highlight style
+  let highlightStyle: any = {
+    top: targetPosition ? targetPosition.y - 5 : 0,
+    left: targetPosition ? targetPosition.x - 5 : 0,
+    width: targetPosition ? targetPosition.width + 10 : 0,
+    height: targetPosition ? targetPosition.height + 10 : 0,
+    borderColor: theme.accent,
+    opacity: highlightOpacity,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderStyle: "dashed",
+    backgroundColor: "transparent",
+    position: "absolute",
+    zIndex: 10,
+  };
+
+  const isProfileOrSettings =
+    currentStep?.targetElementId === "profile-button" ||
+    currentStep?.targetElementId === "settings-button";
+
+  if (targetPosition && isProfileOrSettings) {
+    // Zuerst definieren wir Offset-Werte für die Highlight-Markierung:
+    const offsetX = highlightOffsetX + 2; // z.B. -2, +2
+    const offsetY = highlightOffsetY - 7; // z.B.  2, -2
+
+    // Dann berechnen wir den Kreis:
+    const highlightDiameter =
+      Math.max(targetPosition.width, targetPosition.height) + 10;
+    const highlightRadius = highlightDiameter / 2;
+    const centerX = targetPosition.x + targetPosition.width / 2;
+    const centerY = targetPosition.y + targetPosition.height / 2;
+
+    // Anschließend wenden wir die Offsets an:
+    highlightStyle = {
+      ...highlightStyle,
+      top: centerY - highlightRadius + offsetY,
+      left: centerX - highlightRadius + offsetX,
+      width: highlightDiameter,
+      height: highlightDiameter,
+      borderRadius: highlightRadius,
+    };
+  }
+
   return (
     <Modal transparent visible={isTutorialActive} animationType="fade">
-      <BlurView intensity={30} style={StyleSheet.absoluteFill}>
-        <View style={styles.overlay}>
-          {/* Highlight around target element */}
-          {targetPosition && (
-            <Animated.View
+      <View style={styles.container}>
+        {/* Dimmed overlay areas that avoid the target element */}
+        {targetPosition && (
+          <>
+            {/* Top */}
+            <View
               style={[
-                styles.highlight,
+                styles.overlaySection,
                 {
-                  top: targetPosition.y - 5,
-                  left: targetPosition.x - 5,
-                  width: targetPosition.width + 10,
-                  height: targetPosition.height + 10,
-                  borderColor: theme.accent,
-                  opacity: highlightOpacity,
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: targetPosition.y,
                 },
               ]}
             />
-          )}
-
-          {/* Tooltip */}
-          <Animated.View
-            style={[
-              styles.tooltip,
-              tooltipPosition,
-              {
-                backgroundColor: theme.background,
-                borderColor: theme.accent,
-                opacity,
-                transform: [{ scale }],
-              },
-            ]}
-          >
-            {/* Title */}
-            <View style={styles.tooltipHeader}>
-              {currentStep.icon && (
-                <Ionicons
-                  name={currentStep.icon}
-                  size={24}
-                  color={theme.accent}
-                  style={styles.tooltipIcon}
-                />
-              )}
-              <Text style={[styles.tooltipTitle, { color: theme.text }]}>
-                {currentStep.title}
-              </Text>
-            </View>
-
-            {/* Description */}
-            <Text
+            {/* Left */}
+            <View
               style={[
-                styles.tooltipDescription,
-                { color: theme.text }, // Changed from theme.textSecondary to theme.text
+                styles.overlaySection,
+                {
+                  top: targetPosition.y,
+                  left: 0,
+                  width: targetPosition.x,
+                  height: targetPosition.height,
+                },
               ]}
-            >
-              {currentStep.description}
+            />
+            {/* Right */}
+            <View
+              style={[
+                styles.overlaySection,
+                {
+                  top: targetPosition.y,
+                  left: targetPosition.x + targetPosition.width,
+                  width: width - (targetPosition.x + targetPosition.width),
+                  height: targetPosition.height,
+                },
+              ]}
+            />
+            {/* Bottom */}
+            <View
+              style={[
+                styles.overlaySection,
+                {
+                  top: targetPosition.y + targetPosition.height,
+                  left: 0,
+                  width: "100%",
+                  height: height - (targetPosition.y + targetPosition.height),
+                },
+              ]}
+            />
+
+            {/* Highlight border */}
+            <Animated.View style={highlightStyle} />
+          </>
+        )}
+
+        {/* If no target, full screen dim */}
+        {!targetPosition && <View style={styles.fullOverlay} />}
+
+        {/* Tooltip */}
+        <Animated.View
+          style={[
+            styles.tooltip,
+            tooltipPosition,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.accent,
+              opacity,
+              transform: [{ scale }],
+            },
+          ]}
+        >
+          {/* Title */}
+          <View style={styles.tooltipHeader}>
+            {currentStep.icon && (
+              <Ionicons
+                name={currentStep.icon}
+                size={24}
+                color={theme.accent}
+                style={styles.tooltipIcon}
+              />
+            )}
+            <Text style={[styles.tooltipTitle, { color: theme.text }]}>
+              {currentStep.title}
             </Text>
+          </View>
 
-            {/* Navigation */}
-            <View style={styles.tooltipFooter}>
-              <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-                <Text style={[styles.skipText, { color: theme.accent}]}>
-                  Skip
-                </Text>
-              </TouchableOpacity>
+          {/* Description */}
+          <Text style={[styles.tooltipDescription, { color: theme.text }]}>
+            {currentStep.description}
+          </Text>
 
-              <View style={styles.navigationButtons}>
-                {!isFirstStep && (
-                  <TouchableOpacity
-                    onPress={goToPrevStep}
-                    style={[styles.navButton, { borderColor: theme.text }]}
-                  >
-                    <Ionicons
-                      name="chevron-back"
-                      size={20}
-                      color={theme.text}
-                    />
-                  </TouchableOpacity>
-                )}
+          {/* Footer (Skip/Prev/Next) */}
+          <View style={styles.tooltipFooter}>
+            <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
+              <Text style={[styles.skipText, { color: theme.accent }]}>
+                Skip
+              </Text>
+            </TouchableOpacity>
 
+            <View style={styles.navigationButtons}>
+              {!isFirstStep && (
                 <TouchableOpacity
-                  onPress={goToNextStep}
-                  style={[
-                    styles.navButton,
-                    styles.nextButton,
-                    { backgroundColor: theme.accent },
-                  ]}
+                  onPress={goToPrevStep}
+                  style={[styles.navButton, { borderColor: theme.text }]}
                 >
-                  {isLastStep ? (
-                    <Text style={styles.finishText}>Done</Text>
-                  ) : (
-                    <Ionicons name="chevron-forward" size={20} color="#fff" />
-                  )}
+                  <Ionicons name="chevron-back" size={20} color={theme.text} />
                 </TouchableOpacity>
-              </View>
+              )}
+              <TouchableOpacity
+                onPress={goToNextStep}
+                style={[
+                  styles.navButton,
+                  styles.nextButton,
+                  { backgroundColor: theme.accent },
+                ]}
+              >
+                {isLastStep ? (
+                  <Text style={styles.finishText}>Done</Text>
+                ) : (
+                  <Ionicons name="chevron-forward" size={20} color="#fff" />
+                )}
+              </TouchableOpacity>
             </View>
-          </Animated.View>
-        </View>
-      </BlurView>
+          </View>
+        </Animated.View>
+      </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: {
+  container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    position: "relative",
+  },
+  overlaySection: {
+    position: "absolute",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  fullOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   tooltip: {
     position: "absolute",
     width: 300,
     padding: 20,
     borderRadius: 12,
+    borderWidth: 1,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  highlight: {
+    position: "absolute",
+    borderWidth: 2,
+    borderRadius: 8,
+    borderStyle: "dashed",
+    backgroundColor: "transparent",
+    zIndex: 10,
   },
   tooltipHeader: {
     flexDirection: "row",
@@ -551,13 +730,6 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     borderWidth: 0,
-  },
-  highlight: {
-    position: "absolute",
-    borderWidth: 2,
-    borderRadius: 8,
-    borderStyle: "dashed",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   skipButton: {
     padding: 8,

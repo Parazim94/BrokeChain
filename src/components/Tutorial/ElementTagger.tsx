@@ -66,29 +66,67 @@ const ElementTagger = () => {
 
   // Tag header buttons (profile, settings, burger menu)
   const tagHeaderElements = () => {
-    const headerButtons = document.querySelectorAll("header button");
-    headerButtons.forEach((button) => {
-      const innerHTML = button.innerHTML.toLowerCase();
+    try {
+      // Clear any existing ids to prevent confusion
+      const existingProfile = document.getElementById("profile-button");
+      const existingSettings = document.getElementById("settings-button");
+      if (existingProfile) existingProfile.removeAttribute("id");
+      if (existingSettings) existingSettings.removeAttribute("id");
 
-      // Profile button
+      // Get header right section that contains the buttons
+      const headerRightSection = document.querySelector(
+        "header .r-flexDirection-row:last-child"
+      );
+
+      if (headerRightSection) {
+        // The buttons are in order: profile, then settings
+        const buttons = headerRightSection.querySelectorAll("button");
+
+        if (buttons.length >= 2) {
+          // Find profile button (person-circle icon)
+          for (let i = 0; i < buttons.length; i++) {
+            const button = buttons[i];
+            const innerHTML = button.innerHTML.toLowerCase();
+
+            if (innerHTML.includes("person-circle")) {
+              button.id = "profile-button";
+              break;
+            }
+          }
+
+          // Find settings button (settings-outline icon)
+          for (let i = 0; i < buttons.length; i++) {
+            const button = buttons[i];
+            const innerHTML = button.innerHTML.toLowerCase();
+
+            if (innerHTML.includes("settings-outline")) {
+              button.id = "settings-button";
+              break;
+            }
+          }
+        }
+      }
+
+      // Fallback to last two buttons if specific icons not found
       if (
-        innerHTML.includes("person-circle") ||
-        innerHTML.includes("profile")
+        !document.getElementById("profile-button") ||
+        !document.getElementById("settings-button")
       ) {
-        button.id = "profile-button";
+        const allHeaderButtons = document.querySelectorAll("header button");
+
+        if (allHeaderButtons.length >= 2) {
+          // Usually profile is second-to-last button
+          const profileIndex = allHeaderButtons.length - 2;
+          // Settings is last button
+          const settingsIndex = allHeaderButtons.length - 1;
+
+          allHeaderButtons[profileIndex].id = "profile-button";
+          allHeaderButtons[settingsIndex].id = "settings-button";
+        }
       }
-      // Settings button
-      else if (
-        innerHTML.includes("settings-outline") ||
-        innerHTML.includes("gear")
-      ) {
-        button.id = "settings-button";
-      }
-      // Burger menu button
-      else if (innerHTML.includes("menu")) {
-        button.id = "burger-menu";
-      }
-    });
+    } catch (error) {
+      console.error("Error tagging header elements:", error);
+    }
   };
 
   return null; // This component doesn't render anything
