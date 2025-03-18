@@ -5,7 +5,6 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
-  Image,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
@@ -21,6 +20,7 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
 import { useResponsiveColumns } from "@/src/hooks/useResponsiveColumns";
 import CustomModal from "@/src/components/CustomModal";
+import LazyImage from "@/src/components/LazyImage";
 
 interface NewsItem {
   guid: string;
@@ -84,7 +84,7 @@ export default function CryptoNews() {
                 {/* Obere Zeile: Bild und Header */}
                 <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
                   {item.enclosure?.link ? (
-                    <Image
+                    <LazyImage
                       source={{ uri: item.enclosure.link }}
                       style={newsStyles.newsImage}
                       resizeMode="cover"
@@ -175,7 +175,7 @@ export default function CryptoNews() {
                     style={[newsStyles.newsTopRow, { alignItems: "center" }]}
                   >
                     {item.enclosure?.link ? (
-                      <Image
+                      <LazyImage
                         source={{ uri: item.enclosure.link }}
                         style={newsStyles.newsImage}
                         resizeMode="cover"
@@ -223,7 +223,7 @@ export default function CryptoNews() {
             <View style={{ padding: 16 }}>
               <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
                 {modalNews.enclosure?.link ? (
-                  <Image
+                  <LazyImage
                     source={{ uri: modalNews.enclosure.link }}
                     style={newsStyles.newsImage}
                     resizeMode="cover"
@@ -300,7 +300,7 @@ export default function CryptoNews() {
                 {/* Obere Zeile: Bild und Header */}
                 <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
                   {item.enclosure?.link ? (
-                    <Image
+                    <LazyImage
                       source={{ uri: item.enclosure.link }}
                       style={newsStyles.newsImage}
                       resizeMode="cover"
@@ -349,7 +349,7 @@ export default function CryptoNews() {
             <View style={{ padding: 16 }}>
               <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
                 {modalNews.enclosure?.link ? (
-                  <Image
+                  <LazyImage
                     source={{ uri: modalNews.enclosure.link }}
                     style={newsStyles.newsImage}
                     resizeMode="cover"

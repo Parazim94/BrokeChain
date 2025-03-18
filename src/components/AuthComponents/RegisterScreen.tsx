@@ -17,9 +17,32 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Loading-State für Button
-
+  const [passwordScore, setPasswordScore] = useState(0); // Score als Anzahl erfüllter Kriterien (0-4)
+  const [isLoading, setIsLoading] = useState(false);
   const cardPadding = Platform.OS === "web" ? 32 : 16;
+
+  // Neue Funktion, die den Score als Anzahl der erfüllten 4 Kriterien zurückgibt
+  const calculatePasswordScore = (pass: string) => {
+    let score = 0;
+    if (pass.length >= 8) score++;
+    if (/[A-Z]/.test(pass)) score++;
+    if (/[0-9]/.test(pass)) score++;
+    if (/[^A-Za-z0-9]/.test(pass)) score++;
+    return score;
+  };
+
+  // Handler, der Passwort und Score aktualisiert
+  const handlePasswordChange = (pass: string) => {
+    setPassword(pass);
+    setPasswordScore(calculatePasswordScore(pass));
+  };
+
+  // Bestimmt die Farbe der gefüllten Segmente
+  const getFillColor = () => {
+    if (passwordScore <= 1) return "red";
+    if (passwordScore === 2) return "yellow";
+    return "green";
+  };
 
   const handleRegister = async () => {
     try {
@@ -74,13 +97,31 @@ export default function RegisterScreen() {
           onChangeText={setAge}
         />
         <TextInput
-          placeholder="Passwort"
+          placeholder="Password"
           placeholderTextColor={styles.defaultText.color}
           secureTextEntry
           style={[styles.input, { width: "100%", textAlign: "left" }]}  
           value={password}
-          onChangeText={setPassword}
+          onChangeText={handlePasswordChange} // Update: setze den Handler ein
         />
+        {/* Anzeige der Passwort-Sicherheitsbar */}
+        <View style={{ flexDirection: "row", marginVertical: 4 }}>
+          {[0, 1, 2, 3].map((idx) => (
+            <View 
+              key={idx}
+              style={{
+                flex: 1,
+                height: 8,
+                borderRadius: 4,
+                marginBottom: 8,
+                marginTop: -4,
+                marginRight: idx < 3 ? 4 : 0,
+                backgroundColor: idx < passwordScore ? getFillColor() : "#ccc",
+                opacity: password.length === 0 ? 0 : 0.8,
+              }}
+            />
+          ))}
+        </View>
         <Button
           onPress={handleRegister}
           title="Registrieren"
