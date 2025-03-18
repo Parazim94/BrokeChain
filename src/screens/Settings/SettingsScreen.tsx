@@ -182,6 +182,7 @@ export default function SettingsScreen() {
         tutorial: displayTools.tutorial,
         quiz: displayTools.quiz
       };
+      console.log("Formatted Display Tools:", formattedDisplayTools);
 
       const response = await fetch(
         "https://broke.dev-space.vip/user/settings",
@@ -406,7 +407,7 @@ export default function SettingsScreen() {
       prefTheme: [colorTheme, accent],
       favorites: favorites,
       email: newEmail,
-      displayedTools: formattedDisplayTools // Hier displayedTools benutzen
+      displayedTools: formattedDisplayTools 
     };
 
     try {
