@@ -59,6 +59,10 @@ const QuizComponent = ({ onQuizComplete }: QuizComponentProps) => {
     setScore(0);
     setCurrentQuestion(0);
     setShowResult(false);
+    // Zurücksetzen der Feedback-Zustände beim Themenwechsel
+    setSelectedAnswerIndex(null);
+    setShowFeedback(false);
+    setIsCorrect(false);
     setModalVisible(true);
   };
 

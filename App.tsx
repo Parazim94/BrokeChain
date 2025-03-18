@@ -11,6 +11,7 @@ import { TutorialProvider } from "./src/context/TutorialContext";
 import TutorialOverlay from "./src/components/Tutorial/TutorialOverlay";
 import ElementTagger from "./src/components/Tutorial/ElementTagger";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { QuizProvider } from "./src/context/Quizcontext";
 
 // NEUE Linking-Konfiguration mit NETLIFY Domain:
 const linking = {
@@ -34,6 +35,7 @@ const linking = {
       Verified: "auth/verify/:token",
       redirect: "redirect", // Neue Route für Google Auth Redirect
       NotFound: "*",
+      Quiz: "quiz", // Neue Route für den Quiz-Screen
     },
   },
 };
@@ -82,7 +84,9 @@ export default function App() {
           <AuthProvider>
             <AlertProvider>
               <TutorialProvider>
-                <AppContent />
+                <QuizProvider>
+                  <AppContent />
+                </QuizProvider>
               </TutorialProvider>
             </AlertProvider>
           </AuthProvider>

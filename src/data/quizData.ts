@@ -66,8 +66,8 @@ export const quizData: QuizData = {
       {
         question: "What is a cryptocurrency wallet?",
         answers: [
+            { text: "A software or hardware that stores private keys", isCorrect: true },
           { text: "A physical device that holds actual digital coins", isCorrect: false },
-          { text: "A software or hardware that stores private keys", isCorrect: true },
           { text: "An online bank account for cryptocurrencies", isCorrect: false },
         ],
       },
@@ -90,9 +90,9 @@ export const quizData: QuizData = {
       {
         question: "What is 'gas' in Ethereum?",
         answers: [
-          { text: "Virtual fuel for animated graphics", isCorrect: false },
-          { text: "The fee required to execute transactions or smart contracts", isCorrect: true },
-          { text: "A type of token on the Ethereum network", isCorrect: false },
+            { text: "Virtual fuel for animated graphics", isCorrect: false },
+            { text: "A type of token on the Ethereum network", isCorrect: false },
+            { text: "The fee required to execute transactions or smart contracts", isCorrect: true },
         ],
       },
       {

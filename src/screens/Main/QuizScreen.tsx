@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { SafeAreaView, ScrollView, View, Text, StyleSheet } from "react-native";
+import React from "react";
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemeContext } from "../../context/ThemeContext";
@@ -7,19 +7,14 @@ import { createStyles } from "@/src/styles/style";
 import QuizComponent from "../../components/QuizComponent";
 import Card from "@/src/components/Card";
 import { QuizCategoryKey } from "@/src/data/quizData";
-
-interface QuizResult {
-  score: number;
-  total: number;
-  category: string;
-  categoryKey: QuizCategoryKey;
-  date: Date;
-}
+import { useQuiz } from "@/src/context/Quizcontext";
+import { useNavigation } from "@react-navigation/native";
 
 export default function QuizScreen() {
   const { theme } = useContext(ThemeContext);
   const styles = createStyles();
-  const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
+  const { quizResults, addQuizResult } = useQuiz();
+  const navigation = useNavigation();
 
   // Callback-Funktion, um Ergebnisse vom Quiz zu erhalten
   const handleQuizComplete = (result: { 
@@ -28,13 +23,8 @@ export default function QuizScreen() {
     category: string;
     categoryKey: QuizCategoryKey;
   }) => {
-    const newResult: QuizResult = {
-      ...result,
-      date: new Date()
-    };
-    
-    // Neue Ergebnisse an den Anfang der Liste setzen
-    setQuizResults(prevResults => [newResult, ...prevResults].slice(0, 5));
+    // Ergebnis zum QuizContext hinzufügen
+    addQuizResult(result);
   };
 
   const getPerformanceIcon = (percentage: number) => {
@@ -52,6 +42,12 @@ export default function QuizScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={[headerStyles.header, { backgroundColor: theme.background, borderBottomColor: theme.accent }]}>
+        <TouchableOpacity
+          style={headerStyles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color={theme.text} />
+        </TouchableOpacity>
         <Text style={[headerStyles.title, { color: theme.text }]}>Quiz</Text>
       </View>
       <ScrollView contentContainerStyle={pageStyles.content}>
@@ -87,7 +83,7 @@ export default function QuizScreen() {
                         style={[
                           pageStyles.progressFill, 
                           { width: `${percentage}%`, backgroundColor: performance.color }
-                        ]}
+                        ]} 
                       />
                     </View>
                   </View>
@@ -107,11 +103,18 @@ const headerStyles = StyleSheet.create({
   header: {
     padding: 16,
     borderBottomWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    marginLeft: 10, // Abstand zwischen Zurück-Button und Titel
+    // Zentrierte Ausrichtung und rechter Ausgleich entfernt
   },
+  backButton: {
+    padding: 8,
+  }
 });
 
 const pageStyles = StyleSheet.create({
