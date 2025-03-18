@@ -75,9 +75,9 @@ export default function LoginScreen() {
 
   // Initialisiere den Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
-    // clientId: process.env.ID,
+    clientId: process.env.ID,
     // iosClientId: "YOUR_IOS_CLIENT_ID",
-    androidClientId: "YOUR_ANDROID_CLIENT_ID",
+    // androidClientId: "YOUR_ANDROID_CLIENT_ID",
     webClientId: process.env.ID,
     // scopes: ['profile', 'email'],
   });
@@ -90,19 +90,28 @@ export default function LoginScreen() {
       async function fetchUser(token: String) {
         try {
           const response = await fetch(
-            "https://broke.dev-space.vip/auth/google",
+            "https://broke.dev-space.vip/auth/google/",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(token),
+              body: JSON.stringify({ token }),
             }
           );
+
           const userData = await response.json();
+
           setUser(userData);
+          setIsLoggedIn(true);
+          setTimeout(() => {
+            navigation.navigate("Main", { screen: "Portfolio" });
+          }, 1000);
         } catch (error) {
-          throw new Error("fehler google user fetch");
+          throw new Error(
+            error instanceof Error ? error.message : String(error)
+          );
         }
       }
+
       fetchUser(response.authentication.accessToken);
     }
   }, [response]);
