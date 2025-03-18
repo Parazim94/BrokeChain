@@ -13,7 +13,6 @@ import {
   Animated,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { BlurView } from "expo-blur";
 import { useTutorial } from "../../context/TutorialContext";
 import { useTheme } from "../../context/ThemeContext";
 import { getTutorialSteps, TutorialStepData } from "./TutorialStep";
@@ -396,10 +395,64 @@ const TutorialOverlay: React.FC = () => {
 
   return (
     <Modal transparent visible={isTutorialActive} animationType="fade">
-      <BlurView intensity={30} style={StyleSheet.absoluteFill}>
-        <View style={styles.overlay}>
-          {/* Highlight around target element */}
-          {targetPosition && (
+      {/* Replace BlurView with custom overlay that has cutouts */}
+      <View style={styles.container}>
+        {/* Create overlay areas that avoid the target element */}
+        {targetPosition && (
+          <>
+            {/* Top section */}
+            <View
+              style={[
+                styles.overlaySection,
+                {
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: targetPosition.y,
+                },
+              ]}
+            />
+
+            {/* Left section */}
+            <View
+              style={[
+                styles.overlaySection,
+                {
+                  top: targetPosition.y,
+                  left: 0,
+                  width: targetPosition.x,
+                  height: targetPosition.height,
+                },
+              ]}
+            />
+
+            {/* Right section */}
+            <View
+              style={[
+                styles.overlaySection,
+                {
+                  top: targetPosition.y,
+                  left: targetPosition.x + targetPosition.width,
+                  width: width - (targetPosition.x + targetPosition.width),
+                  height: targetPosition.height,
+                },
+              ]}
+            />
+
+            {/* Bottom section */}
+            <View
+              style={[
+                styles.overlaySection,
+                {
+                  top: targetPosition.y + targetPosition.height,
+                  left: 0,
+                  width: "100%",
+                  height: height - (targetPosition.y + targetPosition.height),
+                },
+              ]}
+            />
+
+            {/* Highlight border around target element */}
             <Animated.View
               style={[
                 styles.highlight,
@@ -413,92 +466,103 @@ const TutorialOverlay: React.FC = () => {
                 },
               ]}
             />
-          )}
+          </>
+        )}
 
-          {/* Tooltip */}
-          <Animated.View
+        {/* If no target position, just show a full screen overlay */}
+        {!targetPosition && <View style={styles.fullOverlay} />}
+
+        {/* Tooltip */}
+        <Animated.View
+          style={[
+            styles.tooltip,
+            tooltipPosition,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.accent,
+              opacity,
+              transform: [{ scale }],
+            },
+          ]}
+        >
+          {/* Title */}
+          <View style={styles.tooltipHeader}>
+            {currentStep.icon && (
+              <Ionicons
+                name={currentStep.icon}
+                size={24}
+                color={theme.accent}
+                style={styles.tooltipIcon}
+              />
+            )}
+            <Text style={[styles.tooltipTitle, { color: theme.text }]}>
+              {currentStep.title}
+            </Text>
+          </View>
+
+          {/* Description */}
+          <Text
             style={[
-              styles.tooltip,
-              tooltipPosition,
-              {
-                backgroundColor: theme.background,
-                borderColor: theme.accent,
-                opacity,
-                transform: [{ scale }],
-              },
+              styles.tooltipDescription,
+              { color: theme.text }, // Changed from theme.textSecondary to theme.text
             ]}
           >
-            {/* Title */}
-            <View style={styles.tooltipHeader}>
-              {currentStep.icon && (
-                <Ionicons
-                  name={currentStep.icon}
-                  size={24}
-                  color={theme.accent}
-                  style={styles.tooltipIcon}
-                />
-              )}
-              <Text style={[styles.tooltipTitle, { color: theme.text }]}>
-                {currentStep.title}
+            {currentStep.description}
+          </Text>
+
+          {/* Navigation */}
+          <View style={styles.tooltipFooter}>
+            <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
+              <Text style={[styles.skipText, { color: theme.accent }]}>
+                Skip
               </Text>
-            </View>
+            </TouchableOpacity>
 
-            {/* Description */}
-            <Text
-              style={[
-                styles.tooltipDescription,
-                { color: theme.text }, // Changed from theme.textSecondary to theme.text
-              ]}
-            >
-              {currentStep.description}
-            </Text>
-
-            {/* Navigation */}
-            <View style={styles.tooltipFooter}>
-              <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-                <Text style={[styles.skipText, { color: theme.accent}]}>
-                  Skip
-                </Text>
-              </TouchableOpacity>
-
-              <View style={styles.navigationButtons}>
-                {!isFirstStep && (
-                  <TouchableOpacity
-                    onPress={goToPrevStep}
-                    style={[styles.navButton, { borderColor: theme.text }]}
-                  >
-                    <Ionicons
-                      name="chevron-back"
-                      size={20}
-                      color={theme.text}
-                    />
-                  </TouchableOpacity>
-                )}
-
+            <View style={styles.navigationButtons}>
+              {!isFirstStep && (
                 <TouchableOpacity
-                  onPress={goToNextStep}
-                  style={[
-                    styles.navButton,
-                    styles.nextButton,
-                    { backgroundColor: theme.accent },
-                  ]}
+                  onPress={goToPrevStep}
+                  style={[styles.navButton, { borderColor: theme.text }]}
                 >
-                  {isLastStep ? (
-                    <Text style={styles.finishText}>Done</Text>
-                  ) : (
-                    <Ionicons name="chevron-forward" size={20} color="#fff" />
-                  )}
+                  <Ionicons name="chevron-back" size={20} color={theme.text} />
                 </TouchableOpacity>
-              </View>
+              )}
+
+              <TouchableOpacity
+                onPress={goToNextStep}
+                style={[
+                  styles.navButton,
+                  styles.nextButton,
+                  { backgroundColor: theme.accent },
+                ]}
+              >
+                {isLastStep ? (
+                  <Text style={styles.finishText}>Done</Text>
+                ) : (
+                  <Ionicons name="chevron-forward" size={20} color="#fff" />
+                )}
+              </TouchableOpacity>
             </View>
-          </Animated.View>
-        </View>
-      </BlurView>
+          </View>
+        </Animated.View>
+      </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: "relative",
+  },
+  overlaySection: {
+    position: "absolute",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  fullOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
   overlay: {
     flex: 1,
     justifyContent: "center",
@@ -515,6 +579,16 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  // ...existing code...
+  highlight: {
+    position: "absolute",
+    borderWidth: 2,
+    borderRadius: 8,
+    borderStyle: "dashed",
+    backgroundColor: "transparent",
+    zIndex: 10,
+  },
+  // ...existing code...
   tooltipHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -551,13 +625,6 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     borderWidth: 0,
-  },
-  highlight: {
-    position: "absolute",
-    borderWidth: 2,
-    borderRadius: 8,
-    borderStyle: "dashed",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   skipButton: {
     padding: 8,
