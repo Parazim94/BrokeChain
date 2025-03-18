@@ -26,8 +26,8 @@ export const quizData: QuizData = {
       {
         question: "What is a blockchain?",
         answers: [
+            { text: "A decentralized, distributed data structure", isCorrect: true },
           { text: "A centralized database", isCorrect: false },
-          { text: "A decentralized, distributed data structure", isCorrect: true },
           { text: "A cloud storage service", isCorrect: false },
         ],
       },
@@ -154,8 +154,8 @@ export const quizData: QuizData = {
         question: "What is 'Scalping' in trading?",
         answers: [
           { text: "Holding positions for months", isCorrect: false },
-          { text: "Making small profits from frequent, short-term trades", isCorrect: true },
           { text: "Buying high and selling low", isCorrect: false },
+          { text: "Making small profits from frequent, short-term trades", isCorrect: true },
         ],
       },
       {
@@ -208,8 +208,8 @@ export const quizData: QuizData = {
       {
         question: "What is a 'Liquidity Pool'?",
         answers: [
+            { text: "A reserve of tokens locked in a smart contract", isCorrect: true },
           { text: "A group of traders who provide market liquidity", isCorrect: false },
-          { text: "A reserve of tokens locked in a smart contract", isCorrect: true },
           { text: "A type of cryptocurrency wallet", isCorrect: false },
         ],
       },
@@ -217,23 +217,23 @@ export const quizData: QuizData = {
         question: "What is 'Yield Farming'?",
         answers: [
           { text: "Growing agricultural products using blockchain", isCorrect: false },
-          { text: "Lending crypto to earn interest and additional tokens", isCorrect: true },
           { text: "Mining cryptocurrency with renewable energy", isCorrect: false },
+          { text: "Lending crypto to earn interest and additional tokens", isCorrect: true },
         ],
       },
       {
         question: "What is an 'AMM'?",
         answers: [
           { text: "Automatic Money Machine", isCorrect: false },
-          { text: "Automated Market Maker", isCorrect: true },
           { text: "Advanced Mining Method", isCorrect: false },
+          { text: "Automated Market Maker", isCorrect: true },
         ],
       },
       {
         question: "What is 'Impermanent Loss'?",
         answers: [
+            { text: "The loss compared to HODLing when providing liquidity", isCorrect: true },
           { text: "A temporary server outage on exchanges", isCorrect: false },
-          { text: "The loss compared to HODLing when providing liquidity", isCorrect: true },
           { text: "A type of tax deduction for crypto losses", isCorrect: false },
         ],
       },
@@ -257,15 +257,15 @@ export const quizData: QuizData = {
         question: "What is a 'DAO'?",
         answers: [
           { text: "Digital Asset Option", isCorrect: false },
-          { text: "Decentralized Autonomous Organization", isCorrect: true },
           { text: "Direct Access Ownership", isCorrect: false },
+          { text: "Decentralized Autonomous Organization", isCorrect: true },
         ],
       },
       {
         question: "What is 'TVL' in DeFi?",
         answers: [
+            { text: "Total Value Locked", isCorrect: true },
           { text: "True Value Liquidation", isCorrect: false },
-          { text: "Total Value Locked", isCorrect: true },
           { text: "Token Verification Level", isCorrect: false },
         ],
       },
@@ -288,8 +288,8 @@ export const quizData: QuizData = {
         question: "What is a 'Candlestick Chart'?",
         answers: [
           { text: "A chart that only shows closing prices", isCorrect: false },
-          { text: "A chart showing high, low, open, and close prices", isCorrect: true },
           { text: "A chart that only shows price trends over a year", isCorrect: false },
+          { text: "A chart showing high, low, open, and close prices", isCorrect: true },
         ],
       },
       {
@@ -319,8 +319,8 @@ export const quizData: QuizData = {
       {
         question: "What is a 'Doji Candlestick'?",
         answers: [
+            { text: "A candlestick where open and close prices are nearly equal", isCorrect: true },
           { text: "A candlestick with a very long body", isCorrect: false },
-          { text: "A candlestick where open and close prices are nearly equal", isCorrect: true },
           { text: "A candlestick showing extremely high volatility", isCorrect: false },
         ],
       },
@@ -328,8 +328,8 @@ export const quizData: QuizData = {
         question: "What is a 'Fibonacci Retracement'?",
         answers: [
           { text: "A mathematical sequence used to predict market lows", isCorrect: false },
-          { text: "A technical analysis tool using Fibonacci ratios to identify potential support/resistance levels", isCorrect: true },
           { text: "A chart pattern named after Leonardo Fibonacci", isCorrect: false },
+          { text: "A technical analysis tool using Fibonacci ratios to identify potential support/resistance levels", isCorrect: true },
         ],
       },
       {
@@ -344,8 +344,8 @@ export const quizData: QuizData = {
         question: "What is 'Volume' in technical analysis?",
         answers: [
           { text: "The loudness of traders on the exchange floor", isCorrect: false },
-          { text: "The total number of shares or contracts traded during a period", isCorrect: true },
           { text: "The size of the candlesticks on a chart", isCorrect: false },
+          { text: "The total number of shares or contracts traded during a period", isCorrect: true },
         ],
       },
       {

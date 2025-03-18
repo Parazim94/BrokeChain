@@ -7,9 +7,11 @@ import {
   Image,
   PanResponder,
   Dimensions,
+  Text,
 } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 
 interface ChatbotButtonProps {
   onPress: () => void;
@@ -28,11 +30,17 @@ const ChatbotButton: React.FC<ChatbotButtonProps> = ({
   const [screenWidth, setScreenWidth] = useState(screenDimensions.width);
   const [screenHeight, setScreenHeight] = useState(screenDimensions.height);
 
+  // Flag um zu prüfen, ob der Button jemals verschoben wurde
+  const [wasEverMoved, setWasEverMoved] = useState(false);
+  
+  // Standard-Position für Flag-Style (rechts seitlich)
+  const defaultFlagPosition = {
+    x: screenWidth - 60,
+    y: Platform.OS === "web" ? screenHeight - 200 : screenHeight - 250,
+  };
+
   // Zustand: Position des Buttons
-  const [position, setPosition] = useState({
-    x: screenWidth - 80,
-    y: Platform.OS === "web" ? screenHeight - 80 : screenHeight - 140,
-  });
+  const [position, setPosition] = useState(defaultFlagPosition);
 
   // Ref, um die zuletzt festgeschriebene Position zu speichern
   const lastPosition = useRef(position);
@@ -42,6 +50,9 @@ const ChatbotButton: React.FC<ChatbotButtonProps> = ({
 
   // Zustand, ob gerade gezogen wird
   const [isDragging, setIsDragging] = useState(false);
+  
+  // Hover-Zustand für die Flag-Animation (wenn nicht verschoben)
+  const [isHovered, setIsHovered] = useState(false);
 
   // Variablen zur Unterscheidung zwischen Tap und Drag
   const touchStartTime = useRef(0);
@@ -52,11 +63,22 @@ const ChatbotButton: React.FC<ChatbotButtonProps> = ({
     const { width, height } = Dimensions.get("window");
     setScreenWidth(width);
     setScreenHeight(height);
+    
+    // Aktualisiere auch die Flag-Position, wenn der Button nicht verschoben wurde
+    if (!wasEverMoved) {
+      const newFlagPosition = {
+        x: width - 60,
+        y: Platform.OS === "web" ? height - 200 : height - 250,
+      };
+      setPosition(newFlagPosition);
+      lastPosition.current = newFlagPosition;
+      translatePosition.setValue(newFlagPosition);
+    }
   };
 
   // Beim Mount: Setze initiale Position und registriere ggf. den Resize-Listener
   useEffect(() => {
-    translatePosition.setValue({ x: position.x, y: position.y });
+    translatePosition.setValue(position);
     lastPosition.current = position;
     if (Platform.OS === "web") {
       window.addEventListener("resize", updateDimensions);
@@ -117,7 +139,11 @@ const ChatbotButton: React.FC<ChatbotButtonProps> = ({
         const savedPositionString = await AsyncStorage.getItem(
           "chatbotButtonPosition"
         );
+        
         if (savedPositionString) {
+          const wasMoved = await AsyncStorage.getItem("chatbotButtonWasMoved");
+          setWasEverMoved(wasMoved === "true");
+          
           const savedPosition = JSON.parse(savedPositionString);
           const x = Math.min(Math.max(0, savedPosition.x), screenWidth - 80);
           const y = Math.min(Math.max(0, savedPosition.y), screenHeight - 80);
@@ -188,6 +214,10 @@ const ChatbotButton: React.FC<ChatbotButtonProps> = ({
           lastPosition.current = newPos;
           translatePosition.setValue(newPos);
 
+          // Markiere, dass der Button manuell verschoben wurde
+          setWasEverMoved(true);
+          AsyncStorage.setItem("chatbotButtonWasMoved", "true");
+
           // Notify parent of position changes
           if (onPositionChange) {
             onPositionChange(newPos);
@@ -215,10 +245,33 @@ const ChatbotButton: React.FC<ChatbotButtonProps> = ({
     })
   ).current;
 
+  // Berechne die Breite für den Flag-Style
+  const getButtonStyle = () => {
+    if (wasEverMoved) {
+      // Runder Button, wenn jemals verschoben
+      return {
+        width: 50,
+        height: 50,
+        borderRadius: 30,
+      };
+    } else {
+      // Flag-Style, wenn nie verschoben
+      return {
+        width: isHovered ? 120 : 48,
+        height: 48,
+        borderTopLeftRadius: 24,
+        borderBottomLeftRadius: 24,
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
+      };
+    }
+  };
+
   return (
     <Animated.View
       style={[
         styles.container,
+        getButtonStyle(),
         {
           backgroundColor: theme.accent,
           transform: [
@@ -230,13 +283,28 @@ const ChatbotButton: React.FC<ChatbotButtonProps> = ({
         isDragging && { opacity: 0.8 },
       ]}
       {...panResponder.panHandlers}
+      {...(Platform.OS === "web" && !wasEverMoved ? {
+        onMouseEnter: () => setIsHovered(true),
+        onMouseLeave: () => setIsHovered(false),
+      } : {} as any)}
     >
-      <Image
-        source={require("../../../assets/images/Brokechain3.png")}
-        style={styles.botImage}
-        tintColor="#FFFFFF"
-        resizeMode="contain"
-      />
+      {wasEverMoved ? (
+        // Runder Button mit Icon, wenn verschoben
+        <Image
+          source={require("../../../assets/images/Brokechain3.png")}
+          style={styles.botImage}
+          tintColor="#FFFFFF"
+          resizeMode="contain"
+        />
+      ) : (
+        // Flag-Style mit Text, wenn nicht verschoben
+        <View style={styles.flagButton}>
+          <Ionicons name="chatbox-ellipses" size={24} color="#fff" />
+          {isHovered && (
+            <Text style={styles.flagText}>Chat AI</Text>
+          )}
+        </View>
+      )}
     </Animated.View>
   );
 };
@@ -246,9 +314,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
-    width: 50,
-    height: 50,
-    borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
@@ -262,8 +327,18 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35,
   },
-  // You can keep or remove this style as it won't be used anymore
-
+  flagButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    height: 48,
+  },
+  flagText: {
+    color: "#fff",
+    marginLeft: 8,
+    fontWeight: "bold",
+  },
 });
 
 export default ChatbotButton;

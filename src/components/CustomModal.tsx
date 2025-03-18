@@ -69,7 +69,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
         >
           {showCloseButton && (
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close-circle" size={32} color={"red"} />
+              <Ionicons name="close-circle" size={36} color={"red"} />
             </TouchableOpacity>
           )}
 

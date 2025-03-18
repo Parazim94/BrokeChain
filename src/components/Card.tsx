@@ -47,7 +47,7 @@ function createCardStyles() {
         margin: 4,
         width: "100%",
         borderRadius: 8,
-        boxShadow: ` 0 0 4px #00000011`,
+        boxShadow: `0 0 4px #00000011`,
       },
     }),
     gradientColors,

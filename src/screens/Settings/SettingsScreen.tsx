@@ -21,6 +21,7 @@ import AppearanceCard from "@/src/components/SettingsComponents/AppearanceCard";
 import EmailCard from "@/src/components/SettingsComponents/EmailCard";
 import PasswordCard from "@/src/components/SettingsComponents/PasswordCard";
 import FavoritesCard from "@/src/components/SettingsComponents/FavoritesCard";
+import DisplayToolsCard from "@/src/components/SettingsComponents/DisplayToolsCard";
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -59,6 +60,14 @@ export default function SettingsScreen() {
   const [newEmail, setNewEmail] = useState(user?.email || "");
   const [isChangingEmail, setIsChangingEmail] = useState(false);
 
+  // States for display tools
+  const [displayTools, setDisplayTools] = useState({
+    chatAi: user?.displayTools?.[0]?.chatAi !== false,
+    tutorial: user?.displayTools?.[1]?.tutorial !== false,
+    quiz: user?.displayTools?.[2]?.quiz !== false,
+  });
+  const [isUpdatingDisplayTools, setIsUpdatingDisplayTools] = useState(false);
+
   // Filtered coins based on search query
   const filteredCoins = useMemo(() => {
     if (!searchQuery) return [];
@@ -71,6 +80,19 @@ export default function SettingsScreen() {
 
   const toggleTheme = () => {
     setColorTheme(colorTheme === "light" ? "dark" : "light");
+  };
+
+  // Toggle functions for display tools
+  const toggleChatAi = () => {
+    setDisplayTools(prev => ({ ...prev, chatAi: !prev.chatAi }));
+  };
+
+  const toggleTutorial = () => {
+    setDisplayTools(prev => ({ ...prev, tutorial: !prev.tutorial }));
+  };
+
+  const toggleQuiz = () => {
+    setDisplayTools(prev => ({ ...prev, quiz: !prev.quiz }));
   };
 
   // Add favorite
@@ -148,6 +170,64 @@ export default function SettingsScreen() {
     }
   };
   
+  // Handle display tools update
+  const handleDisplayToolsUpdate = async () => {
+    if (!user) return;
+    setIsUpdatingDisplayTools(true);
+
+    try {
+      const formattedDisplayTools = [
+        { chatAi: displayTools.chatAi },
+        { tutorial: displayTools.tutorial },
+        { quiz: displayTools.quiz }
+      ];
+
+      const response = await fetch(
+        "https://broke.dev-space.vip/user/settings",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: user?.token,
+            displayTools: formattedDisplayTools
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Display tools update failed");
+      }
+
+      // Serverantwort parsen und neues Token extrahieren
+      const responseData = await response.json();
+      const newToken = responseData.token || user.token;
+      
+      // Aktualisiere User mit neuem Token und Display-Tools-Einstellungen
+      const updatedUser = { 
+        ...user, 
+        displayTools: formattedDisplayTools,
+        token: newToken
+      };
+      
+      setUser(updatedUser);
+
+      showAlert({
+        type: "success",
+        title: "Display Tools Updated",
+        message: "Your display settings have been saved!",
+      });
+    } catch (error) {
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: error instanceof Error ? error.message : "Unexpected error",
+      });
+    } finally {
+      setIsUpdatingDisplayTools(false);
+    }
+  };
+
   // Handle favorites update
   const handleFavoritesUpdate = async () => {
     if (!user) return;
@@ -313,11 +393,19 @@ export default function SettingsScreen() {
     // Log das aktuelle Token vor dem Speichern aller Settings
     console.log("Save Settings - aktueller Token:", user?.token);
 
+    // Format display tools as array of objects
+    const formattedDisplayTools = [
+      { chatAi: displayTools.chatAi },
+      { tutorial: displayTools.tutorial },
+      { quiz: displayTools.quiz }
+    ];
+
     const updatedUserData = {
-      ...user,
+      token: user?.token,
       prefTheme: [colorTheme, accent],
       favorites: favorites,
       email: newEmail,
+      displayTools: formattedDisplayTools
     };
 
     try {
@@ -334,7 +422,15 @@ export default function SettingsScreen() {
         throw new Error("Saving failed");
       }
 
-      const updatedUser = await response.json();
+      const responseData = await response.json();
+      const updatedUser = { 
+        ...user,
+        ...responseData,
+        prefTheme: [colorTheme, accent],
+        favorites: favorites,
+        email: newEmail,
+        displayTools: formattedDisplayTools
+      };
       setUser(updatedUser);
 
       showAlert({
@@ -504,6 +600,18 @@ export default function SettingsScreen() {
             isUpdatingAppearance={isUpdatingAppearance}
             theme={theme}
             AccentColors={AccentColors}
+            styles={settingsStyles}
+            defaultText={styles.defaultText}
+          />
+
+          <DisplayToolsCard
+            displayTools={displayTools}
+            toggleChatAi={toggleChatAi}
+            toggleTutorial={toggleTutorial}
+            toggleQuiz={toggleQuiz}
+            handleDisplayToolsUpdate={handleDisplayToolsUpdate}
+            isUpdatingDisplayTools={isUpdatingDisplayTools}
+            theme={theme}
             styles={settingsStyles}
             defaultText={styles.defaultText}
           />

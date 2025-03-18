@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import MarketList from "@/src/components/MarketList";
+import MarketList from "@/src/components/Market/MarketList";
 import { Ionicons } from "@expo/vector-icons";
 import { RootStackParamList } from "@/src/types/types";
 import { useData } from "@/src/context/DataContext";

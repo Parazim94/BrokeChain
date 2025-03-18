@@ -113,14 +113,14 @@ const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
     }).start();
   }, [visible, shouldShow]);
 
-  // Calculate the position of the notification bubble
+  // Cal  // Calculate the position of the notification bubble
   const getBubblePosition = () => {
     const bubbleWidth = 200;
     const bubbleHeight = 80;
     const padding = 10;
 
     // Default position (to the right of the button)
-    let positionStyle = {
+    let positionStyle: { left?: number; right?: number; top?: number; bottom?: number } = {
       left: buttonPosition.x + buttonSize.width + 10,
       top: buttonPosition.y,
     };
@@ -163,7 +163,7 @@ const ChatbotNotification: React.FC<ChatbotNotificationProps> = ({
     return positionStyle;
   };
 
-  const bubblePosition = getBubblePosition();
+  const bubblePosition: { left?: number; right?: number; top?: number; bottom?: number } = getBubblePosition();
   const isPositionedLeft = bubblePosition.right !== undefined;
   const isPositionedBottom = bubblePosition.bottom !== undefined;
 
