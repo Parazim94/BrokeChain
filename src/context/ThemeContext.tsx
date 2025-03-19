@@ -38,11 +38,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [colorTheme, setColorTheme] = useState<
     "light" | "dark" | null | undefined
-  >("light");
+  >("dark");
   const [accent, setAccent] = useState(AccentColors[0]);
 
   const theme = {
-    ...Colors[colorTheme || "light"],
+    ...Colors[colorTheme || "dark"],
     accent,
   };
 

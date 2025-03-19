@@ -153,9 +153,9 @@ export default function TradeControls({
             <Button
               onPress={() => setTradeAction(tradeAction === "buy" ? "sell" : "buy")}
               title={tradeAction === "buy" ? "Sell" : "Buy"}
-              type={tradeAction === "buy" ? "secondary" : "primary" }
+              type={"primary" }
               size="small"
-              style={{ paddingVertical: 4, paddingHorizontal: 12 }}
+              style={{ paddingVertical: 4, paddingHorizontal: 12, backgroundColor: tradeAction === "sell" ? theme.accent : "#F44336" }}
             />
           </View>
         </View>
@@ -263,7 +263,7 @@ export default function TradeControls({
                   type={tradeAction === "buy" ? "primary" : "secondary"}
                   size="medium"
                   style={{ paddingVertical: 8, paddingHorizontal: 16, minWidth: 120,
-                           backgroundColor: tradeAction === "buy" ? theme.accent : "#F44336" }}
+                           backgroundColor: tradeAction === "buy" ? theme.accent : "#F44336", borderWidth: 0 }}
                   loading={isLoading}
                 />
               </View>
@@ -308,7 +308,7 @@ export default function TradeControls({
                 <Button
                   onPress={handleTrade}
                   title={tradeAction === "buy" ? "Buy Now" : "Sell Now"}
-                  type={tradeAction === "buy" ? "primary" : "secondary"}
+                  type={ "primary"}
                   size="medium"
                   style={{ 
                     paddingVertical: 8, 

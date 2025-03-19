@@ -44,7 +44,10 @@ const measureElement = (
   });
 };
 
-const findElementByTarget = async (targetId: string, currentStep?: TutorialStepData): Promise<any> => {
+const findElementByTarget = async (
+  targetId: string,
+  currentStep?: TutorialStepData
+): Promise<any> => {
   if (!isWeb) {
     // Return null for native platforms, as we'll use simulated positions
     return null;
@@ -82,9 +85,9 @@ const findElementByTarget = async (targetId: string, currentStep?: TutorialStepD
         `header [role="navigation"]`,
         `nav[role="navigation"]`,
         `.header-right`,
-        `header > div:last-child`
+        `header > div:last-child`,
       ];
-      
+
       let headerElement = null;
       for (const selector of selectors) {
         headerElement = document.querySelector(selector);
@@ -93,20 +96,24 @@ const findElementByTarget = async (targetId: string, currentStep?: TutorialStepD
 
       if (headerElement) {
         // Jetzt suche nach passenden Buttons innerhalb des Headers
-        const buttons = [...headerElement.querySelectorAll('button, [role="button"]')];
-        
+        const buttons = [
+          ...headerElement.querySelectorAll('button, [role="button"]'),
+        ];
+
         const profileSelectors = ["person", "profile", "user", "account"];
         const settingsSelectors = ["settings", "gear", "cog"];
-        
-        const targetSelectors = targetId === "profile-button" ? 
-          profileSelectors : settingsSelectors;
-          
+
+        const targetSelectors =
+          targetId === "profile-button" ? profileSelectors : settingsSelectors;
+
         // Suche nach Button mit passendem Text oder Icon
         for (const button of buttons) {
-          const buttonContent = button.textContent?.toLowerCase() || 
-                               button.innerHTML.toLowerCase();
-          
-          if (targetSelectors.some(selector => buttonContent.includes(selector))) {
+          const buttonContent =
+            button.textContent?.toLowerCase() || button.innerHTML.toLowerCase();
+
+          if (
+            targetSelectors.some((selector) => buttonContent.includes(selector))
+          ) {
             button.id = targetId;
             const rect = button.getBoundingClientRect();
             return {
@@ -234,9 +241,18 @@ const getSimulatedPosition = (
         height: iconSize + 2 * paddingAround,
       };
     } else if (targetId === "markets-button" || targetId === "tab-markets") {
-      return { x: width * 0.2, y: 30, width: 100, height: 40 };
+      return {
+        x: width * 0.2,
+        y: 30, 
+        width: 100, 
+        height: 40 
+      };
     } else if (targetId === "share-button" || targetId === "tab-share") {
-      return { x: width * 0.3, y: 30, width: 100, height: 40 };
+      return {
+        x: width * 0.3, 
+        y: 30, 
+        width: 100, 
+        height: 40 };
     } else if (targetId === "trade-button" || targetId === "tab-trade") {
       return { x: width * 0.4, y: 30, width: 100, height: 40 };
     } else if (targetId === "discover-button" || targetId === "tab-discover") {
@@ -251,48 +267,51 @@ const getSimulatedPosition = (
   // Desktop layout
   else {
     // Layout Konstanten
-    const logoWidth = 165;   // Geschätzte Breite des Logos
-    const navStartX = logoWidth -20;  // Navigation beginnt nach dem Logo + Abstand
-    const navItemWidth = 85;  // Breite eines Navigationselements
-    const navItemGap = 5;    // Abstand zwischen Navigationselementen
-    
+    const logoWidth = 165; // Geschätzte Breite des Logos
+    const navStartX = logoWidth - 20; // Navigation beginnt nach dem Logo + Abstand
+    const navItemWidth = 85; // Breite eines Navigationselements
+    const navItemGap = 5; // Abstand zwischen Navigationselementen
+
     // Position für die Elemente berechnen
     if (targetId === "markets-button" || targetId === "tab-markets") {
-      return { 
-        x: navStartX, 
-        y: 10, 
-        width: navItemWidth, 
-        height: 40 
+      return {
+        x: navStartX,
+        y: 10,
+        width: navItemWidth,
+        height: 40,
       };
     } else if (targetId === "share-button" || targetId === "tab-share") {
-      return { 
-        x: navStartX + navItemWidth + navItemGap, 
-        y: 10, 
-        width: navItemWidth, 
-        height: 40 
+      return {
+        x: navStartX + navItemWidth + navItemGap,
+        y: 10,
+        width: navItemWidth,
+        height: 40,
       };
     } else if (targetId === "trade-button" || targetId === "tab-trade") {
-      return { 
-        x: navStartX + (navItemWidth + navItemGap) * 2, 
-        y: 10, 
-        width: navItemWidth, 
-        height: 40 
+      return {
+        x: navStartX + (navItemWidth + navItemGap) * 2,
+        y: 10,
+        width: navItemWidth - 10,
+        height: 40,
       };
     } else if (targetId === "discover-button" || targetId === "tab-discover") {
-      return { 
-        x: navStartX + (navItemWidth + navItemGap) * 3, 
-        y: 10, 
-        width: navItemWidth, 
-        height: 40 
+      return {
+        x: navStartX + (navItemWidth + navItemGap) * 3,
+        y: 10,
+        width: navItemWidth,
+        height: 40,
       };
-    } else if (targetId === "portfolio-button" || targetId === "tab-portfolio") {
-      return { 
-        x: navStartX + (navItemWidth + navItemGap) * 4, 
-        y: 10, 
-        width: navItemWidth, 
-        height: 40 
+    } else if (
+      targetId === "portfolio-button" ||
+      targetId === "tab-portfolio"
+    ) {
+      return {
+        x: navStartX + (navItemWidth + navItemGap) * 4,
+        y: 10,
+        width: navItemWidth + 10,
+        height: 40,
       };
-    } 
+    }
     // Settings und Profile buttons bleiben rechts fixiert
     else if (targetId === "settings-button") {
       const x = width - 60 + 15;
@@ -307,7 +326,7 @@ const getSimulatedPosition = (
       const x = width - 110 + 15;
       const y = 30;
       return {
-        x: x - paddingAround,
+        x: x - paddingAround + 7,
         y: y - paddingAround,
         width: iconSize + 2 * paddingAround,
         height: iconSize + 2 * paddingAround,
@@ -335,12 +354,12 @@ const TutorialOverlay: React.FC = () => {
   const highlightOffsetY = 0; // Passe diesen Wert an
   const tooltipOffsetX = 0; // Offset für das Tooltip horizontal
   const tooltipOffsetY = 0; // Offset für das Tooltip vertikal
-  
+
   // Dynamische Berechnung der Desktop-Offsets basierend auf der Bildschirmbreite
   const getDesktopOffsets = (screenWidth: number) => {
-    const xOffset = -10;   // Leicht nach links verschoben vom jeweiligen Element
-    const yOffset = -10;   // Nach oben verschoben
-    
+    const xOffset = -10; // Leicht nach links verschoben vom jeweiligen Element
+    const yOffset = -10; // Nach oben verschoben
+
     return { x: xOffset, y: yOffset };
   };
 
@@ -375,7 +394,10 @@ const TutorialOverlay: React.FC = () => {
 
     try {
       // Pass current step to improve element finding
-      const position = await findElementByTarget(currentStep.targetElementId, currentStep);
+      const position = await findElementByTarget(
+        currentStep.targetElementId,
+        currentStep
+      );
       if (position) {
         setTargetPosition(position);
       } else {
@@ -466,11 +488,11 @@ const TutorialOverlay: React.FC = () => {
     // Definiere hier ggf. Offset-Werte für das Tooltip
     const tooltipWidth = width < 768 ? Math.min(300, width - 40) : 300;
     const tooltipHeight = 180; // Approximate height
-    
+
     // Desktop-spezifische Offsets - dynamisch berechnen
     let currentOffsetX = tooltipOffsetX;
     let currentOffsetY = tooltipOffsetY;
-    
+
     if (width >= 1024) {
       const desktopOffsets = getDesktopOffsets(width);
       currentOffsetX = desktopOffsets.x;
@@ -520,7 +542,7 @@ const TutorialOverlay: React.FC = () => {
               10,
               targetPosition.y + targetPosition.height / 2 - tooltipHeight / 2
             ) + currentOffsetY,
-          right: Math.max(10, width - targetPosition.x + 15) + (-currentOffsetX), // Hier invertieren wir das Vorzeichen für "right"
+          right: Math.max(10, width - targetPosition.x + 15) + -currentOffsetX, // Hier invertieren wir das Vorzeichen für "right"
         };
       case "right":
         return {
@@ -570,11 +592,11 @@ const TutorialOverlay: React.FC = () => {
   if (targetPosition && isProfileOrSettings) {
     // Zuerst definieren wir Offset-Werte für die Highlight-Markierung:
     const offsetX = highlightOffsetX + 2; // z.B. -2, +2
-    const offsetY = highlightOffsetY - 7; // z.B.  2, -2
+    const offsetY = highlightOffsetY - 12; // z.B.  2, -2
 
     // Dann berechnen wir den Kreis:
     const highlightDiameter =
-      Math.max(targetPosition.width, targetPosition.height) + 10;
+      Math.max(targetPosition.width, targetPosition.height) - 5;
     const highlightRadius = highlightDiameter / 2;
     const centerX = targetPosition.x + targetPosition.width / 2;
     const centerY = targetPosition.y + targetPosition.height / 2;
@@ -804,7 +826,8 @@ const styles = StyleSheet.create({
   finishText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 12,
+    padding: 4,
   },
 });
 
