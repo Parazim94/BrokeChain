@@ -470,7 +470,7 @@ const TutorialOverlay: React.FC = () => {
               useNativeDriver: true,
             }),
             Animated.timing(highlightOpacity, {
-              toValue: 0.8,
+              toValue: 0.8, // Numerischer Wert, nicht Boolean
               duration: 300,
               useNativeDriver: true,
             }),
@@ -621,7 +621,6 @@ const TutorialOverlay: React.FC = () => {
     width: targetPosition ? targetPosition.width + 10 : 0,
     height: targetPosition ? targetPosition.height + 10 : 0,
     borderColor: theme.accent,
-    opacity: highlightOpacity,
     borderRadius: 8,
     borderWidth: 2,
     borderStyle: "dashed",
@@ -713,7 +712,12 @@ const TutorialOverlay: React.FC = () => {
             />
 
             {/* Highlight border */}
-            <Animated.View style={highlightStyle} />
+            <Animated.View 
+              style={[
+                highlightStyle, 
+                { opacity: highlightOpacity } // Korrekte Verwendung mit Animated.View
+              ]} 
+            />
           </>
         )}
 

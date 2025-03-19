@@ -147,24 +147,35 @@ export default function LoginScreen() {
           onPress={handleLogin}
           title="Login"
           loading={isLoading}
-          fullWidth
+          fullWidth          
+          size="small"
           style={{
             marginTop: 12,
             ...(isMobile ? { width: "100%", alignItems: "center" } : {}),
           }}
         />
-        {/* Neuer Button für Google Login */}
         <Button
           onPress={() => promptAsync()}
           title="Login with Google"
           loading={isLoading}
+          icon="logo-google"
+          type="secondary"
+          size="small"
           fullWidth
           style={{
             marginTop: 12,
             ...(isMobile ? { width: "100%", alignItems: "center" } : {}),
-            backgroundColor: "#db4437",
           }}
         />
+        {/* Added Privacy Policy & Terms link below the Google Login button */}
+        <View style={{ alignItems: "center", marginTop: 8 }}>
+          <Text
+            style={{ color: styles.accent.color, textDecorationLine: "underline",fontSize:10 }}
+            onPress={() => navigation.navigate("PrivacyTermsScreen" as never)}
+          >
+            Privacy Policy & Terms of Service
+          </Text>
+        </View>
         <View style={auth.linkContainer}>
           <Text style={auth.infoText}>New here? </Text>
           <Text

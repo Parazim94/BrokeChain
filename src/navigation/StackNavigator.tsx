@@ -30,6 +30,10 @@ import NotFoundScreen from "../screens/NotFoundScreen";
 import VerifiedScreen from "../screens/VerifiedScreen";
 import InteractiveFlagButtons from "../components/InteractiveFlagButtons";
 import QuizScreen from "../screens/Main/QuizScreen"; // <-- Neuer Import
+import ImpressumScreen from "../screens/ImpressumScreen";  // Neuer Import
+import Footer from "../components/Footer"; // Neuer Import
+// import CookieConsent from "../components/CookieConsent"; // Neuer Import
+import PrivacyTermsScreen from "../screens/PrivacyTermsScreen";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -230,6 +234,18 @@ export default function StackNavigator() {
           component={QuizScreen}
           options={{ headerShown: false }}
         />
+        {/* Neuer Impressum-Screen */}
+        <Stack.Screen
+          name="Impressum"
+          component={ImpressumScreen}
+          options={{ title: "Impressum" }}
+        />
+        {/* Neuer PrivacyTermsScreen */}
+        <Stack.Screen
+          name="PrivacyTermsScreen"
+          component={PrivacyTermsScreen}
+          options={{ title: "Privacy & Terms" }}
+        />
       </Stack.Navigator>
 
       {/* Add Chatbot component here */}
@@ -237,6 +253,24 @@ export default function StackNavigator() {
 
       {/* Add InteractiveFlagButtons component */}
       <InteractiveFlagButtons />
+
+      {/* Footer integrieren */}
+      <Footer />
+
+      {/* CookieConsent integrieren */}
+      {/* <CookieConsent /> */}
+
+      {/* PrivacyTermsScreen integrieren */}
+    
+
+      {/* StatusBar für Android */}
+      {Platform.OS === "android" && (
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={theme.background}
+        />
+      )}
+
     </>
   );
 }

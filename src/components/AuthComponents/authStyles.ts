@@ -30,16 +30,19 @@ export const authStyles = () => {
       fontWeight: "bold",
     },
     linkContainer: {
+      alignItems: "center",
       flexDirection: "row",
-      justifyContent: "flex-start",
+      justifyContent: "center",
       marginTop: 20,
     },
     linkText: {
       color: styles.accent.color,
       fontWeight: "bold",
+      fontSize:14,
     },
     infoText: {
       color: styles.defaultText.color,
+      fontSize:12,
     },
   });
 };
