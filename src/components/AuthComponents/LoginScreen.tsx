@@ -142,7 +142,7 @@ export default function LoginScreen() {
           value={password}
           onChangeText={setPassword}
           style={styles.input}
-        />
+        /> 
         <Button
           onPress={handleLogin}
           title="Login"
@@ -177,22 +177,20 @@ export default function LoginScreen() {
           </Text>
         </View>
         <View style={auth.linkContainer}>
-          <Text style={auth.infoText}>New here? </Text>
+          <Text style={auth.infoText}>New here? or </Text>
           <Text
-            style={auth.linkText}
-            onPress={() => navigation.navigate("Register" as never)}
-          >
-            Register
-          </Text>
-        </View>
-        <View style={auth.linkContainer}>
-          <Text
-            style={auth.linkText}
+            style={[auth.linkText,{fontSize:12, margin: 1, textAlign: "center"}]}
             onPress={() => navigation.navigate("ForgotPassword" as never)}
-          >
-            Forgot Password?
-          </Text>
+          >Forgot Password?
+          </Text>        
         </View>
+        <Button
+            onPress={() => navigation.navigate("Register" as never)}
+            title="Register"
+            type="primary"
+            size="small"
+            style={{ marginTop: 8, alignSelf: "center",width: "100%" }}
+          />
       </Card>
     </View>
   );

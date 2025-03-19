@@ -29,8 +29,8 @@ const ImpressumScreen = () => {
             Google Login & Datenschutz
           </Text>
           <Text style={[styles.text, { color: theme.text }]}>
-            By continuing, Google will share your name, email address, language preference,
-            and profile picture with BrokeChain. See BrokeChain’s{" "}
+            By loggin in with Google, Google will share your name, email address, language preference,
+            and profile picture with us. See our{" "}
             <Text
               style={{ color: theme.accent, textDecorationLine: "underline" }}
               onPress={() => navigation.navigate("PrivacyTermsScreen")}
