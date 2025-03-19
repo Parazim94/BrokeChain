@@ -35,15 +35,16 @@ const linking = {
       Register: "register",
       Settings: "settings",
       Verified: "auth/verify/:token",
-      redirect: "redirect", // Neue Route für Google Auth Redirect
+      redirect: "redirect", 
       NotFound: "*",
-      Quiz: "quiz", // Neue Route für den Quiz-Screen
+      Quiz: "quiz", 
+      Impressum: "impressum",
+      PrivacyTermsScreen: "privacy",
     },
   },
 };
 
-// Problematischen SplashScreen-Code entfernen
-// Das ermöglicht der App zu starten, ohne den Fehler zu werfen
+
 if (Platform.OS === 'android') {
   try {
     SplashScreen.preventAutoHideAsync()
