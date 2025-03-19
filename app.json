@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme":"vip.dev-space.broke",
     "sdkVersion": "52.0.0",
     "name": "Broke-Chain",
     "slug": "Broke-Chain",
@@ -19,7 +20,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "icon": "public/favicon.png"
+      "icon": "public/favicon.png",
+      "expo.ios.bundleIdentifier":"vip.dev-space.broke"
     },
     "android": {
       "adaptiveIcon": {

@@ -75,8 +75,9 @@ export default function LoginScreen() {
 
   // Initialisiere den Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: process.env.ID,
-    // iosClientId: "YOUR_IOS_CLIENT_ID",
+    // clientId: process.env.ID,
+    iosClientId: process.env.IOS_ID,
+    redirectUri: "vip.dev-space.broke:/oauth2redirect",
     // androidClientId: "YOUR_ANDROID_CLIENT_ID",
     webClientId: process.env.ID,
     // scopes: ['profile', 'email'],
