@@ -75,9 +75,12 @@ export default function LoginScreen() {
 
   // Initialisiere den Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
-    // clientId: process.env.ID,
+    clientId: process.env.ID,
     iosClientId: process.env.IOS_ID,
-    redirectUri: "vip.dev-space.broke:/oauth2redirect",
+    redirectUri: Platform.select({
+      ios: "vip.dev-space.broke:/oauth2redirect", // iOS redirect URI
+      android: "vip.dev-space.broke:/oauth2redirect", // Android redirect URI
+    }),
     // androidClientId: "YOUR_ANDROID_CLIENT_ID",
     webClientId: process.env.ID,
     // scopes: ['profile', 'email'],
@@ -105,7 +108,7 @@ export default function LoginScreen() {
           setIsLoggedIn(true);
           setTimeout(() => {
             navigation.navigate("Main", { screen: "Portfolio" });
-          }, 1000);
+          }, 500);
         } catch (error) {
           throw new Error(
             error instanceof Error ? error.message : String(error)
