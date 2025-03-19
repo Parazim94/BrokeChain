@@ -241,7 +241,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
             </Text>
           </View>
           <TouchableOpacity onPress={onClose} >
-            <Ionicons name="close-circle" size={24} color="red" />
+            <Ionicons name="close-circle" size={36} color="red" />
           </TouchableOpacity>
         </View>
 

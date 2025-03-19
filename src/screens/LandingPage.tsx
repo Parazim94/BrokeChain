@@ -53,8 +53,8 @@ export default function LandingPage() {
       if (isFromLogo) {
         // Bei Klick aufs Logo: Wenn eingeloggt -> zu Portfolio, sonst zu Markets
         targetRoute = isLoggedIn 
-          ? { name: 'Main', params: { screen: 'Portfolio' } } 
-          : { name: 'Main', params: { screen: 'Markets' } };
+          ? ({ name: 'Main', params: { screen: 'Portfolio' } } as any)
+          : ({ name: 'Main', params: { screen: 'Markets' } } as any);
       } else {
         // Alte Logik: Wenn eingeloggt, prüfe auf letzten besuchten Screen
         if (isLoggedIn) {
@@ -64,12 +64,12 @@ export default function LandingPage() {
               targetRoute = { 
                 name: 'Main',
                 params: { screen: lastScreen }
-              };
+              } as any;
             } else {
               targetRoute = { 
                 name: 'Main',
                 params: { screen: 'Portfolio' }
-              };
+              } as any;
             }
           } catch (error) {
             console.error('Fehler beim Abrufen des letzten Screens:', error);
@@ -113,10 +113,10 @@ export default function LandingPage() {
   }, [navigation, opacity, scale, isLoggedIn, isAuthLoading, route]);
 
   // Hintergrundfarbe basierend auf Login-Status wählen
-  const backgroundColor = isLoggedIn ? theme.background : "#000";
+  
 
   return (
-    <View style={[styles.container, { backgroundColor: backgroundColor }]}>
+    <View style={[styles.container, { backgroundColor: "#000" }]}>
       <StatusBar hidden />
       
       {Platform.OS === "web" && (
