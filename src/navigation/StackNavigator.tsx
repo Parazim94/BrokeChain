@@ -39,10 +39,13 @@ export default function StackNavigator() {
   const { isLoggedIn } = useContext(AuthContext);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
+  // Android startet direkt mit dem Main-Screen
+  const initialRoute = Platform.OS === "android" ? "Main" : "LandingPage";
+
   return (
     <>
       <Stack.Navigator
-        initialRouteName="LandingPage"
+        initialRouteName={initialRoute}
         screenOptions={{
           headerStyle: {
             backgroundColor: theme.background,
@@ -52,11 +55,14 @@ export default function StackNavigator() {
           headerStatusBarHeight: Platform.OS === "ios" ? 50 : undefined,
         }}
       >
-        <Stack.Screen
-          name="LandingPage"
-          component={LandingPage}
-          options={{ headerShown: false }}
-        />
+        {/* LandingPage nur für nicht-Android-Plattformen rendern */}
+        {Platform.OS !== "android" && (
+          <Stack.Screen
+            name="LandingPage"
+            component={LandingPage}
+            options={{ headerShown: false }}
+          />
+        )}
 
         <Stack.Screen
           name="Main"

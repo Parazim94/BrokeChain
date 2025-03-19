@@ -1,9 +1,9 @@
 {
   "expo": {
-    "scheme":"vip.dev-space.broke",
+    "scheme": "vip.dev-space.broke",
     "sdkVersion": "52.0.0",
     "name": "Broke-Chain",
-    "slug": "Broke-Chain",
+    "slug": "tradeyomama",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "public/favicon.png",
@@ -21,20 +21,29 @@
     "ios": {
       "supportsTablet": true,
       "icon": "public/favicon.png",
-      "expo.ios.bundleIdentifier":"vip.dev-space.broke"
+      "expo.ios.bundleIdentifier": "vip.dev-space.broke"
     },
     "android": {
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "public/favicon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.k0miker.tradeyomama"
     },
     "web": {
       "favicon": "public/favicon.png",
       "build": {
         "favicon": {
           "src": "public/favicon.png",
-          "sizes": [96, 192, 512]
+          "sizes": [
+            96,
+            192,
+            512
+          ]
         }
       }
     },

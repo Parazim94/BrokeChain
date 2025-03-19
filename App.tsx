@@ -1,5 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { registerRootComponent } from "expo";
+// SplashScreen-Import entfernen, da er den Fehler verursacht
 import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar, Platform, View } from "react-native";
 import StackNavigator from "./src/navigation/StackNavigator";
@@ -12,6 +13,7 @@ import TutorialOverlay from "./src/components/Tutorial/TutorialOverlay";
 import ElementTagger from "./src/components/Tutorial/ElementTagger";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QuizProvider } from "./src/context/QuizzContext";
+import * as SplashScreen from 'expo-splash-screen';
 
 // NEUE Linking-Konfiguration mit NETLIFY Domain:
 const linking = {
@@ -39,6 +41,23 @@ const linking = {
     },
   },
 };
+
+// Problematischen SplashScreen-Code entfernen
+// Das ermöglicht der App zu starten, ohne den Fehler zu werfen
+if (Platform.OS === 'android') {
+  try {
+    SplashScreen.preventAutoHideAsync()
+      .then(() => {
+        setTimeout(() => {
+          SplashScreen.hideAsync();
+        }, 2000);
+      })
+      .catch(console.warn);
+  } catch (e) {
+    console.warn("SplashScreen nicht verfügbar:", e);
+  }
+}
+
 
 function AppContent() {
   const { user, isLoggedIn } = useContext(AuthContext);

@@ -145,7 +145,7 @@ const QuizComponent = ({ onQuizComplete }: QuizComponentProps) => {
                   <View 
                     style={[
                       styles.progressFill, 
-                      { width: `${(score/totalQuestions)*100}%` }
+                      { width: `${Math.max(0, Math.min(100, (score/totalQuestions)*100))}%` }
                     ]} 
                   />
                 </View>
@@ -180,7 +180,7 @@ const QuizComponent = ({ onQuizComplete }: QuizComponentProps) => {
               <Text style={[styles.quizTitle, { color: "white" }]}>
                 {quizData[selectedQuiz].title}
               </Text>
-              <Text style={[styles.questionCounter, { color: "white" }]}>
+              <Text style={[styles.questionCounter, { color: "white"}]}>
                 Question {currentQuestion + 1} of {totalQuestions}
               </Text>
               <Text style={[styles.question, { color: "white" }]}>
@@ -199,17 +199,20 @@ const QuizComponent = ({ onQuizComplete }: QuizComponentProps) => {
                   buttonType = "success";
                 }
                 
+                // Setze explizite numerische Werte für dynamische Stile
+                const dynamicStyle = isSelected ? { transform: [{ scale: 1.02 }] } : null;
+                
                 return (
                   <Button
                     key={index}
                     title={answer.text}
                     type={buttonType}
                     size="medium"
-                    disabled={showFeedback} // Deaktiviere während Feedback angezeigt wird
+                    disabled={showFeedback ? true : false} // Explizit boolesch halten
                     onPress={() => handleAnswer(answer.isCorrect, index)}
                     style={[
                       styles.answerButton,
-                      isSelected ? styles.selectedAnswer : {}
+                      dynamicStyle
                     ]}
                     fullWidth
                   />
@@ -275,7 +278,6 @@ const styles = StyleSheet.create({
   questionCounter: {
     fontSize: 16,
     marginBottom: 20,
-    opacity: 0.7,
   },
   question: {
     fontSize: 20,

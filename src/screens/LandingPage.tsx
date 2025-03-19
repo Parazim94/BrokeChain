@@ -14,6 +14,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width, height } = Dimensions.get('window');
 
 export default function LandingPage() {
+  // Vermeide jegliche Ausführung auf Android
+  if (Platform.OS === "android") {
+    return null;
+  }
+
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute();
   const { theme } = useContext(ThemeContext);
@@ -129,6 +134,7 @@ export default function LandingPage() {
           isMuted={true}
         />
       )}
+      
       
       <Animated.View 
         style={[

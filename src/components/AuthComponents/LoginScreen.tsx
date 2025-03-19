@@ -173,7 +173,7 @@ export default function LoginScreen() {
           >
             Register
           </Text>
-        </View>{" "}
+        </View>
         <View style={auth.linkContainer}>
           <Text
             style={auth.linkText}

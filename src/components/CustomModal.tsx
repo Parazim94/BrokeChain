@@ -36,22 +36,22 @@ const CustomModal: React.FC<CustomModalProps> = ({
   const { theme } = useContext(ThemeContext);
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 
-  // Default modal size calculations
+  // Angepasste Modal-Größenberechnung
   const defaultWidth =
     Platform.OS === "web"
       ? Math.min(650, screenWidth * 0.9)
-      : screenWidth * 0.9;
+      : screenWidth * 0.85; // Leicht verkleinert für mobile Geräte
 
   const defaultHeight =
     Platform.OS === "web"
       ? "auto"
-      : screenHeight * 0.7;
+      : Math.min(screenHeight * 0.6, 600); // Beschränkte Höhe für mobile Geräte
 
   return (
     <Modal
       transparent={true}
       visible={visible}
-      animationType="slide"
+      animationType="fade" // Geändert zu "fade" für sanftere Übergänge
       onRequestClose={onClose}
       supportedOrientations={["portrait", "landscape"]}
     >
@@ -63,6 +63,7 @@ const CustomModal: React.FC<CustomModalProps> = ({
               width: width || defaultWidth,
               height: height || defaultHeight,
               maxHeight: screenHeight * 0.8,
+              maxWidth: screenWidth * 0.95, // Maximale Breite hinzugefügt
             },
             modalStyle,
           ])}
