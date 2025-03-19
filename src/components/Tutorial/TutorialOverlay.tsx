@@ -221,18 +221,28 @@ const getSimulatedPosition = (
   // Tablet layout
   else if (width >= 768 && width < 1024) {
     if (targetId === "burger-menu") {
-      return { x: width - 60, y: 30, width: 40, height: 40 };
+      // Burger-Menü ist links vom Profil-Button
+      const x = width - 125;
+      const y = 23;
+      return {
+        x: x - paddingAround,
+        y: y - paddingAround,
+        width: iconSize + 2 * paddingAround -10,
+        height: iconSize + 2 * paddingAround -10,
+      };
     } else if (targetId === "settings-button") {
-      const x = width - 110 + 15;
+      // Settings-Button ist ganz rechts
+      const x = width - 45;
       const y = 30;
       return {
         x: x - paddingAround,
         y: y - paddingAround,
-        width: iconSize + 2 * paddingAround,
-        height: iconSize + 2 * paddingAround,
+        width: iconSize + 2 * paddingAround ,
+        height: iconSize + 2 * paddingAround ,
       };
     } else if (targetId === "profile-button") {
-      const x = width - 160 + 15;
+      // Profil-Button ist zwischen Burger-Menü und Settings
+      const x = width - 88;
       const y = 30;
       return {
         x: x - paddingAround,
@@ -363,6 +373,14 @@ const TutorialOverlay: React.FC = () => {
     return { x: xOffset, y: yOffset };
   };
 
+  // Neue Funktion für Tablet-spezifische Offsets
+  const getTabletOffsets = () => {
+    return {
+      x: -80, // Deutlicher Versatz nach links
+      y: -10
+    };
+  };
+
   // Load steps based on screen size
   useEffect(() => {
     const tutorialSteps = getTutorialSteps(width).filter((step) => {
@@ -489,20 +507,33 @@ const TutorialOverlay: React.FC = () => {
     const tooltipWidth = width < 768 ? Math.min(300, width - 40) : 300;
     const tooltipHeight = 180; // Approximate height
 
-    // Desktop-spezifische Offsets - dynamisch berechnen
+    // Offset basierend auf dem Gerätetyp
     let currentOffsetX = tooltipOffsetX;
     let currentOffsetY = tooltipOffsetY;
 
+    // Desktop-Ansicht
     if (width >= 1024) {
       const desktopOffsets = getDesktopOffsets(width);
       currentOffsetX = desktopOffsets.x;
       currentOffsetY = desktopOffsets.y;
+    } 
+    // Tablet-Ansicht
+    else if (width >= 768 && width < 1024) {
+      const tabletOffsets = getTabletOffsets();
+      currentOffsetX = tabletOffsets.x;
+      currentOffsetY = tabletOffsets.y;
     }
+
+    // Zusätzliche Sicherheitsabfrage, damit Tooltip nicht rechts überläuft
+    const ensureOnScreen = (left: number) => {
+      // Stellt sicher, dass der Tooltip nie über den rechten Bildschirmrand hinausragt
+      return Math.min(left, width - tooltipWidth - 10);
+    };
 
     if (!targetPosition || !currentStep.position) {
       return {
         top: height / 2 - 100 + currentOffsetY,
-        left: width / 2 - 150 + currentOffsetX,
+        left: ensureOnScreen(width / 2 - 150 + currentOffsetX),
       };
     }
 
@@ -510,14 +541,15 @@ const TutorialOverlay: React.FC = () => {
       case "top":
         return {
           bottom: Math.max(10, height - targetPosition.y + 15) + currentOffsetY,
-          left:
+          left: ensureOnScreen(
             Math.max(
               10,
               Math.min(
                 width - tooltipWidth - 10,
                 targetPosition.x + targetPosition.width / 2 - tooltipWidth / 2
               )
-            ) + currentOffsetX,
+            ) + currentOffsetX
+          ),
         };
       case "bottom":
         return {
@@ -526,24 +558,36 @@ const TutorialOverlay: React.FC = () => {
               height - tooltipHeight - 10,
               targetPosition.y + targetPosition.height + 15
             ) + currentOffsetY,
-          left:
+          left: ensureOnScreen(
             Math.max(
               10,
               Math.min(
                 width - tooltipWidth - 10,
                 targetPosition.x + targetPosition.width / 2 - tooltipWidth / 2
               )
-            ) + currentOffsetX,
+            ) + currentOffsetX
+          ),
         };
       case "left":
-        return {
-          top:
-            Math.max(
+        // Bei position="left" besonders auf Tablet aufpassen
+        if (width >= 768 && width < 1024) {
+          return {
+            top: Math.max(
               10,
               targetPosition.y + targetPosition.height / 2 - tooltipHeight / 2
             ) + currentOffsetY,
-          right: Math.max(10, width - targetPosition.x + 15) + -currentOffsetX, // Hier invertieren wir das Vorzeichen für "right"
-        };
+            left: Math.max(10, targetPosition.x - tooltipWidth - 15),
+          };
+        } else {
+          return {
+            top:
+              Math.max(
+                10,
+                targetPosition.y + targetPosition.height / 2 - tooltipHeight / 2
+              ) + currentOffsetY,
+            right: Math.max(10, width - targetPosition.x + 15) + -currentOffsetX,
+          };
+        }
       case "right":
         return {
           top:
@@ -551,16 +595,17 @@ const TutorialOverlay: React.FC = () => {
               10,
               targetPosition.y + targetPosition.height / 2 - tooltipHeight / 2
             ) + currentOffsetY,
-          left:
+          left: ensureOnScreen(
             Math.min(
               width - tooltipWidth - 10,
               targetPosition.x + targetPosition.width + 15
-            ) + currentOffsetX,
+            ) + currentOffsetX
+          ),
         };
       default:
         return {
           top: height / 2 - 100 + currentOffsetY,
-          left: width / 2 - 150 + currentOffsetX,
+          left: ensureOnScreen(width / 2 - 150 + currentOffsetX),
         };
     }
   };

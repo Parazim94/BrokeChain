@@ -145,7 +145,11 @@ export default function StackNavigator() {
                     onPress={() =>
                       navigation.dispatch(DrawerActions.toggleDrawer())
                     }
-                    style={{ alignItems: "center", justifyContent: "center" }}
+                    style={{ 
+                      alignItems: "center", 
+                      justifyContent: "center",
+                      marginRight: 15 // Abstand zwischen Burger-Menü und Profil-Button
+                    }}
                   >
                     <Ionicons name="menu" size={28} color={theme.accent} />
                   </TouchableOpacity>
@@ -153,7 +157,7 @@ export default function StackNavigator() {
                 {/* Benutzer-Icon: Navigiert zu Portfolio, wenn angemeldet, sonst zu Login */}
                 <TouchableOpacity
                   style={{
-                    marginLeft: 15,
+                    marginLeft: Platform.OS === "web" && width >= 768 && width < 1024 ? 0 : 15,
                     alignItems: "center",
                     justifyContent: "center",
                   }}
