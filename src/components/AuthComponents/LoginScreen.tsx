@@ -10,8 +10,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAlert } from "@/src/context/AlertContext";
 import Card from "@/src/components/Card";
 import * as WebBrowser from "expo-web-browser";
-import { makeRedirectUri } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
+import { ID, IOS_ID, ANDROID_ID } from "@env"; // Properly import from @env instead of process.env
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -75,15 +75,15 @@ export default function LoginScreen() {
 
   // Initialisiere den Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: process.env.ID,
-    androidClientId: process.env.ANDROID_ID,
-    iosClientId: process.env.IOS_ID,
+    clientId: ID,
+    androidClientId: ANDROID_ID,
+    iosClientId: IOS_ID,
     redirectUri: Platform.select({
       ios: "vip.dev-space.broke:/oauth2redirect", // iOS redirect URI
       android: "com.k0miker.tradeyomama:/oauth2redirect", // Android redirect URI
     }),
 
-    webClientId: process.env.ID,
+    webClientId: ID,
     // scopes: ['profile', 'email'],
   });
 
