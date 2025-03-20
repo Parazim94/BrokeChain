@@ -44,6 +44,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         // backgroundColor is set dynamically
+        maxWidth:1024,
+        marginHorizontal:"auto",
     },
     content: {
         padding: 20,
