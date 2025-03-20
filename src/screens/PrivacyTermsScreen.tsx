@@ -4,66 +4,66 @@ import { ThemeContext } from "../context/ThemeContext";
 import Card from "@/src/components/Card";
 
 const PrivacyTermsScreen = () => {
-  const { theme } = useContext(ThemeContext);
-  return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Datenschutzerklärung */}
-        <Card style={cardStyles.card}>
-          <Text style={[styles.title, { color: theme.accent }]}>BrokeChain – Datenschutzerklärung</Text>
-          <Text style={[styles.text, { color: theme.text }]}>
-            Stand: 19.03.2025{"\n"}
-            Standort: Deutschland{"\n\n"}
-            Diese Datenschutzerklärung informiert Sie darüber, wie BrokeChain Ihre personenbezogenen Daten verarbeitet, wenn Sie sich über Google anmelden.{"\n"}
-            Im Rahmen des Google-Logins erhält BrokeChain folgende Informationen von Google:{"\n"}
-            • Name{"\n"}
-            • E-Mail-Adresse{"\n"}
-            • Spracheinstellung{"\n"}
-            • Profilbild{"\n\n"}
-            Die Daten dienen ausschließlich der Identifizierung und zur Verbesserung unseres Services. Ihre Daten werden verschlüsselt gespeichert und nicht an Dritte weitergegeben, außer bei gesetzlichen Verpflichtungen. Für weitere Details konsultieren Sie bitte das Impressum.
-          </Text>
-        </Card>
+    const { theme } = useContext(ThemeContext);
+    return (
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+            <ScrollView contentContainerStyle={styles.content}>
+                {/* Privacy Policy */}
+                <Card style={cardStyles.card}>
+                    <Text style={[styles.title, { color: theme.accent }]}>BrokeChain – Privacy Policy</Text>
+                    <Text style={[styles.text, { color: theme.text }]}>
+                        Updated: 19.03.2025{"\n"}
+                        Location: Germany{"\n\n"}
+                        This Privacy Policy explains how BrokeChain processes your personal data when you sign in with Google.{"\n"}
+                        When signing in with Google, BrokeChain receives the following information from Google:{"\n"}
+                        • Name{"\n"}
+                        • Email address{"\n"}
+                        • Language setting{"\n"}
+                        • Profile picture{"\n\n"}
+                        The data is used solely for identification and to improve our service. Your data is stored securely and is not shared with third parties, except as required by law. For further details, please refer to the legal notice.
+                    </Text>
+                </Card>
 
-        {/* Nutzungsbedingungen */}
-        <Card style={cardStyles.card}>
-          <Text style={[styles.title, { color: theme.accent }]}>BrokeChain – Nutzungsbedingungen</Text>
-          <Text style={[styles.text, { color: theme.text }]}>           
-            Diese Nutzungsbedingungen regeln Ihr Vertragsverhältnis mit BrokeChain. Durch die Nutzung der App erklären Sie sich mit folgenden Bedingungen einverstanden:{"\n\n"}
-            1. Nutzung des Google-Logins: Mit der Anmeldung über Google erklären Sie sich damit einverstanden, dass Google Ihre Profildaten (Name, E-Mail, Sprache, Profilbild) an BrokeChain übermittelt.{"\n\n"}
-            2. Verantwortlichkeiten: Sie verpflichten sich, Ihre Zugangsdaten vertraulich zu behandeln. BrokeChain haftet nur für Vorsatz und grobe Fahrlässigkeit.{"\n\n"}
-            3. Inhalte und Verhaltensregeln: Es ist untersagt, rechtswidrige Inhalte zu verbreiten. Bei Verstößen behalten wir uns das Recht vor, Nutzungen einzuschränken.{"\n\n"}
-            4. Änderungen: BrokeChain behält sich vor, diese Bedingungen anzupassen. Fortgesetzte Nutzung der App gilt als Zustimmung.
-          </Text>
-        </Card>
-      </ScrollView>
-    </SafeAreaView>
-  );
+                {/* Terms of Service */}
+                <Card style={cardStyles.card}>
+                    <Text style={[styles.title, { color: theme.accent }]}>BrokeChain – Terms of Service</Text>
+                    <Text style={[styles.text, { color: theme.text }]}>
+                        These terms govern your contract with BrokeChain. By using the app, you agree to the following conditions:{"\n\n"}
+                        1. Use of Google Sign-In: By signing in with Google, you consent to the transmission of your profile data (name, email, language, profile picture) to BrokeChain.{"\n\n"}
+                        2. Responsibilities: You agree to keep your login details confidential. BrokeChain is only liable for intentional wrongdoing and gross negligence.{"\n\n"}
+                        3. Content and Code of Conduct: It is prohibited to distribute illegal content. In case of violations, we reserve the right to restrict usage.{"\n\n"}
+                        4. Changes: BrokeChain reserves the right to modify these terms. Continued use of the app constitutes acceptance.
+                    </Text>
+                </Card>
+            </ScrollView>
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // backgroundColor wird dynamisch gesetzt
-  },
-  content: {
-    padding: 20,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  text: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
+    container: {
+        flex: 1,
+        // backgroundColor is set dynamically
+    },
+    content: {
+        padding: 20,
+    },
+    title: {
+        fontSize: 22,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    text: {
+        fontSize: 16,
+        lineHeight: 24,
+    },
 });
 
 const cardStyles = StyleSheet.create({
-  card: {
-    padding: 16,
-    borderRadius: 8,
-  },
+    card: {
+        padding: 16,
+        borderRadius: 8,
+    },
 });
 
 export default PrivacyTermsScreen;
