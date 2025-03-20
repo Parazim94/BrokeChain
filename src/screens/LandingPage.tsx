@@ -83,28 +83,35 @@ export default function LandingPage() {
       }
       
       const initialDelay = isLoggedIn ? 500 : 0;
-      const middleDelay = isLoggedIn ? 1500 : 1000;
+      const middleDelay = isLoggedIn ? 1000 : 1500;
       
       setTimeout(() => {
         Animated.sequence([
           Animated.parallel([
             Animated.timing(opacity, {
               toValue: 1,
-              duration: 1000,
+              duration: 500,
               useNativeDriver: false,
             }),
             Animated.timing(scale, {
               toValue: 1,
-              duration: 800,
+              duration: 500,
               useNativeDriver: false,
             }),
           ]),
           Animated.delay(middleDelay),
-          Animated.timing(opacity, {
-            toValue: 0,
-            duration: 1000,
-            useNativeDriver: false,
-          }),
+          Animated.parallel([
+            Animated.timing(opacity, {
+              toValue: 0,
+              duration: 1800,
+              useNativeDriver: false,
+            }),
+            Animated.timing(scale, {
+              toValue: 35,
+              duration: 1800,
+              useNativeDriver: false,
+            }),
+          ]),
         ]).start(() => {
           navigation.reset({
             index: 0,

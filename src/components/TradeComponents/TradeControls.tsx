@@ -54,7 +54,7 @@ export default function TradeControls({
       });
       
       if (!found && marketPrice && user.cash) {
-        maxAmount = (user.cash - 10) / marketPrice;
+        maxAmount = (user.cash * 0.95) / marketPrice;
       }
       
       setQuantity(String(maxAmount));
