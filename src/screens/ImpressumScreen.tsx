@@ -58,6 +58,8 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
+    maxWidth: 1024,
+    marginHorizontal: "auto",
   },
   title: {
     fontSize: 24,

@@ -11,7 +11,7 @@ import { useAlert } from "@/src/context/AlertContext";
 import Card from "@/src/components/Card";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import { ID, IOS_ID, ANDROID_ID } from "@env"; // Properly import from @env instead of process.env
+import { ID, IOS_ID, ANDROID_ID } from "@env"; 
 
 WebBrowser.maybeCompleteAuthSession();
 
