@@ -25,7 +25,6 @@ import CashInfo from "../components/CashInfo";
 import LandingPage from "../screens/LandingPage";
 import { RootStackParamList } from "../types/types";
 import WebTabTextMenu from "./WebTabTextMenu";
-import Chatbot from "../components/ChatBot/Chatbot";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import VerifiedScreen from "../screens/VerifiedScreen";
 import InteractiveFlagButtons from "../components/InteractiveFlagButtons";
@@ -247,9 +246,6 @@ export default function StackNavigator() {
           options={{ title: "Privacy & Terms" }}
         />
       </Stack.Navigator>
-
-      {/* Add Chatbot component here */}
-      <Chatbot />
 
       {/* Add InteractiveFlagButtons component */}
       <InteractiveFlagButtons />
