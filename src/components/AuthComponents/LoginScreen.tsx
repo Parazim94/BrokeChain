@@ -10,8 +10,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAlert } from "@/src/context/AlertContext";
 import Card from "@/src/components/Card";
 import * as WebBrowser from "expo-web-browser";
-import { makeRedirectUri } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
+import { ID, IOS_ID, ANDROID_ID } from "@env"; // Properly import from @env instead of process.env
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -75,15 +75,15 @@ export default function LoginScreen() {
 
   // Initialisiere den Google Auth Request
   const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: process.env.ID,
-    androidClientId: process.env.ANDROID_ID,
-    iosClientId: process.env.IOS_ID,
+    clientId: ID,
+    androidClientId: ANDROID_ID,
+    iosClientId: IOS_ID,
     redirectUri: Platform.select({
       ios: "vip.dev-space.broke:/oauth2redirect", // iOS redirect URI
       android: "vip.dev-space.broke:/oauth2redirect", // Android redirect URI
     }),
 
-    webClientId: process.env.ID,
+    webClientId: ID,
     // scopes: ['profile', 'email'],
   });
 
@@ -142,12 +142,12 @@ export default function LoginScreen() {
           value={password}
           onChangeText={setPassword}
           style={styles.input}
-        /> 
+        />
         <Button
           onPress={handleLogin}
           title="Login"
           loading={isLoading}
-          fullWidth          
+          fullWidth
           size="small"
           style={{
             marginTop: 12,
@@ -170,7 +170,11 @@ export default function LoginScreen() {
         {/* Added Privacy Policy & Terms link below the Google Login button */}
         <View style={{ alignItems: "center", marginTop: 8 }}>
           <Text
-            style={{ color: styles.accent.color, textDecorationLine: "underline",fontSize:10 }}
+            style={{
+              color: styles.accent.color,
+              textDecorationLine: "underline",
+              fontSize: 10,
+            }}
             onPress={() => navigation.navigate("PrivacyTermsScreen" as never)}
           >
             Privacy Policy & Terms of Service
@@ -179,18 +183,22 @@ export default function LoginScreen() {
         <View style={auth.linkContainer}>
           <Text style={auth.infoText}>New here? or </Text>
           <Text
-            style={[auth.linkText,{fontSize:12, margin: 1, textAlign: "center"}]}
+            style={[
+              auth.linkText,
+              { fontSize: 12, margin: 1, textAlign: "center" },
+            ]}
             onPress={() => navigation.navigate("ForgotPassword" as never)}
-          >Forgot Password?
-          </Text>        
+          >
+            Forgot Password?
+          </Text>
         </View>
         <Button
-            onPress={() => navigation.navigate("Register" as never)}
-            title="Register"
-            type="primary"
-            size="small"
-            style={{ marginTop: 8, alignSelf: "center",width: "100%" }}
-          />
+          onPress={() => navigation.navigate("Register" as never)}
+          title="Register"
+          type="primary"
+          size="small"
+          style={{ marginTop: 8, alignSelf: "center", width: "100%" }}
+        />
       </Card>
     </View>
   );
