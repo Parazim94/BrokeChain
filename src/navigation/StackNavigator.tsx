@@ -28,10 +28,9 @@ import WebTabTextMenu from "./WebTabTextMenu";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import VerifiedScreen from "../screens/VerifiedScreen";
 import InteractiveFlagButtons from "../components/InteractiveFlagButtons";
-import QuizScreen from "../screens/Main/QuizScreen"; // <-- Neuer Import
-import ImpressumScreen from "../screens/ImpressumScreen";  // Neuer Import
-import Footer from "../components/Footer"; // Neuer Import
-// import CookieConsent from "../components/CookieConsent"; // Neuer Import
+import QuizScreen from "../screens/Main/QuizScreen"; 
+import ImpressumScreen from "../screens/ImpressumScreen";  
+import Footer from "../components/Footer"; 
 import PrivacyTermsScreen from "../screens/PrivacyTermsScreen";
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -73,7 +72,7 @@ export default function StackNavigator() {
           options={{
             headerTitle:
               Platform.OS === "web"
-                ? () => (
+                ? () => (                  
                     <View
                       style={{
                         width: "100%",
