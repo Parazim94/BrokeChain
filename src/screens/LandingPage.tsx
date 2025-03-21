@@ -107,7 +107,7 @@ export default function LandingPage() {
               useNativeDriver: false,
             }),
             Animated.timing(scale, {
-              toValue: 35,
+              toValue: 0,
               duration: 1800,
               useNativeDriver: false,
             }),
@@ -124,7 +124,7 @@ export default function LandingPage() {
     navigateToLastScreen();
   }, [navigation, opacity, scale, isLoggedIn, isAuthLoading, route]);
 
-  // Hintergrundfarbe basierend auf Login-Status wählen
+
   
 
   return (
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: "100%",  
-    opacity: 0.3,
+    opacity: 0.4,
     transform: [{ scale: 2 }],
   },
 });
