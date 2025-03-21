@@ -24,6 +24,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [emailError, setEmailError] = useState(false); // Neuer State für Email-Fehler
   const cardPadding = Platform.OS === "web" ? 32 : 16;
 
   const isMobile = Platform.OS !== "web";
@@ -34,6 +35,17 @@ export default function LoginScreen() {
   }, []);
 
   const handleForgotPassword = async () => {
+    // Überprüfe, ob eine Email eingegeben wurde
+    if (!email.trim()) {
+      setEmailError(true); // Setze den Fehlerstatus für Email
+      showAlert({
+        type: "error",
+        title: "Missing Mail for Password Reset",
+        message: "Please provide an email address",
+      });
+      return;
+    }
+
     try {
       const response = await fetch(
         "https://broke.dev-space.vip/auth/new_password",
@@ -154,10 +166,14 @@ export default function LoginScreen() {
           placeholder="E-Mail"
           placeholderTextColor={styles.defaultText.color}
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(text) => {
+            setEmail(text);
+            if (emailError) setEmailError(false); // Fehler zurücksetzen, wenn der Benutzer tippt
+          }}
           style={[
             styles.input,
             isMobile && { width: "100%", textAlign: "left" },
+            emailError && { borderColor: 'red', borderWidth: 1 } // Roten Rahmen hinzufügen, wenn Fehler
           ]}
         />
         <TextInput
