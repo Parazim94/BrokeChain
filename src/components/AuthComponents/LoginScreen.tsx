@@ -11,7 +11,7 @@ import { useAlert } from "@/src/context/AlertContext";
 import Card from "@/src/components/Card";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import { ID, IOS_ID, ANDROID_ID } from "@env"; 
+import { ID, IOS_ID, ANDROID_ID } from "@env";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -32,6 +32,31 @@ export default function LoginScreen() {
   useEffect(() => {
     logout();
   }, []);
+
+  const handleForgotPassword = async () => {
+    try {
+      const response = await fetch(
+        "https://broke.dev-space.vip/auth/new_password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
+      if (!response.ok) throw new Error("Password request failed");
+      showAlert({
+        type: "success",
+        title: "Success",
+        message: `New Password send to ${email}`,
+      });
+    } catch (error: any) {
+      showAlert({
+        type: "error",
+        title: "Login Error",
+        message: error.message || "Unexpected error occurred",
+      });
+    }
+  };
 
   // Normaler Email/Passwort Login
   const handleLogin = async () => {
@@ -187,7 +212,7 @@ export default function LoginScreen() {
               auth.linkText,
               { fontSize: 12, margin: 1, textAlign: "center" },
             ]}
-            onPress={() => navigation.navigate("ForgotPassword" as never)}
+            onPress={handleForgotPassword}
           >
             Forgot Password?
           </Text>
