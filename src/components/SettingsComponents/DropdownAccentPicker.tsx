@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, View, TouchableOpacity, StyleSheet, Text } from "react-native";
-import Button from "@/src/components/Button";
+import Button from "@/src/components/UiComponents/Button";
 import { Ionicons } from "@expo/vector-icons";
 
 interface DropdownAccentPickerProps {

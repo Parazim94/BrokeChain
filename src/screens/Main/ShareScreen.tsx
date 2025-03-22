@@ -15,7 +15,7 @@ import * as Linking from "expo-linking";
 import { Ionicons } from "@expo/vector-icons";
 import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
-import Card from "@/src/components/Card";
+import Card from "@/src/components/UiComponents/Card";
 
 interface Post {
   id: string;
@@ -87,7 +87,7 @@ export default function ShareScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Card
-              style={{ marginTop: 16, maxWidth: 350, marginHorizontal:16, paddingHorizontal:"16"  }}
+              style={{ marginTop: 16, maxWidth: 350, marginHorizontal: 16, paddingHorizontal: 16 }}
               onPress={() =>
                 setExpandedPost(expandedPost === item.id ? null : item.id)
               }

@@ -13,7 +13,7 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
 import { AccentColors } from "../../constants/accentColors";
-import Button from "@/src/components/Button";
+import Button from "@/src/components/UiComponents/Button";
 import { useData } from "@/src/context/DataContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useAlert } from "@/src/context/AlertContext";

@@ -22,9 +22,9 @@ import D3LineChart from "@/src/components/TradeComponents/d3-LineChart";
 import { useData } from "@/src/context/DataContext";
 import D3CandlestickChart from "@/src/components/TradeComponents/d3-Candlestick";
 import TradeControls from "@/src/components/TradeComponents/TradeControls";
-import Button from "@/src/components/Button";
+import Button from "@/src/components/UiComponents/Button";
 import { createTradeScreenStyles } from "@/src/components/TradeComponents/sharedstyles";
-import Card from "@/src/components/Card";
+import Card from "@/src/components/UiComponents/Card";
 
 const timeIntervals = {
   "1s": "1s", 
@@ -51,7 +51,9 @@ export default function TradeScreen() {
   const [selectedRange, setSelectedRange] =
     useState<keyof typeof timeIntervals>("1m");
   const [chartData, setChartData] = useState<
-    { label: string; value: number }[]
+    {
+      timestamp: any; label: string; value: number 
+}[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [chartType, setChartType] = useState<"line" | "d3-candlestick">("line");

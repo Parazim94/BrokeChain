@@ -12,11 +12,11 @@ import {
   ImageSourcePropType,
   ImageResizeMode
 } from "react-native";
-import Card from "@/src/components/Card";
+import Card from "../UiComponents/Card";
 import Sparkline from "@/src/components/Market/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 
-// Typdefinition für die PlatformImage-Props
+// Type definition for PlatformImage props
 interface PlatformImageProps {
   source: ImageSourcePropType;
   style: StyleProp<ImageStyle>;

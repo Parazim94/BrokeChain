@@ -6,7 +6,7 @@ import { RootStackParamList } from '@/src/types/types';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeContext } from '@/src/context/ThemeContext';
 import { Video, ResizeMode } from 'expo-av';
-import AnimatedLogo from '@/src/components/AnimatedLogo';
+import AnimatedLogo from '@/src/components/UiComponents/AnimatedLogo';
 import { AuthContext } from '../context/AuthContext';
 import { fetchPost } from '../hooks/useFetch';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -107,7 +107,7 @@ export default function LandingPage() {
               useNativeDriver: false,
             }),
             Animated.timing(scale, {
-              toValue: 0,
+              toValue: 35,
               duration: 1800,
               useNativeDriver: false,
             }),
@@ -124,7 +124,7 @@ export default function LandingPage() {
     navigateToLastScreen();
   }, [navigation, opacity, scale, isLoggedIn, isAuthLoading, route]);
 
-
+  // Hintergrundfarbe basierend auf Login-Status wählen
   
 
   return (
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "100%",
     height: "100%",  
-    opacity: 0.4,
+    opacity: 0.3,
     transform: [{ scale: 2 }],
   },
 });

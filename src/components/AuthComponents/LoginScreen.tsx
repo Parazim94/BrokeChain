@@ -5,13 +5,13 @@ import { StackParamList } from "@/src/types/types";
 import { AuthContext } from "../../context/AuthContext";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "@/src/components/AuthComponents/authStyles";
-import Button from "@/src/components/Button";
+import Button from "@/src/components/UiComponents/Button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAlert } from "@/src/context/AlertContext";
-import Card from "@/src/components/Card";
+import Card from "@/src/components/UiComponents/Card";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import { ID, IOS_ID, ANDROID_ID } from "@env";
+import { ID, IOS_ID, ANDROID_ID } from "@env"; 
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -24,7 +24,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [emailError, setEmailError] = useState(false); // Neuer State für Email-Fehler
+  const [emailError, setEmailError] = useState(false);
   const cardPadding = Platform.OS === "web" ? 32 : 16;
 
   const isMobile = Platform.OS !== "web";
@@ -33,42 +33,6 @@ export default function LoginScreen() {
   useEffect(() => {
     logout();
   }, []);
-
-  const handleForgotPassword = async () => {
-    // Überprüfe, ob eine Email eingegeben wurde
-    if (!email.trim()) {
-      setEmailError(true); // Setze den Fehlerstatus für Email
-      showAlert({
-        type: "error",
-        title: "Missing Mail for Password Reset",
-        message: "Please provide an email address",
-      });
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        "https://broke.dev-space.vip/auth/new_password",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
-      if (!response.ok) throw new Error("Password request failed");
-      showAlert({
-        type: "success",
-        title: "Success",
-        message: `New Password send to ${email}`,
-      });
-    } catch (error: any) {
-      showAlert({
-        type: "error",
-        title: "Login Error",
-        message: error.message || "Unexpected error occurred",
-      });
-    }
-  };
 
   // Normaler Email/Passwort Login
   const handleLogin = async () => {
@@ -158,6 +122,41 @@ export default function LoginScreen() {
     }
   }, [response]);
 
+  // Neue Funktion für "Forgot Password"
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setEmailError(true);
+      showAlert({
+        type: "error",
+        title: "Fehler",
+        message: "E-Mail wird benötigt"
+      });
+      return;
+    } else {
+      setEmailError(false);
+      try {
+        const response = await fetch("https://broke.dev-space.vip/auth/new_password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        if (!response.ok) throw new Error("Fehler beim Senden der Reset-Mail");
+        showAlert({
+          type: "success",
+          title: "Erfolg",
+          message: "Passwort-Reset-E-Mail wurde gesendet."
+        });
+      } catch (error) {
+        showAlert({
+          type: "error",
+          title: "Fehler",
+          message:
+            error instanceof Error ? error.message : "Unerwarteter Fehler"
+        });
+      }
+    }
+  };
+
   return (
     <View style={[styles.container, auth.center]}>
       <Card onPress={() => {}} style={{ padding: cardPadding }}>
@@ -166,14 +165,11 @@ export default function LoginScreen() {
           placeholder="E-Mail"
           placeholderTextColor={styles.defaultText.color}
           value={email}
-          onChangeText={(text) => {
-            setEmail(text);
-            if (emailError) setEmailError(false); // Fehler zurücksetzen, wenn der Benutzer tippt
-          }}
+          onChangeText={(text) => { setEmail(text); emailError && setEmailError(false); }}
           style={[
             styles.input,
             isMobile && { width: "100%", textAlign: "left" },
-            emailError && { borderColor: 'red', borderWidth: 1 } // Roten Rahmen hinzufügen, wenn Fehler
+            emailError && { borderColor: "red", borderWidth: 2 }
           ]}
         />
         <TextInput

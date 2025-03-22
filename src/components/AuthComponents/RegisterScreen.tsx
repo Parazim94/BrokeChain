@@ -3,9 +3,9 @@ import { View, Text, TextInput, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { createStyles } from "../../styles/style";
 import { authStyles } from "@/src/components/AuthComponents/authStyles";
-import Button from "@/src/components/Button"; 
+import Button from "@/src/components/UiComponents/Button"; 
 import { useAlert } from "@/src/context/AlertContext"; 
-import Card from "@/src/components/Card";
+import Card from "@/src/components/UiComponents/Card";
 
 export default function RegisterScreen() {
   const styles = createStyles();

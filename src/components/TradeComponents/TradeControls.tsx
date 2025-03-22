@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { View, TextInput, StyleSheet, Dimensions, Platform } from "react-native";
 import { useData } from "@/src/context/DataContext";
-import Button from "@/src/components/Button";
+import Button from "@/src/components/UiComponents/Button"; 
 import { useAlert } from "@/src/context/AlertContext";
 import { createStyles } from "@/src/styles/style";
 import { createTradeControlsStyles } from "@/src/components/TradeComponents/sharedstyles";
-import Card from "@/src/components/Card";
+import Card from "@/src/components/UiComponents/Card";
 
 interface TradeControlsProps {
   symbol: string;

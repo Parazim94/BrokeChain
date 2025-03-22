@@ -14,13 +14,13 @@ import {
 import * as Linking from "expo-linking";
 import { createStyles } from "../../styles/style";
 import { ThemeContext } from "../../context/ThemeContext";
-import Card from "@/src/components/Card";
-import Button from "@/src/components/Button";
+import Card from "@/src/components/UiComponents/Card";
+import Button from "@/src/components/UiComponents/Button";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
 import { useResponsiveColumns } from "@/src/hooks/useResponsiveColumns";
-import CustomModal from "@/src/components/CustomModal";
-import LazyImage from "@/src/components/LazyImage";
+import CustomModal from "@/src/components/UiComponents/CustomModal";
+import LazyImage from "@/src/components/UiComponents/LazyImage";
 
 interface NewsItem {
   guid: string;

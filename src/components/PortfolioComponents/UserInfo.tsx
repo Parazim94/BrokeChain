@@ -13,9 +13,8 @@ import { createStyles as createGlobalStyles } from "@/src/styles/style";
 import PortfolioPieChart from "./PortfolioPieChart";
 import { AuthContext } from "../../context/AuthContext";
 import { useAlert } from "@/src/context/AlertContext";
-import Button from "@/src/components/Button";
-import Card from "@/src/components/Card";
-import { useNavigation } from "@react-navigation/native";
+import Button from "@/src/components/UiComponents/Button";
+import Card from "@/src/components/UiComponents/Card";
 
 interface UserInfoProps {
   userName: string;
@@ -39,13 +38,11 @@ export default function UserInfo({
   positions = [],
 }: UserInfoProps) {
   const globalStyles = createGlobalStyles();
-  const navigation = useNavigation();
 
   // Neue Hooks für Logout
-  const { setIsLoggedIn, setUser, isLoggedIn } = useContext(AuthContext);
+  const { setIsLoggedIn, setUser } = useContext(AuthContext);
   const { showAlert } = useAlert();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
 
   const handleLogout = () => {
     setIsLoggingOut(true);
@@ -59,14 +56,6 @@ export default function UserInfo({
         message: "You have been successfully logged out."
       });
     }, 500);
-  };
-
-  const handleLoginNavigation = () => {
-    setIsNavigating(true);
-    setTimeout(() => {
-      navigation.navigate("Login" as never);
-      setIsNavigating(false);
-    }, 300);
   };
 
   // Internal state
@@ -286,7 +275,7 @@ export default function UserInfo({
   return (
     <Card style={styles.container}>
           
-      {/* Header mit Name, Performance und Login/Logout-Button */}
+      {/* Header mit Name, Performance und Logout-Button */}
       <View style={styles.headerRow}>
         <View style={styles.userNameContainer}>
           <Ionicons name="person-circle" size={30} style={styles.profileIcon} />
@@ -306,26 +295,14 @@ export default function UserInfo({
         </Text>
           </View>
         </View>
-        
-        {isLoggedIn ? (
-          <Button
-            onPress={handleLogout}
-            title="Logout"
-            loading={isLoggingOut}
-            style={{ marginLeft: 10 }}
-            size="small"
-            type="danger"
-          />
-        ) : (
-          <Button
-            onPress={handleLoginNavigation}
-            title="Login"
-            loading={isNavigating}
-            style={{ marginLeft: 10 }}
-            size="small"
-            type="primary"
-          />
-        )}
+        <Button
+          onPress={handleLogout}
+          title="Logout"
+          loading={isLoggingOut}
+          style={{ marginLeft: 10 }}
+          size="small"
+          type="danger"
+        />
       </View>
   {/* Value history chart */}
   <View style={styles.historyContainer}>

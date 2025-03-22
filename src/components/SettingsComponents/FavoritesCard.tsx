@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, TextInput, FlatList, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Button from "@/src/components/Button";
-import Card from "../../components/Card";
+import Button from "@/src/components/UiComponents/Button";
+import Card from "@/src/components/UiComponents/Card";
 
 interface FavoritesCardProps {
   favorites: string[];

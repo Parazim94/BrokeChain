@@ -1,7 +1,7 @@
 import React from "react";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { Text, View, Platform, useWindowDimensions } from "react-native";
-import Card from "@/src/components/Card";
+import Card from "@/src/components/UiComponents/Card";
 import { createStyles } from "@/src/components/PortfolioComponents/portfolioStyles";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 

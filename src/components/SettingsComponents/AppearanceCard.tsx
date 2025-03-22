@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Button from "@/src/components/Button";
+import Button from "@/src/components/UiComponents/Button";
 import DropdownAccentPicker from "../../components/SettingsComponents/DropdownAccentPicker";
-import Card from "../../components/Card";
+import Card from "../../components/UiComponents/Card";
 
 interface AppearanceCardProps {
   colorTheme: string;

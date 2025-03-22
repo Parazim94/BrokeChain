@@ -17,7 +17,7 @@ import { ThemeContext } from "@/src/context/ThemeContext";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { useData } from "@/src/context/DataContext";
 import { createChartStyles } from "@/src/components/TradeComponents/sharedstyles";
-import Card from "@/src/components/Card";
+import Card from "@/src/components/UiComponents/Card";
 import { Ionicons } from "@expo/vector-icons";
 
 // Neue helper-Funktion: adjustColor zum Anpassen der Helligkeit einer Hex-Farbe

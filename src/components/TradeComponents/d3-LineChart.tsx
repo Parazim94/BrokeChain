@@ -26,7 +26,7 @@ import { format } from "date-fns";
 import { ThemeContext } from "@/src/context/ThemeContext";
 import { useData } from "@/src/context/DataContext";
 import { formatCurrency } from "@/src/utils/formatCurrency";
-import Card from "@/src/components/Card";
+import Card from "@/src/components/UiComponents/Card";
 interface LineData {
   timestamp: number;
   value: number;

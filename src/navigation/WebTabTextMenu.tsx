@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation, useNavigationState, CommonActions } from "@react-navigation/native";
 import { ThemeContext } from "../context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
-import Card from "../components/Card";
+import Card from "../components/UiComponents/Card";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const tabs = [

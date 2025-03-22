@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '@/src/types/types';
-import Button from '../components/Button';
+import Button from '@/src/components/UiComponents/Button';
 
 export default function NotFoundScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();

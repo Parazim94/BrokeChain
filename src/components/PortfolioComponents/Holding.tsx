@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
 import { Image, Text, View, Platform, useWindowDimensions } from "react-native";
-import Card from "@/src/components/Card";
+import Card from "@/src/components/UiComponents/Card";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import Sparkline from "@/src/components/Market/Sparkline";
 import { createStyles } from "@/src/components/PortfolioComponents/portfolioStyles";

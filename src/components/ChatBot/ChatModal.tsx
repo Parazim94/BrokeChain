@@ -14,7 +14,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-import CustomModal from "../CustomModal";
+import CustomModal from "../UiComponents/CustomModal";
 import { AuthContext } from "../../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
