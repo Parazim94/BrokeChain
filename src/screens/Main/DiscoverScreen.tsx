@@ -56,7 +56,10 @@ export default function CryptoNews() {
       } catch (error) {
         console.error("Fehler beim Laden der Nachrichten:", error);
       } finally {
-        setLoading(false);
+        // 500ms Verzögerung hinzufügen, bevor der Ladeindikator verschwindet
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
       }
     };
     fetchNews();
