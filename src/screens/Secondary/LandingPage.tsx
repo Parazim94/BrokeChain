@@ -21,11 +21,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const { width, height } = Dimensions.get("window");
 
 export default function LandingPage() {
-  // Vermeide jegliche Ausführung auf Android und iOS
-  if (Platform.OS === "android" || Platform.OS === "ios") {
-    return null;
-  }
-
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const route = useRoute();
   const { theme } = useContext(ThemeContext);
