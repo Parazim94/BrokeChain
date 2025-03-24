@@ -55,7 +55,7 @@ export default function AnimatedLogo() {
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
       />
-      
+
       {/* Linkes Kettenglied - unterer Arc (transparent) */}
       <AnimatedPath
         d="
@@ -89,7 +89,7 @@ export default function AnimatedLogo() {
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
       />
-      
+
       {/* Rechtes Kettenglied - unterer Arc (transparent) */}
       <AnimatedPath
         d="
@@ -103,7 +103,7 @@ export default function AnimatedLogo() {
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
       />
-      
+
       {/* Text BROKE im linken Kettenglied */}
       <SvgText
         x="55"
@@ -115,7 +115,7 @@ export default function AnimatedLogo() {
       >
         BROKE
       </SvgText>
-      
+
       {/* Text CHAIN im rechten Kettenglied */}
       <SvgText
         x="152"
