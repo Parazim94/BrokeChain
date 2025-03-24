@@ -35,7 +35,7 @@ export default function AnimatedLogo() {
     >
       {/* Hintergrund transparent */}
       <Rect width="100%" height="100%" fill="none" />
-   
+
       <AnimatedPath
         d="
           M 20,60
@@ -46,7 +46,7 @@ export default function AnimatedLogo() {
           V 60 
           A 20,20 0 0 1 100,80 
           H 50
-          A 20,20 0 20 1 20,60 
+          A 20,20 0 0 1 20,60 
           Z
         "
         fill="none"
@@ -67,7 +67,7 @@ export default function AnimatedLogo() {
           V 60 
           A 20,20 0 0 1 180,80 
           H 130
-          A 20,20 0 20 1 100,30 
+          A 20,20 0 0 1 100,30 
           Z
         "
         fill="none"
