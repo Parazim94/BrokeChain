@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import {
   SafeAreaView,
   View,
@@ -33,6 +33,7 @@ export default function ShareScreen() {
   const [loading, setLoading] = useState(true);
   const [expandedPost, setExpandedPost] = useState<string | null>(null);
   const [likedPosts, setLikedPosts] = useState<Record<string, number>>({});
+  const postsDataRef = useRef<Post[]>([]);  // Ref für frühe Daten
   const styles = createStyles();
   const shareStyles = createShareStyles();
 
@@ -43,15 +44,31 @@ export default function ShareScreen() {
           "https://mastodonapp.uk/api/v1/timelines/tag/crypto?limit=15"
         );
         const data = await response.json();
+        // Sofort Daten in Ref speichern für Bild-Preloading
+        postsDataRef.current = data;
         setPosts(data);
+        
+        // Preloading nur für Web vorbereiten
+        // Keine direkte Image-Konstruktion verwenden
+        // Für Web: Das Preloading wird im render-Block via div+img gemacht
       } catch (error) {
         console.error("Fehler beim Laden der Beiträge:", error);
       } finally {
-        setLoading(false);
+        setTimeout(() => setLoading(false), 1000);    
       }
     };
     fetchPosts();
   }, []);
+
+  // Bilder schon während des Ladens vorbereiten - nur wenn auf Web-Plattform
+  const loadingContent = Platform.OS === "web" && postsDataRef.current.length > 0 && (
+    <div style={{ position: 'absolute', opacity: 0, width: 0, height: 0, overflow: 'hidden' }}>
+      {postsDataRef.current.map(post => 
+        post.account?.avatar && 
+        <img key={post.id} src={post.account.avatar} alt="" style={{width: 1, height: 1}} />
+      )}
+    </div>
+  );
 
   const handleLike = (postId: string) => {
     setLikedPosts((prevLikes) => ({
@@ -74,7 +91,10 @@ export default function ShareScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color={styles.defaultText.color} />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={styles.defaultText.color} />
+          {loadingContent}
+        </View>
       ) : (
         <FlatList
           data={posts}
