@@ -1,5 +1,12 @@
 import React, { useContext } from "react";
-import { SafeAreaView, ScrollView, Text, StyleSheet, View } from "react-native";
+import {
+  SafeAreaView,
+  ScrollView,
+  Text,
+  StyleSheet,
+  View,
+  Dimensions,
+} from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/UiComponents/Card";
 
@@ -66,7 +73,7 @@ const PrivacyTermsScreen = () => {
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    height: "100vh",
+    height: Dimensions.get("window").height,
     width: "100%",
     position: "absolute",
     top: 0,
