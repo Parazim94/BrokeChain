@@ -10,7 +10,7 @@
     "splash": {
       "image": "public/favicon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1D2022"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -30,7 +30,7 @@
       ],
       "adaptiveIcon": {
         "foregroundImage": "public/favicon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1D2022"
       },
       "package": "com.k0miker.tradeyomama"
     },
