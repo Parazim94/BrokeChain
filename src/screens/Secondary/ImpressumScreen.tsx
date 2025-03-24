@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import { SafeAreaView, ScrollView, Text, StyleSheet } from "react-native";
-import { ThemeContext } from "../context/ThemeContext";
+import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/UiComponents/Card";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../types/types";
+import { RootStackParamList } from "../../types/types";
 
 const ImpressumScreen = () => {
   const { theme } = useContext(ThemeContext);

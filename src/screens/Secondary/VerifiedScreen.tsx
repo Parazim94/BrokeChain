@@ -1,10 +1,10 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, NavigationProp } from '@react-navigation/native';
-import { AuthContext } from '../context/AuthContext';
-import { fetchPost } from '../hooks/useFetch';
+import { AuthContext } from '../../context/AuthContext';
+import { fetchPost } from '../../hooks/useFetch';
 import { RootStackParamList } from '@/src/types/types';
-import { ThemeContext } from '../context/ThemeContext';
+import { ThemeContext } from '../../context/ThemeContext';
 import * as Linking from 'expo-linking';
 
 export default function VerifiedScreen() {

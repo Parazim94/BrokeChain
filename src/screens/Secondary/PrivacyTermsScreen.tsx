@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { SafeAreaView, ScrollView, Text, StyleSheet } from "react-native";
-import { ThemeContext } from "../context/ThemeContext";
+import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/UiComponents/Card";
 
 const PrivacyTermsScreen = () => {

@@ -17,21 +17,21 @@ import {
   DrawerActions,
 } from "@react-navigation/native";
 import ResponsiveNavigator from "./ResponsiveNavigator";
-import SettingsScreen from "../screens/Settings/SettingsScreen";
+import SettingsScreen from "../screens/Secondary/SettingsScreen";
 // import AuthScreen from "../screens/Auth/AuthScreen";
 import LoginScreen from "../components/AuthComponents/LoginScreen";
 import RegisterScreen from "../components/AuthComponents/RegisterScreen";
 import CashInfo from "../components/PortfolioComponents/CashInfo";
-import LandingPage from "../screens/LandingPage";
+import LandingPage from "../screens/Secondary/LandingPage";
 import { RootStackParamList } from "../types/types";
 import WebTabTextMenu from "./WebTabTextMenu";
-import NotFoundScreen from "../screens/NotFoundScreen";
-import VerifiedScreen from "../screens/VerifiedScreen";
+import NotFoundScreen from "../screens/Secondary/NotFoundScreen";
+import VerifiedScreen from "../screens/Secondary/VerifiedScreen";
 import InteractiveFlagButtons from "../components/UiComponents/InteractiveFlagButtons";
 import QuizScreen from "../screens/Main/QuizScreen"; 
-import ImpressumScreen from "../screens/ImpressumScreen";  
+import ImpressumScreen from "../screens/Secondary/ImpressumScreen";  
 import Footer from "../components/UiComponents/Footer"; 
-import PrivacyTermsScreen from "../screens/PrivacyTermsScreen";
+import PrivacyTermsScreen from "../screens/Secondary/PrivacyTermsScreen";
 
 const Stack = createStackNavigator<RootStackParamList>();
 

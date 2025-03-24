@@ -7,8 +7,8 @@ import { StatusBar } from 'expo-status-bar';
 import { ThemeContext } from '@/src/context/ThemeContext';
 import { Video, ResizeMode } from 'expo-av';
 import AnimatedLogo from '@/src/components/UiComponents/AnimatedLogo';
-import { AuthContext } from '../context/AuthContext';
-import { fetchPost } from '../hooks/useFetch';
+import { AuthContext } from '../../context/AuthContext';
+import { fetchPost } from '../../hooks/useFetch';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
