@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import {
   SafeAreaView,
   View,
@@ -36,8 +36,9 @@ export default function CryptoNews() {
   const { theme } = useContext(ThemeContext);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedNews, setExpandedNews] = useState<string | null>(null); // bleibt für mobile View
-  const [modalNews, setModalNews] = useState<NewsItem | null>(null); // <-- neu
+  const [expandedNews, setExpandedNews] = useState<string | null>(null);
+  const [modalNews, setModalNews] = useState<NewsItem | null>(null);
+  const newsDataRef = useRef<NewsItem[]>([]);  // Ref für frühe Daten
   const styles = createStyles();
   const newsStyles = createNewsStyles();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -52,25 +53,82 @@ export default function CryptoNews() {
           "https://broke.dev-space.vip/marketData/news"
         );
         const data = await response.json();
+        // Sofort Daten in Ref speichern, damit Bilder geladen werden können
+        newsDataRef.current = data.items;
         setNews(data.items);
+        
+        // Preload-Versuch nur für Web ohne direktes Image-Object
+        if (Platform.OS === "web" && data.items?.length > 0) {
+          // Keine direkte Image Konstruktion - nur DOM-Element für preload vorbereiten
+          // Web-spezifischer Code wird in renderContent behandelt
+        }
       } catch (error) {
         console.error("Fehler beim Laden der Nachrichten:", error);
       } finally {
-        // 500ms Verzögerung hinzufügen, bevor der Ladeindikator verschwindet
         setTimeout(() => {
           setLoading(false);
-        }, 500);
+        }, 2000);
       }
     };
     fetchNews();
   }, []);
 
+  // Render-Logik für hintergrundladende Bilder während des Loadings
+  const renderNewsItem = (item: NewsItem, isModalContent = false) => {
+    return (
+      <>
+        {/* Obere Zeile: Bild und Header */}
+        <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
+          {item.enclosure?.link ? (
+            <LazyImage
+              source={{ uri: item.enclosure.link }}
+              style={newsStyles.newsImage}
+              resizeMode="cover"
+              // Preload aktivieren auch während des Ladens
+            />
+          ) : (
+            <View style={newsStyles.newsImage}>
+              <Text style={isModalContent ? [newsStyles.newsDate, { color: "white" }] : newsStyles.newsDate}>
+                Kein Bild
+              </Text>
+            </View>
+          )}
+          <View style={newsStyles.newsHeader}>
+            <Text style={isModalContent ? [newsStyles.newsTitle, { color: "white" }] : newsStyles.newsTitle}>
+              {item.title}
+            </Text>
+            <Text style={isModalContent ? [newsStyles.newsDate, { color: "white" }] : newsStyles.newsDate}>
+              {item.pubDate}
+            </Text>
+          </View>
+        </View>
+        {/* ...existing code... */}
+      </>
+    );
+  };
+
   // Mobile Render (Original-Implementierung)
   if (isMobile) {
+    // Während Loading werden Bilder bereits geladen
+    const loadingContent = newsDataRef.current.length > 0 && (
+      <View style={{ opacity: 0, position: 'absolute', width: 1, height: 1, overflow: 'hidden' }}>
+        {newsDataRef.current.map(item => (
+          <LazyImage 
+            key={item.guid}
+            source={item.enclosure?.link ? { uri: item.enclosure.link } : undefined}
+            style={{ width: 1, height: 1 }}
+          />
+        ))}
+      </View>
+    );
+
     return (
       <SafeAreaView style={styles.container}>
         {loading ? (
-          <ActivityIndicator size="large" color={styles.defaultText.color} />
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="large" color={styles.defaultText.color} />
+            {loadingContent}
+          </View>
         ) : news && news.length > 0 ? (
           <FlatList
             data={news}
@@ -148,13 +206,26 @@ export default function CryptoNews() {
     );
   }
 
-  // Web-Render: Öffne bei Klick ein Modal
+  // Web-Render: Bilder vorladend
   if (Platform.OS === "web") {
+    // Vorlade-Element für Web - vorsichtiger Ansatz
+    const loadingContent = newsDataRef.current.length > 0 && (
+      <div style={{ position: 'absolute', opacity: 0, width: 0, height: 0, overflow: 'hidden' }}>
+        {newsDataRef.current.map(item => 
+          item.enclosure?.link && 
+          <img key={item.guid} src={item.enclosure.link} alt="" style={{width: 1, height: 1}} />
+        )}
+      </div>
+    );
+
     return (
       <SafeAreaView style={styles.container}>
         <View style={{ flex: 1, width: "100%", alignSelf: "center" }}>
           {loading ? (
-            <ActivityIndicator size="large" color={styles.defaultText.color} />
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+              <ActivityIndicator size="large" color={styles.defaultText.color} />
+              {loadingContent}
+            </View>
           ) : news && news.length > 0 ? (
             <FlatList
               data={news}
@@ -272,14 +343,26 @@ export default function CryptoNews() {
     );
   }
 
-  // Tablet/Web-Render (Responsive mit Columns)
+  // Tablet/Web-Render mit Preloading
+  const loadingContent = newsDataRef.current.length > 0 && (
+    <div style={{ position: 'absolute', opacity: 0, width: 0, height: 0, overflow: 'hidden' }}>
+      {newsDataRef.current.map(item => 
+        item.enclosure?.link && 
+        <img key={item.guid} src={item.enclosure.link} alt="" style={{width: 1, height: 1}} />
+      )}
+    </div>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View
         style={{ flex: 1, width: "100%", maxWidth: 1024, alignSelf: "center" }}
       >
         {loading ? (
-          <ActivityIndicator size="large" color={styles.defaultText.color} />
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size="large" color={styles.defaultText.color} />
+            {(Platform.OS as string) === "web" && loadingContent}
+          </View>
         ) : news && news.length > 0 ? (
           <FlatList
             data={news}

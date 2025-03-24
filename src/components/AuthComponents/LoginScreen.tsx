@@ -203,7 +203,7 @@ export default function LoginScreen() {
           >
             Forgot Password?
           </Text>
-        </View>{" "}
+        </View>
         <Button
           onPress={() => promptAsync()}
           title="Login with Google"
