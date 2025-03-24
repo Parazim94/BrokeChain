@@ -15,7 +15,7 @@ const { width, height } = Dimensions.get('window');
 
 export default function LandingPage() {
   // Vermeide jegliche Ausführung auf Android
-  if (Platform.OS === "android") {
+  if (Platform.OS === "android" || Platform.OS === "ios") {
     return null;
   }
 

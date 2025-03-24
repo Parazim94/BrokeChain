@@ -39,7 +39,7 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     message: '',
   });
   
-  // Ref für Modal hinzufügen, um findDOMNode-Warnung zu vermeiden
+
   const modalRef = useRef(null);
 
   // Entscheiden, ob natives Alert oder Modal basierend auf Plattform

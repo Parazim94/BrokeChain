@@ -36,6 +36,7 @@ export default function AnimatedLogo() {
       {/* Hintergrund transparent */}
       <Rect width="100%" height="100%" fill="none" />
 
+      {/* Linkes Kettenglied - Hauptteil */}
       <AnimatedPath
         d="
           M 20,60
@@ -46,8 +47,6 @@ export default function AnimatedLogo() {
           V 60 
           A 20,20 0 0 1 100,80 
           H 50
-          A 20,20 0 0 1 20,60 
-          Z
         "
         fill="none"
         stroke={strokeColor}
@@ -56,7 +55,23 @@ export default function AnimatedLogo() {
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
       />
+      
+      {/* Linkes Kettenglied - unterer Arc (transparent) */}
+      <AnimatedPath
+        d="
+          M 50,80
+          A 20,20 0 0 1 20,60
+          Z
+        "
+        fill="none"
+        stroke={`${strokeColor}00`} // 00 bedeutet vollständig transparent
+        strokeWidth="8"
+        transform="rotate(180,70,50)"
+        strokeDasharray={dashLength}
+        strokeDashoffset={dashAnim}
+      />
 
+      {/* Rechtes Kettenglied - Hauptteil */}
       <AnimatedPath
         d="
           M 100,60
@@ -67,8 +82,6 @@ export default function AnimatedLogo() {
           V 60 
           A 20,20 0 0 1 180,80 
           H 130
-          A 20,20 0 0 1 100,30 
-          Z
         "
         fill="none"
         stroke={strokeColor}
@@ -76,6 +89,21 @@ export default function AnimatedLogo() {
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
       />
+      
+      {/* Rechtes Kettenglied - unterer Arc (transparent) */}
+      <AnimatedPath
+        d="
+          M 130,80
+          A 20,20 0 0 1 100,60         
+          Z
+        "
+        fill="none"
+        stroke={`${strokeColor}00`} // 00 bedeutet vollständig transparent
+        strokeWidth="8"
+        strokeDasharray={dashLength}
+        strokeDashoffset={dashAnim}
+      />
+      
       {/* Text BROKE im linken Kettenglied */}
       <SvgText
         x="55"
@@ -87,6 +115,7 @@ export default function AnimatedLogo() {
       >
         BROKE
       </SvgText>
+      
       {/* Text CHAIN im rechten Kettenglied */}
       <SvgText
         x="152"
