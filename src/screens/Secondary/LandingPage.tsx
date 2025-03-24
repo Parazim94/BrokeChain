@@ -107,7 +107,7 @@ export default function LandingPage() {
               useNativeDriver: false,
             }),
             Animated.timing(scale, {
-              toValue: 35,
+              toValue: 0,
               duration: 1800,
               useNativeDriver: false,
             }),
@@ -133,7 +133,7 @@ export default function LandingPage() {
       
       {Platform.OS === "web" && (
         <Video
-          source={require('../../assets/videos/intro.mp4')}
+          source={require('../../../assets/videos/intro.mp4')}
           style={styles.backgroundVideo}
           resizeMode={ResizeMode.COVER}
           shouldPlay

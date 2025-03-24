@@ -184,7 +184,6 @@ export default function LoginScreen() {
           onPress={handleLogin}
           title="Login"
           loading={isLoading}
-          fullWidth
           size="small"
           style={{
             marginTop: 12,
@@ -198,10 +197,9 @@ export default function LoginScreen() {
           icon="logo-google"
           type="secondary"
           size="small"
-          fullWidth
           style={{
             marginTop: 12,
-            ...(isMobile ? { width: "100%", alignItems: "center" } : {}),
+            width: "100%", alignItems: "center",
           }}
         />
         {/* Added Privacy Policy & Terms link below the Google Login button */}
@@ -234,7 +232,7 @@ export default function LoginScreen() {
           title="Register"
           type="primary"
           size="small"
-          style={{ marginTop: 8, alignSelf: "center", width: "100%" }}
+          style={{ marginTop: 8, width: "100%" }}
         />
       </Card>
     </View>
