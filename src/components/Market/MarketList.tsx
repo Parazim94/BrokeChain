@@ -13,7 +13,7 @@ import {
   ImageResizeMode
 } from "react-native";
 import Card from "../UiComponents/Card";
-import Sparkline from "@/src/components/Market/Sparkline";
+import Sparkline from "@/src/components/UiComponents/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 
 // Type definition for PlatformImage props

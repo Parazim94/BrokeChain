@@ -11,7 +11,7 @@ import { useAlert } from "@/src/context/AlertContext";
 import Card from "@/src/components/UiComponents/Card";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import { ID, IOS_ID, ANDROID_ID } from "@env"; 
+import { ID, IOS_ID, ANDROID_ID } from "@env";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -129,29 +129,32 @@ export default function LoginScreen() {
       showAlert({
         type: "error",
         title: "Fehler",
-        message: "E-Mail wird benötigt"
+        message: "E-Mail wird benötigt",
       });
       return;
     } else {
       setEmailError(false);
       try {
-        const response = await fetch("https://broke.dev-space.vip/auth/new_password", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
-        });
+        const response = await fetch(
+          "https://broke.dev-space.vip/auth/new_password",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          }
+        );
         if (!response.ok) throw new Error("Fehler beim Senden der Reset-Mail");
         showAlert({
           type: "success",
           title: "Erfolg",
-          message: "Passwort-Reset-E-Mail wurde gesendet."
+          message: "Passwort-Reset-E-Mail wurde gesendet.",
         });
       } catch (error) {
         showAlert({
           type: "error",
           title: "Fehler",
           message:
-            error instanceof Error ? error.message : "Unerwarteter Fehler"
+            error instanceof Error ? error.message : "Unerwarteter Fehler",
         });
       }
     }
@@ -165,11 +168,14 @@ export default function LoginScreen() {
           placeholder="E-Mail"
           placeholderTextColor={styles.defaultText.color}
           value={email}
-          onChangeText={(text) => { setEmail(text); emailError && setEmailError(false); }}
+          onChangeText={(text) => {
+            setEmail(text);
+            emailError && setEmailError(false);
+          }}
           style={[
             styles.input,
             isMobile && { width: "100%", textAlign: "left" },
-            emailError && { borderColor: "red", borderWidth: 2 }
+            emailError && { borderColor: "red", borderWidth: 2 },
           ]}
         />
         <TextInput
@@ -184,33 +190,8 @@ export default function LoginScreen() {
           onPress={handleLogin}
           title="Login"
           loading={isLoading}
-          size="small"       
-         
-        />
-        <Button
-          onPress={() => promptAsync()}
-          title="Login with Google"
-          loading={isLoading}
-          icon="logo-google"
-          type="secondary"
           size="small"
-          style={{ marginTop: 8 }}
-          
-        
         />
-        {/* Added Privacy Policy & Terms link below the Google Login button */}
-        <View style={{ alignItems: "center", marginTop: 8 }}>
-          <Text
-            style={{
-              color: styles.accent.color,
-              textDecorationLine: "underline",
-              fontSize: 10,
-            }}
-            onPress={() => navigation.navigate("PrivacyTermsScreen" as never)}
-          >
-            Privacy Policy & Terms of Service
-          </Text>
-        </View>
         <View style={auth.linkContainer}>
           <Text style={auth.infoText}>New here? or </Text>
           <Text
@@ -221,6 +202,29 @@ export default function LoginScreen() {
             onPress={handleForgotPassword}
           >
             Forgot Password?
+          </Text>
+        </View>{" "}
+        <Button
+          onPress={() => promptAsync()}
+          title="Login with Google"
+          loading={isLoading}
+          icon="logo-google"
+          iconPosition="left"
+          type="secondary"
+          size="small"
+          style={{ marginTop: 8 }}
+          />
+          {/* Added Privacy Policy & Terms link below the Google Login button */}
+        <View style={{ alignItems: "center", marginTop: 8 }}>
+          <Text
+            style={{
+              color: styles.accent.color,
+              textDecorationLine: "underline",
+              fontSize: 10,
+            }}
+            onPress={() => navigation.navigate("PrivacyTermsScreen" as never)}
+          >
+            Privacy Policy & Terms of Service
           </Text>
         </View>
         <Button

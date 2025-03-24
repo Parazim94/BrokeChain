@@ -7,7 +7,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Sparkline from "@/src/components/Market/Sparkline";
+import Sparkline from "@/src/components/UiComponents/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { createStyles as createGlobalStyles } from "@/src/styles/style";
 import PortfolioPieChart from "./PortfolioPieChart";
@@ -367,6 +367,7 @@ export default function UserInfo({
             height={80}
             stroke={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
             strokeWidth={2}
+            staticFlag={true}
           />
         </View>
       </View>

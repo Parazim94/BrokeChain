@@ -96,7 +96,7 @@ function Sparkline({
   if (totalLength <= 0) return null;
 
   // Shared value für animierten dashOffset
-  const animatedDashOffset = useSharedValue(totalLength);
+  const animatedDashOffset = useSharedValue(staticFlag ? 0 : totalLength);
   
   // Animated props
   const animatedProps = useAnimatedProps(() => ({
@@ -104,8 +104,11 @@ function Sparkline({
   }));
 
   useEffect(() => {
-    animatedDashOffset.value = withTiming(0, { duration: 500 }); // Kürzere Animationsdauer
-  }, [animatedDashOffset, points]);
+    // Animation nur ausführen, wenn staticFlag false ist
+    if (!staticFlag) {
+      animatedDashOffset.value = withTiming(0, { duration: 500 }); // Kürzere Animationsdauer
+    }
+  }, [animatedDashOffset, points, staticFlag]);
 
   return (
     <Svg width={width} height={height}>
