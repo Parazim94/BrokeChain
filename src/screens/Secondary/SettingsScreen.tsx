@@ -22,8 +22,7 @@ import EmailCard from "@/src/components/SettingsComponents/EmailCard";
 import PasswordCard from "@/src/components/SettingsComponents/PasswordCard";
 import FavoritesCard from "@/src/components/SettingsComponents/FavoritesCard";
 import DisplayToolsCard from "@/src/components/SettingsComponents/DisplayToolsCard";
-import { useNavigation } from '@react-navigation/native';
-
+import { useNavigation } from "@react-navigation/native";
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -35,10 +34,16 @@ export default function SettingsScreen() {
   const styles = createStyles();
   const [isSaving, setIsSaving] = useState(false);
 
+  // Add avatar state
+  const [avatar, setAvatar] = useState<{ icon: string; color: string }>({
+    icon: "person-outline",
+    color: accent || "#00a9d7",
+  });
+
   // Überprüfung, ob Benutzer eingeloggt ist
   useEffect(() => {
     if (!user) {
-      navigation.navigate('Login' as never);
+      navigation.navigate("Login" as never);
     }
   }, [user, navigation]);
 
@@ -84,15 +89,15 @@ export default function SettingsScreen() {
 
   // Toggle functions for display tools
   const toggleChatAi = () => {
-    setDisplayTools(prev => ({ ...prev, chatAi: !prev.chatAi }));
+    setDisplayTools((prev) => ({ ...prev, chatAi: !prev.chatAi }));
   };
 
   const toggleTutorial = () => {
-    setDisplayTools(prev => ({ ...prev, tutorial: !prev.tutorial }));
+    setDisplayTools((prev) => ({ ...prev, tutorial: !prev.tutorial }));
   };
 
   const toggleQuiz = () => {
-    setDisplayTools(prev => ({ ...prev, quiz: !prev.quiz }));
+    setDisplayTools((prev) => ({ ...prev, quiz: !prev.quiz }));
   };
 
   // Add favorite
@@ -123,12 +128,10 @@ export default function SettingsScreen() {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify( 
-            {            
+          body: JSON.stringify({
             token: user?.token,
-            prefTheme:[           
-            colorTheme,
-            accent]
+            prefTheme: [colorTheme, accent],
+            avatar: avatar, // Include avatar in the request
           }),
         }
       );
@@ -142,16 +145,16 @@ export default function SettingsScreen() {
       const responseData = await response.json();
       const newToken = responseData.token;
       console.log("Neues Token:", newToken);
-      
-      
+
       // Aktualisiere User mit neuem Token und Theme-Einstellungen
-      const updatedUser = { 
-        ...user, 
+      const updatedUser = {
+        ...user,
         prefTheme: [colorTheme, accent],
-        token: newToken // Verwende neues Token oder behalte altes, falls keins zurückkommt
+        avatar: avatar,
+        token: newToken, // Verwende neues Token oder behalte altes, falls keins zurückkommt
       };
       console.log("Updated User:", updatedUser);
-      
+
       setUser(updatedUser);
 
       showAlert({
@@ -169,18 +172,17 @@ export default function SettingsScreen() {
       setIsUpdatingAppearance(false);
     }
   };
-  
+
   // Handle display tools update
   const handleDisplayToolsUpdate = async () => {
     if (!user) return;
     setIsUpdatingDisplayTools(true);
 
     try {
-    
       const formattedDisplayTools = {
         chatAi: displayTools.chatAi,
         tutorial: displayTools.tutorial,
-        quiz: displayTools.quiz
+        quiz: displayTools.quiz,
       };
       console.log("Formatted Display Tools:", formattedDisplayTools);
 
@@ -191,10 +193,10 @@ export default function SettingsScreen() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             token: user?.token,
-            displayedTools: formattedDisplayTools 
+            displayedTools: formattedDisplayTools,
           }),
         }
-      );      
+      );
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Display tools update failed");
@@ -205,12 +207,12 @@ export default function SettingsScreen() {
       const newToken = responseData.token || user.token;
       console.log("response Data:", responseData);
       // Aktualisiere User mit neuem Token und Display-Tools-Einstellungen
-      const updatedUser = { 
-        ...user, 
+      const updatedUser = {
+        ...user,
         displayedTools: formattedDisplayTools, // Hier displayedTools benutzen
-        token: newToken
+        token: newToken,
       };
-      
+
       setUser(updatedUser);
 
       showAlert({
@@ -331,7 +333,12 @@ export default function SettingsScreen() {
   // Handle email change
   const handleEmailChange = async () => {
     // Log das aktuelle Token
-    console.log("Email Change - aktueller Token:", user?.token, "New Email:", newEmail);
+    console.log(
+      "Email Change - aktueller Token:",
+      user?.token,
+      "New Email:",
+      newEmail
+    );
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -347,8 +354,8 @@ export default function SettingsScreen() {
     setIsChangingEmail(true);
 
     try {
-      console.log("User token: ", user?.token , "New Email: ", newEmail);
-      
+      console.log("User token: ", user?.token, "New Email: ", newEmail);
+
       // Implement email change API call here
       const response = await fetch(
         "https://broke.dev-space.vip/user/change_email",
@@ -398,7 +405,7 @@ export default function SettingsScreen() {
     const formattedDisplayTools = {
       chatAi: displayTools.chatAi,
       tutorial: displayTools.tutorial,
-      quiz: displayTools.quiz
+      quiz: displayTools.quiz,
     };
 
     const updatedUserData = {
@@ -406,7 +413,8 @@ export default function SettingsScreen() {
       prefTheme: [colorTheme, accent],
       favorites: favorites,
       email: newEmail,
-      displayedTools: formattedDisplayTools 
+      displayedTools: formattedDisplayTools,
+      avatar: avatar, // Include avatar in updatedUserData
     };
 
     try {
@@ -424,13 +432,14 @@ export default function SettingsScreen() {
       }
 
       const responseData = await response.json();
-      const updatedUser = { 
+      const updatedUser = {
         ...user,
         ...responseData,
         prefTheme: [colorTheme, accent],
         favorites: favorites,
         email: newEmail,
-        displayedTools: formattedDisplayTools 
+        displayedTools: formattedDisplayTools,
+        avatar: avatar, // Include avatar in updatedUser
       };
       setUser(updatedUser);
 
@@ -465,7 +474,7 @@ export default function SettingsScreen() {
       marginBottom: 30,
       marginTop: 10,
       color: theme.accent,
-      backgroundColor: "transparent", 
+      backgroundColor: "transparent",
     },
     sectionContainer: {
       marginBottom: 30,
@@ -534,7 +543,7 @@ export default function SettingsScreen() {
       borderRadius: 8,
       marginTop: 10,
       borderWidth: 1,
-      borderColor: theme.accent+ "60",
+      borderColor: theme.accent + "60",
     },
     favoriteItem: {
       flexDirection: "row",
@@ -597,6 +606,8 @@ export default function SettingsScreen() {
             toggleTheme={toggleTheme}
             accent={accent}
             setAccent={setAccent}
+            avatar={avatar}
+            setAvatar={setAvatar}
             handleAppearanceUpdate={handleAppearanceUpdate}
             isUpdatingAppearance={isUpdatingAppearance}
             theme={theme}
