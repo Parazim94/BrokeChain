@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Modal,
   View,
@@ -11,6 +11,7 @@ import Button from "@/src/components/UiComponents/Button";
 import { Ionicons } from "@expo/vector-icons";
 // Import default avatars as fallback
 import { Avatars as DefaultAvatars } from "../../constants/avatars";
+import { AuthContext } from "../../context/AuthContext";
 
 // Define the avatar type
 interface Avatar {
@@ -35,6 +36,7 @@ export default function DropdownAvatarPicker({
 }: DropdownAvatarPickerProps) {
   const [visible, setVisible] = useState(false);
   const [availableAvatars, setAvailableAvatars] = useState<Avatar[]>([]);
+  const { user } = useContext(AuthContext);
 
   // Initialize available avatars
   useEffect(() => {
@@ -45,8 +47,19 @@ export default function DropdownAvatarPicker({
     setAvailableAvatars(avatarsToUse as Avatar[]);
   }, [avatars]);
 
+  // Initialisiere Avatar aus dem User-Objekt, wenn vorhanden und kein Avatar gesetzt ist
+  useEffect(() => {
+    if (!avatar && user && user.icon && user.iconColor) {
+      setAvatar({
+        icon: user.icon,
+        color: user.iconColor
+      });
+    }
+  }, [user, avatar, setAvatar]);
+
   // Find default avatar if none is set
-  const currentAvatar = avatar || availableAvatars[0] || DefaultAvatars[0];
+  const currentAvatar = avatar || 
+    (user && user.icon && user.iconColor ? { icon: user.icon, color: user.iconColor } : availableAvatars[0] || DefaultAvatars[0]);
 
   return (
     <View style={styles.container}>

@@ -69,6 +69,39 @@ export default function UserInfo({
     }, 300);
   };
 
+  // Funktion zum Rendern des Avatar/Benutzer-Icons
+  const renderUserAvatar = () => {
+    const user = useContext(AuthContext).user;
+    
+    // Wenn der Benutzer einen benutzerdefinierten Avatar hat
+    if (user && user.icon && user.iconColor) {
+      return (
+        <View
+          style={{
+            backgroundColor: user.iconColor,
+            width: 30,
+            height: 30,
+            borderRadius: 15,
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: 8,
+          }}
+        >
+          <Ionicons
+            name={user.icon}
+            size={20}
+            color="#FFFFFF"
+          />
+        </View>
+      );
+    }
+    
+    // Standard-Icon als Fallback
+    return (
+      <Ionicons name="person-circle" size={30} style={styles.profileIcon} />
+    );
+  };
+
   // Internal state
   const [localHistory, setLocalHistory] = React.useState("7d");
   const historyOptions = ["7d", "30d", "360d"];
@@ -289,7 +322,8 @@ export default function UserInfo({
       {/* Header mit Name, Performance und Login/Logout-Button */}
       <View style={styles.headerRow}>
         <View style={styles.userNameContainer}>
-          <Ionicons name="person-circle" size={30} style={styles.profileIcon} />
+          {/* Hier wird der Avatar angezeigt */}
+          {renderUserAvatar()}
           <Text style={styles.userName}>{userName}</Text>
           <View style={[styles.performanceContainer, { marginLeft: 10 }]}>
             <Ionicons
