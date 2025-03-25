@@ -131,7 +131,8 @@ export default function SettingsScreen() {
           body: JSON.stringify({
             token: user?.token,
             prefTheme: [colorTheme, accent],
-            avatar: avatar, // Include avatar in the request
+            icon: avatar.icon,       // Sende icon als separaten Parameter
+            iconColor: avatar.color, // Sende iconColor als separaten Parameter
           }),
         }
       );
@@ -151,6 +152,8 @@ export default function SettingsScreen() {
         ...user,
         prefTheme: [colorTheme, accent],
         avatar: avatar,
+        icon: avatar.icon,       // Speichere im lokalen User-Objekt
+        iconColor: avatar.color, // Speichere im lokalen User-Objekt
         token: newToken, // Verwende neues Token oder behalte altes, falls keins zurückkommt
       };
       console.log("Updated User:", updatedUser);
@@ -414,7 +417,8 @@ export default function SettingsScreen() {
       favorites: favorites,
       email: newEmail,
       displayedTools: formattedDisplayTools,
-      avatar: avatar, // Include avatar in updatedUserData
+      icon: avatar.icon,       // Sende icon als separaten Parameter
+      iconColor: avatar.color, // Sende iconColor als separaten Parameter
     };
 
     try {
@@ -439,7 +443,9 @@ export default function SettingsScreen() {
         favorites: favorites,
         email: newEmail,
         displayedTools: formattedDisplayTools,
-        avatar: avatar, // Include avatar in updatedUser
+        avatar: avatar, // Behalte das komplette Avatar-Objekt für die Frontend-Nutzung
+        icon: avatar.icon,       // Speichere im lokalen User-Objekt
+        iconColor: avatar.color, // Speichere im lokalen User-Objekt
       };
       setUser(updatedUser);
 

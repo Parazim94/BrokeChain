@@ -39,11 +39,45 @@ const Stack = createStackNavigator<RootStackParamList>();
 export default function StackNavigator() {
   const { width } = useWindowDimensions();
   const { theme } = useContext(ThemeContext);
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, user } = useContext(AuthContext); // Hier holen wir uns den user
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   // Android startet direkt mit dem Main-Screen
   const initialRoute = Platform.OS === "android" ? "Main" : "LandingPage";
+
+  // Funktion zum Rendern des Avatar/Benutzer-Icons
+  const renderUserIcon = () => {
+    // Wenn der Benutzer eingeloggt ist und einen benutzerdefinierten Avatar hat
+    if (isLoggedIn && user && user.icon && user.iconColor) {
+      return (
+        <View
+          style={{
+            backgroundColor: user.iconColor,
+            width: 30,
+            height: 30,
+            borderRadius: 15,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Ionicons
+            name={user.icon}
+            size={20}
+            color="#FFFFFF"
+          />
+        </View>
+      );
+    }
+    
+    // Standard-Icon, wenn kein benutzerdefinierter Avatar vorhanden ist
+    return (
+      <Ionicons
+        name="person-circle"
+        size={28}
+        color={theme.accent}
+      />
+    );
+  };
 
   return (
     <>
@@ -178,11 +212,7 @@ export default function StackNavigator() {
                     }
                   }}
                 >
-                  <Ionicons
-                    name="person-circle"
-                    size={28}
-                    color={theme.accent}
-                  />
+                  {renderUserIcon()}
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={{

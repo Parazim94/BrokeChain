@@ -14,7 +14,7 @@ import { Avatars as DefaultAvatars } from "../../constants/avatars";
 
 // Define the avatar type
 interface Avatar {
-  icon: string;
+  icon: React.ComponentProps<typeof Ionicons>["name"];
   color: string;
 }
 
@@ -42,7 +42,7 @@ export default function DropdownAvatarPicker({
     const avatarsToUse =
       avatars && avatars.length > 0 ? avatars : DefaultAvatars;
     console.log("DropdownAvatarPicker - Using avatars:", avatarsToUse.length);
-    setAvailableAvatars(avatarsToUse);
+    setAvailableAvatars(avatarsToUse as Avatar[]);
   }, [avatars]);
 
   // Find default avatar if none is set
