@@ -6,10 +6,16 @@ import { ThemeContext } from "../../context/ThemeContext";
 import { AuthContext } from "../../context/AuthContext";
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
+const AnimatedSvgText = Animated.createAnimatedComponent(SvgText);
 
 export default function AnimatedLogo() {
   const dashLength = 300;
   const dashAnim = useRef(new Animated.Value(dashLength)).current;
+  
+  // Neue Animationswerte für den Text
+  const textOpacity = useRef(new Animated.Value(0)).current;
+  const textScale = useRef(new Animated.Value(0.5)).current;
+  
   const { theme } = useContext(ThemeContext);
   const { isLoggedIn } = useContext(AuthContext);
 
@@ -19,12 +25,36 @@ export default function AnimatedLogo() {
   const textColor2 = isLoggedIn ? theme.accent : "#00AEEF";
 
   useEffect(() => {
-    Animated.timing(dashAnim, {
+    // Animation für Pfade starten
+    const pathAnimation = Animated.timing(dashAnim, {
       toValue: 0,
       duration: 2000,
       useNativeDriver: false,
-    }).start();
-  }, [dashAnim]);
+    });
+    
+    // Animation für Text mit Verzögerung starten
+    const textFadeIn = Animated.timing(textOpacity, {
+      toValue: 1,
+      duration: 800,
+      delay: 1000, // 1 Sekunde verzögern
+      useNativeDriver: false,
+    });
+    
+    const textGrow = Animated.timing(textScale, {
+      toValue: 1,
+      duration: 800,
+      delay: 1000, // 1 Sekunde verzögern
+      useNativeDriver: false,
+    });
+    
+    // Beide Animationen parallel ausführen
+    Animated.parallel([
+      pathAnimation, 
+      textFadeIn,
+      textGrow
+    ]).start();
+    
+  }, [dashAnim, textOpacity, textScale]);
 
   return (
     <Svg
@@ -104,29 +134,39 @@ export default function AnimatedLogo() {
         strokeDashoffset={dashAnim}
       />
 
-      {/* Text BROKE im linken Kettenglied */}
-      <SvgText
+      {/* Text BROKE im linken Kettenglied - jetzt animiert */}
+      <AnimatedSvgText
         x="55"
         y="55"
         fontFamily="Arial, sans-serif"
         fontSize="14"
         fill={textColor}
         textAnchor="middle"
+        opacity={textOpacity}
+        scaleX={textScale}
+        scaleY={textScale}
+        originX="55"
+        originY="55"
       >
         BROKE
-      </SvgText>
+      </AnimatedSvgText>
 
-      {/* Text CHAIN im rechten Kettenglied */}
-      <SvgText
+      {/* Text CHAIN im rechten Kettenglied - jetzt animiert */}
+      <AnimatedSvgText
         x="152"
         y="55"
         fontFamily="Arial, sans-serif"
         fontSize="14"
         fill={textColor2}
         textAnchor="middle"
+        opacity={textOpacity}
+        scaleX={textScale}
+        scaleY={textScale}
+        originX="152"
+        originY="55"
       >
         CHAIN
-      </SvgText>
+      </AnimatedSvgText>
     </Svg>
   );
 }

@@ -5,14 +5,13 @@ import Button from "@/src/components/UiComponents/Button";
 import DropdownAccentPicker from "../../components/SettingsComponents/DropdownAccentPicker";
 import DropdownAvatarPicker from "../../components/SettingsComponents/DropdownAvatarPicker";
 import Card from "../../components/UiComponents/Card";
-// Import Avatars directly to ensure they're available
-import { Avatars as DefaultAvatars } from "../../constants/avatars";
 
 // Update the interface to reflect the new Avatar type
 interface Avatar {
   icon: string;
   color: string;
 }
+
 
 interface AppearanceCardProps {
   colorTheme: string;
@@ -45,41 +44,12 @@ export default function AppearanceCard({
   styles,
   defaultText,
 }: AppearanceCardProps) {
-  // Use DefaultAvatars if Avatars prop is empty
-  const [localAvatars, setLocalAvatars] = useState<Avatar[]>([]);
-  const [localAvatar, setLocalAvatar] = useState<Avatar | undefined>(avatar);
-
-  // Initialize avatars from imported constant if prop is empty
-  useEffect(() => {
-    const avatarsToUse =
-      Avatars && Avatars.length > 0 ? Avatars : DefaultAvatars;
-    console.log(
-      "Using avatars:",
-      avatarsToUse.length > 0 ? "From import" : "Empty array"
-    );
-    setLocalAvatars(avatarsToUse);
-
-    // Initialize avatar if not set
-    if (!localAvatar && avatarsToUse.length > 0) {
-      console.log("Initializing avatar with:", avatarsToUse[0]);
-      setLocalAvatar(avatarsToUse[0]);
-      if (setAvatar && typeof setAvatar === "function") {
-        setAvatar(avatarsToUse[0]);
-      }
-    }
-  }, [Avatars, localAvatar]); // Remove setAvatar from dependency array to avoid infinite loops
-
-  // Handle when avatar prop changes
-  useEffect(() => {
-    if (avatar && JSON.stringify(avatar) !== JSON.stringify(localAvatar)) {
-      setLocalAvatar(avatar);
-    }
-  }, [avatar, localAvatar]); // Add localAvatar to the dependency array
+  // Entferne die nicht mehr benötigten Avatar-Hilfsvariablen
+  // da die Komponente jetzt direkt mit Icon und Farbe arbeitet
 
   // Handle avatar change
   const handleAvatarChange = (newAvatar: Avatar) => {
     console.log("Avatar changed to:", newAvatar);
-    setLocalAvatar(newAvatar);
     if (setAvatar && typeof setAvatar === "function") {
       setAvatar(newAvatar);
     }
@@ -151,9 +121,8 @@ export default function AppearanceCard({
           </Text>
           <View style={styles.control}>
             <DropdownAvatarPicker
-              avatar={localAvatar || localAvatars[0]}
+              avatar={avatar}
               setAvatar={handleAvatarChange}
-              avatars={localAvatars}
               themeBackground={theme.background}
               accentColor={accent}
             />

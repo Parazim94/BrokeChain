@@ -5,24 +5,25 @@ import {
   TouchableOpacity,
   StyleSheet,
   Text,
-  ScrollView,
+  FlatList,
+  Dimensions,
 } from "react-native";
 import Button from "@/src/components/UiComponents/Button";
 import { Ionicons } from "@expo/vector-icons";
-// Import default avatars as fallback
-import { Avatars as DefaultAvatars } from "../../constants/avatars";
+// Import default avatars and accent colors
+import { AvatarIcons } from "../../constants/avatars";
+import { AccentColors } from "../../constants/accentColors";
 import { AuthContext } from "../../context/AuthContext";
 
 // Define the avatar type
 interface Avatar {
-  icon: React.ComponentProps<typeof Ionicons>["name"];
+  icon: string;
   color: string;
 }
 
 interface DropdownAvatarPickerProps {
   avatar?: Avatar;
   setAvatar: (avatar: Avatar) => void;
-  avatars?: Avatar[];
   themeBackground: string;
   accentColor: string;
 }
@@ -30,51 +31,77 @@ interface DropdownAvatarPickerProps {
 export default function DropdownAvatarPicker({
   avatar,
   setAvatar,
-  avatars = [],
   themeBackground,
   accentColor,
 }: DropdownAvatarPickerProps) {
   const [visible, setVisible] = useState(false);
-  const [availableAvatars, setAvailableAvatars] = useState<Avatar[]>([]);
+  const [selectedIcon, setSelectedIcon] = useState<string>("");
+  const [selectedColor, setSelectedColor] = useState<string>("");
+  const [step, setStep] = useState<1 | 2>(1); // 1: Icon-Auswahl, 2: Farb-Auswahl
   const { user } = useContext(AuthContext);
 
-  // Initialize available avatars
+  // Initialisiere Icon und Farbe aus dem aktuellen Avatar oder User
   useEffect(() => {
-    // Use provided avatars or fallback to default ones
-    const avatarsToUse =
-      avatars && avatars.length > 0 ? avatars : DefaultAvatars;
-    console.log("DropdownAvatarPicker - Using avatars:", avatarsToUse.length);
-    setAvailableAvatars(avatarsToUse as Avatar[]);
-  }, [avatars]);
-
-  // Initialisiere Avatar aus dem User-Objekt, wenn vorhanden und kein Avatar gesetzt ist
-  useEffect(() => {
-    if (!avatar && user && user.icon && user.iconColor) {
-      setAvatar({
-        icon: user.icon,
-        color: user.iconColor
-      });
+    if (avatar) {
+      setSelectedIcon(avatar.icon);
+      setSelectedColor(avatar.color);
+    } else if (user && user.icon && user.iconColor) {
+      setSelectedIcon(user.icon);
+      setSelectedColor(user.iconColor);
+    } else {
+      // Fallback zu Standardwerten
+      setSelectedIcon(AvatarIcons[0]);
+      setSelectedColor(AccentColors[0]);
     }
-  }, [user, avatar, setAvatar]);
+  }, [avatar, user]);
 
-  // Find default avatar if none is set
-  const currentAvatar = avatar || 
-    (user && user.icon && user.iconColor ? { icon: user.icon, color: user.iconColor } : availableAvatars[0] || DefaultAvatars[0]);
+  // Aktualisiere den Avatar, wenn sich Icon oder Farbe ändert
+  const updateAvatar = (icon?: string, color?: string) => {
+    const newIcon = icon !== undefined ? icon : selectedIcon;
+    const newColor = color !== undefined ? color : selectedColor;
+    
+    setSelectedIcon(newIcon);
+    setSelectedColor(newColor);
+    
+    setAvatar({
+      icon: newIcon,
+      color: newColor
+    });
+  };
+
+  // Öffne Modal und setze es auf den ersten Schritt
+  const openModal = () => {
+    setStep(1);
+    setVisible(true);
+  };
+
+  // Schließe Modal und setze Avatar
+  const completeSelection = () => {
+    updateAvatar();
+    setVisible(false);
+    setStep(1); // Reset für nächstes Öffnen
+  };
+
+  // Berechne die ideale Anzahl der Spalten basierend auf der Bildschirmbreite
+  const screenWidth = Dimensions.get('window').width;
+  const modalWidth = Math.min(500, screenWidth * 0.9);
+  const itemSize = 66; // Icon-Option-Größe + Margin
+  const numColumns = Math.max(4, Math.floor(modalWidth / itemSize));
 
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        onPress={() => setVisible(true)}
+        onPress={openModal}
         style={styles.avatarButton}
       >
         <View
           style={[
             styles.currentAvatar,
-            { backgroundColor: currentAvatar?.color || accentColor },
+            { backgroundColor: selectedColor || accentColor },
           ]}
         >
           <Ionicons
-            name={currentAvatar?.icon || "person-outline"}
+            name={(selectedIcon || "person-outline") as React.ComponentProps<typeof Ionicons>["name"]}
             size={24}
             color="#FFFFFF"
           />
@@ -93,71 +120,106 @@ export default function DropdownAvatarPicker({
             style={[styles.modalContent, { backgroundColor: themeBackground }]}
           >
             <Text style={[styles.modalTitle, { color: accentColor }]}>
-              Select Profile Avatar
+              {step === 1 ? "Wähle ein Symbol" : "Wähle eine Farbe"}
             </Text>
-
-            {/* Show avatar count for debugging */}
-            <Text style={styles.debugText}>
-              {availableAvatars.length} avatars available
-            </Text>
-
-            {/* Use ScrollView for many avatars */}
-            <ScrollView style={styles.scrollView}>
-              <View style={styles.avatarContainer}>
-                {availableAvatars.map((avatarItem, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      console.log("Selected avatar at index:", index);
-                      setAvatar(avatarItem);
-                      setVisible(false);
-                    }}
-                    style={[
-                      styles.avatarOption,
-                      {
-                        borderColor:
-                          currentAvatar &&
-                          currentAvatar.icon === avatarItem.icon &&
-                          currentAvatar.color === avatarItem.color
-                            ? accentColor
-                            : "transparent",
-                        backgroundColor: avatarItem.color,
-                      },
-                    ]}
-                  >
-                    <Ionicons
-                      name={avatarItem.icon}
-                      size={30}
-                      color="#FFFFFF"
-                    />
-
-                    {/* Show checkmark only for selected avatar */}
-                    {currentAvatar &&
-                      currentAvatar.icon === avatarItem.icon &&
-                      currentAvatar.color === avatarItem.color && (
-                        <View style={styles.selectedIndicator}>
-                          <Ionicons
-                            name="checkmark"
-                            size={18}
-                            color="#FFFFFF"
-                          />
-                        </View>
-                      )}
-                  </TouchableOpacity>
-                ))}
+            
+            {/* Schritt 1: Icon-Auswahl */}
+            {step === 1 && (
+              <View style={styles.selectionContainer}>
+                <FlatList
+                  data={AvatarIcons}
+                  keyExtractor={(item, index) => `icon-${index}`}
+                  numColumns={numColumns}
+                  renderItem={({ item: icon }) => (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedIcon(icon);
+                        setStep(2); // Nach Icon-Auswahl zur Farbauswahl wechseln
+                      }}
+                      style={[
+                        styles.iconOption,
+                        {
+                          borderColor: selectedIcon === icon ? accentColor : "transparent",
+                          backgroundColor: selectedColor,
+                        },
+                      ]}
+                    >
+                      <Ionicons name={icon as React.ComponentProps<typeof Ionicons>["name"]} size={30} color="#FFFFFF" />
+                    </TouchableOpacity>
+                  )}
+                  style={styles.itemGrid}
+                />
               </View>
-            </ScrollView>
+            )}
+            
+            {/* Schritt 2: Farb-Auswahl */}
+            {step === 2 && (
+              <View style={styles.selectionContainer}>
+                <FlatList
+                  data={AccentColors}
+                  keyExtractor={(item, index) => `color-${index}`}
+                  numColumns={numColumns}
+                  renderItem={({ item: color }) => (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedColor(color);
+                        // Nach der Farbauswahl direkt abschließen
+                        updateAvatar(undefined, color);
+                        setVisible(false);
+                        setStep(1); // Reset für nächstes Öffnen
+                      }}
+                      style={[
+                        styles.colorOption,
+                        {
+                          backgroundColor: color,
+                          borderColor: selectedColor === color ? accentColor : "transparent",
+                        },
+                      ]}
+                    >
+                      {selectedColor === color && (
+                        <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+                      )}
+                    </TouchableOpacity>
+                  )}
+                  style={styles.itemGrid}
+                />
+              </View>
+            )}
 
-            {/* Close button */}
+            {/* Buttons */}
             <View style={styles.buttonContainer}>
-              <Button
-                onPress={() => setVisible(false)}
-                title="Close"
-                size="small"
-                type="secondary"
-                icon="close-circle"
-                iconPosition="left"
-              />
+              {step === 1 ? (
+                // Im ersten Schritt: Nur Abbrechen
+                <Button
+                  onPress={() => setVisible(false)}
+                  title="Abbrechen"
+                  size="small"
+                  type="secondary"
+                  icon="close-circle"
+                  iconPosition="left"
+                />
+              ) : (
+                // Im zweiten Schritt: Zurück und Abbrechen
+                <>
+                  <Button
+                    onPress={() => setStep(1)}
+                    title="Zurück"
+                    size="small"
+                    type="secondary"
+                    icon="arrow-back"
+                    iconPosition="left"
+                    style={{ marginRight: 10 }}
+                  />
+                  <Button
+                    onPress={() => setVisible(false)}
+                    title="Abbrechen"
+                    size="small"
+                    type="secondary"
+                    icon="close-circle"
+                    iconPosition="left"
+                  />
+                </>
+              )}
             </View>
           </View>
         </View>
@@ -204,7 +266,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "90%",
     maxWidth: 500,
-    maxHeight: "80%",
+    maxHeight: 500, // Kleinere maximale Höhe, da wir weniger Elemente anzeigen
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.25,
@@ -212,57 +274,44 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: 20,
+    fontWeight: "700",
     marginBottom: 20,
     textAlign: "center",
   },
-  scrollView: {
+  selectionContainer: {
     width: "100%",
-    maxHeight: 400,
+    height: 300, // Feste Höhe für die Auswahl
   },
-  avatarContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    paddingBottom: 10,
+  itemGrid: {
+    width: "100%",
   },
-  avatarOption: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  iconOption: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     margin: 8,
     borderWidth: 3,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
-    position: "relative",
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  selectedIndicator: {
-    position: "absolute",
-    bottom: -3,
-    right: -3,
-    backgroundColor: "#00aa00",
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+  colorOption: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    margin: 8,
+    borderWidth: 3,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
   },
   buttonContainer: {
-    marginTop: 15,
-    width: "100%",
-    alignItems: "center",
-  },
-  debugText: {
-    fontSize: 12,
-    color: "#999",
-    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
   },
 });
