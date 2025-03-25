@@ -55,6 +55,7 @@ export default function TradeControls({
       
       if (!found && marketPrice && user.cash) {
         maxAmount = (user.cash * 0.95) / marketPrice;
+        maxAmount = Math.floor(maxAmount * 10000000) / 10000000;
       }
       
       setQuantity(String(maxAmount));

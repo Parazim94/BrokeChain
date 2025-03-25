@@ -35,7 +35,15 @@ const timeIntervals = {
   "1M": "1M",
 };
 
-
+// CandleData Interface definieren
+interface CandleData {
+  timestamp: any;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
 
 export default function TradeScreen() {
   const { theme } = useContext(ThemeContext);
@@ -53,7 +61,7 @@ export default function TradeScreen() {
   const [chartData, setChartData] = useState<
     {
       timestamp: any; label: string; value: number 
-}[]
+    }[] | CandleData[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [chartType, setChartType] = useState<"line" | "d3-candlestick">("line");
@@ -78,6 +86,8 @@ export default function TradeScreen() {
     interface Favorite {
       name?: string;
       symbol?: string;
+      id?: string;
+      current_price?: number;
     }
 
     const favoriteMatches: Favorite[] = favorites.filter(
@@ -163,9 +173,17 @@ export default function TradeScreen() {
           // Mergen: Entferne Einträge, die bereits vorhanden sind (basierend auf Datum)
           setChartData(prev => {
             if (prev.length === 0) return newData;
-            const lastTimestamp = new Date(prev[prev.length - 1].label).getTime();
-            const filtered = newData.filter(item => new Date(item.label).getTime() > lastTimestamp);
-            return [...prev, ...filtered];
+            
+            // Check if we have line chart data
+            if ('label' in prev[0]) {
+              const lineItem = prev[prev.length - 1] as { label: string; value: number };
+              const lastTimestamp = new Date(lineItem.label).getTime();
+              const filtered = newData.filter(item => new Date(item.label).getTime() > lastTimestamp);
+              return [...prev, ...filtered];
+            } else {
+              // Fallback for unexpected data format
+              return [...prev, ...newData];
+            }
           });
           if (newData.length > 0) {
             const lastEntry = newData[newData.length - 1];
@@ -218,9 +236,22 @@ export default function TradeScreen() {
           const newData = await getHistoricalData(symbol, timeIntervals[selectedRange], 1);
           setChartData(prev => {
             if (prev.length === 0) return newData;
-            const lastTimestamp = new Date(prev[prev.length - 1].label).getTime();
+            
+            // Sicherstellen, dass wir mit Line-Chart-Daten arbeiten
+            // und entsprechend den letzten Timestamp bekommen
+            const isLineData = 'label' in prev[0];
+            let lastTimestamp: number;
+            
+            if (isLineData) {
+              const lineItem = prev[0] as { label: string };
+              lastTimestamp = new Date(lineItem.label).getTime();
+            } else {
+              return [...prev, ...newData]; // Fallback für unerwartete Datenformate
+            }
+            
             const filtered = newData.filter(item => new Date(item.label).getTime() > lastTimestamp);
             const updatedData = [...prev, ...filtered];
+            
             // "Sliding Window" - Nur die letzten MAX_CANDLES anzeigen
             return updatedData.length > MAX_CANDLES 
               ? updatedData.slice(updatedData.length - MAX_CANDLES) 
@@ -294,8 +325,7 @@ export default function TradeScreen() {
             interval={timeIntervals[selectedRange]}
             width={containerWidth ? containerWidth * 0.91 : 300}
             height={300}
-            data={chartData}
-            maxCandleCount={MAX_CANDLES}
+            data={chartData as CandleData[]}
            />
         </View>
       );
@@ -373,7 +403,7 @@ export default function TradeScreen() {
                 >
                   <FlatList
                     data={filteredCoins}
-                    keyExtractor={(item) => item.id || item.symbol}
+                    keyExtractor={(item, index) => (item.id || item.symbol || index.toString())}
                     renderItem={({ item }) => (
                       <TouchableOpacity
                         style={{
@@ -395,7 +425,7 @@ export default function TradeScreen() {
                         <Text
                           style={[localStyles.defaultText, { color: theme.accent }]}
                         >
-                          {formatCurrency(item.current_price)}
+                          {formatCurrency(item.current_price || 0)}
                         </Text>
                       </TouchableOpacity>
                     )}

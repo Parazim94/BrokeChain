@@ -192,7 +192,7 @@ export function createChartStyles(theme: any): ChartStyles {
       flex: 1,
       alignItems: "center",
     },
-  });
+  }) as ChartStyles;
 }
 
 /**
@@ -239,7 +239,7 @@ export function createTradeControlsStyles(theme: any): TradeControlsStyles {
       flexDirection: "row",
       gap: 8,
     },
-  });
+  }) as TradeControlsStyles;
 }
 
 /**
@@ -247,18 +247,18 @@ export function createTradeControlsStyles(theme: any): TradeControlsStyles {
  */
 export function createTradeScreenStyles(theme: any) {
   return StyleSheet.create({
-    // chartContainer: {
-    //   borderWidth: 1,
-    //   borderRadius: 8,
-    //   borderColor: theme.accent,
-    //   boxShadow: `0 0 10px ${theme.accent}55`,
-    // },
+    chartContainer: {
+      flex: 1,
+      backgroundColor: theme.background+"28",
+      borderRadius: 8,
+      marginTop: 8,
+    },
     headerContainer: {
       display: "flex",
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginLeft: 4,
+      marginLeft: 8,
     },
     coinInfoContainer: {
       display: "flex",
@@ -299,7 +299,9 @@ export function createTradeScreenStyles(theme: any) {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginVertical: 8,
+      marginHorizontal:8,
+      marginRight:2,
+      maxWidth: 1600,
     },
     timeIntervalButtonsContainer: {
       flexDirection: "row", 

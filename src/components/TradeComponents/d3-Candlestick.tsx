@@ -60,7 +60,7 @@ interface CandlestickChartProps {
 export default function D3CandlestickChart({
   symbol,
   interval,
-  width = Dimensions.get("window").width * 0.95,
+  width = Dimensions.get("window").width * 0.98,
   height = 300,
   data, 
 }: CandlestickChartProps) {
@@ -76,18 +76,14 @@ export default function D3CandlestickChart({
     isVisible: boolean;
   } | null>(null);
   const [showMA, setShowMA] = useState<boolean>(true);
-  // Neuer State: Verwendung von Theme-Farben
   const [useThemeColors, setUseThemeColors] = useState<boolean>(false);
-  
-  // Neuer State für die ausgewählte Candle
   const [selectedCandle, setSelectedCandle] = useState<CandleData | null>(null);
-  // Neuer State für den Index der ausgewählten Candle (für Markierung)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // Configuration
   const CHART_HEIGHT = Math.round(height * 0.8);
   const VOLUME_HEIGHT = Math.round(height * 0.15);
-  const MARGIN = { top: 10, right: 10, bottom: 10, left: 60 };
+  const MARGIN = { top: 10, right: 0, bottom: 10, left: 60 };
   const INNER_WIDTH = width - MARGIN.left - MARGIN.right ;
   const INNER_HEIGHT = CHART_HEIGHT - MARGIN.top - MARGIN.bottom;
 
@@ -107,7 +103,8 @@ export default function D3CandlestickChart({
         console.error("Error fetching candlestick data:", error);
         setCandles([]);
       } finally {
-        setLoading(false);
+        setTimeout(() => setLoading(false), 1000);
+        
       }
     };
     fetchCandles();
@@ -117,7 +114,7 @@ export default function D3CandlestickChart({
   useEffect(() => {
     if (data && data.length > 0) {
       setCandles(data);
-      setLoading(false);
+      setTimeout(() => setLoading(false), 1000);
     }
   }, [data]);
 
@@ -258,16 +255,16 @@ export default function D3CandlestickChart({
 
   return (
     <>
-      <ScrollView horizontal={true} contentContainerStyle={{ minWidth: width }}>
+      <ScrollView horizontal={true} contentContainerStyle={{ minWidth: width, width: "100%" }}>
         <View style={styles.container} {...panResponder.panHandlers}>
-          <Svg width={width} height={height}>
+          <Svg width={width}  height={height}>
             {/* Grid lines */}
             {yTicks.map((tick) => (
               <Line
                 key={`grid-${tick}`}
                 x1={MARGIN.left}
                 y1={yScale(tick)}
-                x2={width - MARGIN.right}
+                x2={width - MARGIN.left}
                 y2={yScale(tick)}
                 stroke={`${theme.text}20`}
                 strokeWidth={0.5}
@@ -399,7 +396,7 @@ export default function D3CandlestickChart({
                         xScale(point.index.toString())! + xScale.bandwidth() / 2
                       }
                       y2={yScale(point.value)}
-                      stroke={theme.accent} // Orange color for MA line
+                      stroke={theme.accent} 
                       strokeWidth={2}
                     />
                   );
