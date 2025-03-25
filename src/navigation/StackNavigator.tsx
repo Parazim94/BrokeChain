@@ -28,10 +28,11 @@ import WebTabTextMenu from "./WebTabTextMenu";
 import NotFoundScreen from "../screens/Secondary/NotFoundScreen";
 import VerifiedScreen from "../screens/Secondary/VerifiedScreen";
 import InteractiveFlagButtons from "../components/UiComponents/InteractiveFlagButtons";
-import QuizScreen from "../screens/Main/QuizScreen"; 
+import QuizScreen from "../screens/Secondary/QuizScreen"; 
 import ImpressumScreen from "../screens/Secondary/ImpressumScreen";  
 import Footer from "../components/UiComponents/Footer"; 
 import PrivacyTermsScreen from "../screens/Secondary/PrivacyTermsScreen";
+import ChatbotScreen from "../components/ChatBot/ChatbotScreen"; // Neuer Import
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -243,6 +244,14 @@ export default function StackNavigator() {
           name="PrivacyTermsScreen"
           component={PrivacyTermsScreen}
           options={{ title: "Privacy & Terms" }}
+        />
+        {/* Neuer ChatbotScreen */}
+        <Stack.Screen
+          name="ChatbotScreen"
+          component={ChatbotScreen}
+          options={{ 
+            headerShown: false, // Header verstecken, da der Screen seinen eigenen Header hat
+          }}
         />
       </Stack.Navigator>
 

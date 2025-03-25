@@ -30,6 +30,7 @@ export type RootStackParamList = {
   Quiz: undefined; 
   Impressum: undefined;
   PrivacyTermsScreen: undefined;
+  ChatbotScreen: undefined; // Neue Route hinzugefügt
 };
 
 export type StackParamList = {

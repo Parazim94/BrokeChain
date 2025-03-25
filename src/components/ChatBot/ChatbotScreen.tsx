@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -10,13 +10,13 @@ import {
   Platform,
   Dimensions,
   Animated,
+  SafeAreaView,
+  StatusBar,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { ThemeContext } from "../../context/ThemeContext";
-import CustomModal from "../UiComponents/CustomModal";
 import { AuthContext } from "../../context/AuthContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 
 interface Message {
@@ -36,12 +36,7 @@ interface NewsItem {
   enclosure?: { link: string };
 }
 
-interface ChatModalProps {
-  visible: boolean;
-  onClose: () => void;
-}
-
-// New LoadingDots component for the typing indicator
+// LoadingDots Komponente für den Tipp-Indikator
 const LoadingDots = () => {
   const [dot1] = useState(new Animated.Value(0));
   const [dot2] = useState(new Animated.Value(0));
@@ -111,25 +106,10 @@ const LoadingDots = () => {
   );
 };
 
-const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
+const ChatbotScreen: React.FC = () => {
   const { theme } = useContext(ThemeContext);
   const { user, setUser } = useContext(AuthContext);
   const navigation = useNavigation();
-  
-  // Für Android direkt zum Screen navigieren anstatt das Modal zu zeigen
-  useEffect(() => {
-    if (Platform.OS === "android" && visible) {
-      onClose(); // Modal schließen (falls geöffnet)
-      navigation.navigate("ChatbotScreen" as never);
-    }
-  }, [visible, navigation]);
-
-  // Wenn Android, dann nichts rendern (stattdessen wird ChatbotScreen verwendet)
-  if (Platform.OS === "android") {
-    return null;
-  }
-
-  // Web und iOS Implementierung (Modal)
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -161,7 +141,6 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
     fetchNews();
   }, []);
 
-  //ohne useCallback
   const generateAIResponse = async (userPrompt: string): Promise<string> => {
     console.log("user", user);
     try {
@@ -190,6 +169,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
       return "Sorry, I couldn't process that request. Please try again later.";
     }
   };
+
   const handleSend = async () => {
     if (!message.trim()) return;
 
@@ -234,32 +214,25 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
     }
   };
 
-  const { width } = Dimensions.get("window");
-  const modalWidth =
-    Platform.OS === "web" ? Math.min(600, width * 0.9) : width * 0.9;
-
   return (
-    <CustomModal
-      visible={visible}
-      onClose={onClose}
-      width={modalWidth}
-      showCloseButton={false}
-    >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <Text style={[styles.title, { color: "white" }]}>
-              Trading Assistant
-            </Text>
-            <Text style={[styles.subtitle, { color: "white" }]}>
-              {newsLoaded ? "Mit aktuellen News-Daten" : "Lade News-Daten..."}
-            </Text>
-          </View>
-          <TouchableOpacity onPress={onClose} >
-            <Ionicons name="close-circle" size={36} color="red" />
-          </TouchableOpacity>
+    <SafeAreaView style={[styles.safeContainer, { backgroundColor: theme.background, marginTop: StatusBar.currentHeight }]}>
+      <StatusBar backgroundColor={theme.background} barStyle="light-content" />
+      
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <Text style={[styles.title, { color: "white" }]}>
+            Trading Assistant
+          </Text>
+          <Text style={[styles.subtitle, { color: "white" }]}>
+            {newsLoaded ? "Mit aktuellen News-Daten" : "Lade News-Daten..."}
+          </Text>
         </View>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="close-circle" size={36} color="red" />
+        </TouchableOpacity>
+      </View>
 
+      <View style={styles.container}>
         <FlatList
           data={messages}
           keyExtractor={(item) => item.id}
@@ -328,16 +301,18 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </View>
-    </CustomModal>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     display: "flex",
     flexDirection: "column",
-    minHeight: 450,
   },
   header: {
     flexDirection: "row",
@@ -357,9 +332,6 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     marginTop: 2,
-  },
-  closeButton: {
-    padding: 4,
   },
   messageList: {
     flex: 1,
@@ -418,4 +390,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChatModal;
+export default ChatbotScreen;
