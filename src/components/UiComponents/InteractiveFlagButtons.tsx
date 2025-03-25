@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Reanimated, {
   useAnimatedStyle,
   withTiming,
+  useSharedValue,
 } from "react-native-reanimated";
 import { NavigationProp } from "@react-navigation/native";
 import { ThemeContext } from "../../context/ThemeContext";
@@ -38,18 +39,29 @@ const FlagButton = ({
 }) => {
   const { theme } = useContext(ThemeContext);
   const [isHovered, setIsHovered] = useState(false);
+  const textOpacity = useSharedValue(0);
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const animatedContainerStyle = useAnimatedStyle(() => {
     return {
       width: withTiming(isHovered ? 120 : 48, { duration: 300 }),
     };
   });
 
+  const animatedTextStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(isHovered ? 1 : 0, { duration: 200 }),
+    };
+  });
+
+  useEffect(() => {
+    textOpacity.value = isHovered ? 1 : 0;
+  }, [isHovered]);
+
   return (
     <Reanimated.View
       style={[
         styles.flagContainer,
-        animatedStyle,
+        animatedContainerStyle,
         { backgroundColor: theme.accent },
       ]}
       {...(Platform.OS === "web" ? { 
@@ -64,16 +76,9 @@ const FlagButton = ({
         onPressOut={Platform.OS !== "web" ? () => setIsHovered(false) : undefined}
       >
         <Ionicons name={icon} size={24} color="#fff" />
-        {isHovered && (
-          <Reanimated.Text
-            style={[
-              styles.flagText,
-              { opacity: withTiming(1, { duration: 200 }) },
-            ]}
-          >
-            {label}
-          </Reanimated.Text>
-        )}
+        <Reanimated.Text style={[styles.flagText, animatedTextStyle]}>
+          {label}
+        </Reanimated.Text>
       </TouchableOpacity>
     </Reanimated.View>
   );
@@ -83,6 +88,7 @@ const FlagButton = ({
 const ChatFlagButton = () => {
   const { theme } = useContext(ThemeContext);
   const [isHovered, setIsHovered] = useState(false);
+  const textOpacity = useSharedValue(0);
   
   // Modal & notification states
   const [modalVisible, setModalVisible] = useState(false);
@@ -99,6 +105,10 @@ const ChatFlagButton = () => {
     x: screenWidth - 60,
     y: screenHeight - 250
   };
+  
+  useEffect(() => {
+    textOpacity.value = isHovered ? 1 : 0;
+  }, [isHovered]);
   
   // Überprüfe Benachrichtigungsstatus
   useEffect(() => {
@@ -147,9 +157,15 @@ const ChatFlagButton = () => {
     setHasShownNotification(true);
   };
   
-  const animatedStyle = useAnimatedStyle(() => {
+  const animatedContainerStyle = useAnimatedStyle(() => {
     return {
       width: withTiming(isHovered ? 120 : 48, { duration: 300 }),
+    };
+  });
+
+  const animatedTextStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(isHovered ? 1 : 0, { duration: 200 }),
     };
   });
 
@@ -158,7 +174,7 @@ const ChatFlagButton = () => {
       <Reanimated.View
         style={[
           styles.flagContainer,
-          animatedStyle,
+          animatedContainerStyle,
           { 
             backgroundColor: theme.accent,
             marginBottom: 10
@@ -176,11 +192,9 @@ const ChatFlagButton = () => {
           onPressOut={Platform.OS !== "web" ? () => setIsHovered(false) : undefined}
         >
           <Ionicons name="chatbox-ellipses" size={24} color="#fff" />
-          {isHovered && (
-            <Reanimated.Text style={styles.flagText}>
-              Chat AI
-            </Reanimated.Text>
-          )}
+          <Reanimated.Text style={[styles.flagText, animatedTextStyle]}>
+            Chat AI
+          </Reanimated.Text>
         </TouchableOpacity>
       </Reanimated.View>
       

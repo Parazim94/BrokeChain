@@ -171,9 +171,9 @@ export default function StackNavigator() {
                   }}
                   onPress={() => {
                     if (isLoggedIn) {
-                      navigation.navigate("Portfolio" as never);
+                      navigation.navigate("Main", { screen: "Portfolio" });
                     } else {
-                      navigation.navigate("Login" as never);
+                      navigation.navigate("Login");
                     }
                   }}
                 >
