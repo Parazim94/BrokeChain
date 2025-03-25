@@ -24,6 +24,7 @@ import ChatbotNotification from "../ChatBot/ChatbotNotification";
 
 type RootStackParamList = {
   Quiz: undefined;
+  Main: { screen: string };
   // Add other screens as needed
 };
 
@@ -218,9 +219,9 @@ export default function InteractiveFlagButtons() {
   const { user } = useContext(AuthContext);
 
   // Check which tools to display based on user settings
-  // Angepasst für das richtige Schema
+  // Angepasst für das richtige Schema - Tutorial auf Android immer ausblenden
   const showChatAi = user?.displayedTools?.chatAi !== false;
-  const showTutorial = user?.displayedTools?.tutorial !== false;
+  const showTutorial = Platform.OS === "android" ? false : user?.displayedTools?.tutorial !== false;
   const showQuiz = user?.displayedTools?.quiz !== false;
 
   // Don't render anything if no tools are visible
@@ -229,7 +230,16 @@ export default function InteractiveFlagButtons() {
   }
 
   // Button handlers
-  const handleTutorialPress = () => startTutorial();
+  const handleTutorialPress = () => {
+    // Erst zur Market-Seite navigieren und dann das Tutorial starten
+    navigation.navigate("Main", { screen: "Market" });
+    
+    // Kurze Verzögerung, damit die Navigation abgeschlossen wird
+    setTimeout(() => {
+      startTutorial();
+    }, 300);
+  };
+  
   const handleQuizPress = () => navigation.navigate("Quiz");
 
   return (

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Switch } from "react-native";
+import { View, Text, Switch, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/src/components/UiComponents/Button";
 import Card from "@/src/components/UiComponents/Card";
@@ -31,6 +31,8 @@ export default function DisplayToolsCard({
   styles,
   defaultText,
 }: DisplayToolsCardProps) {
+  const isAndroid = Platform.OS === "android";
+  
   return (
     <Card style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
@@ -54,19 +56,21 @@ export default function DisplayToolsCard({
           </View>
         </View>
         
-        <View style={styles.row}>
-          <Text style={[defaultText, { backgroundColor: "transparent" }, styles.label]}>
-            Show Tutorial
-          </Text>
-          <View style={styles.control}>
-            <Switch
-              value={displayTools.tutorial}
-              onValueChange={toggleTutorial}
-              trackColor={{ false: "#767577", true: theme.accent }}
-              thumbColor="#f4f3f4"
-            />
+        {!isAndroid && (
+          <View style={styles.row}>
+            <Text style={[defaultText, { backgroundColor: "transparent" }, styles.label]}>
+              Show Tutorial
+            </Text>
+            <View style={styles.control}>
+              <Switch
+                value={displayTools.tutorial}
+                onValueChange={toggleTutorial}
+                trackColor={{ false: "#767577", true: theme.accent }}
+                thumbColor="#f4f3f4"
+              />
+            </View>
           </View>
-        </View>
+        )}
         
         <View style={styles.row}>
           <Text style={[defaultText, { backgroundColor: "transparent" }, styles.label]}>
