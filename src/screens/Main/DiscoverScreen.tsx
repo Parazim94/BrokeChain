@@ -67,7 +67,7 @@ export default function CryptoNews() {
       } finally {
         setTimeout(() => {
           setLoading(false);
-        }, 2000);
+        }, 1000);
       }
     };
     fetchNews();
