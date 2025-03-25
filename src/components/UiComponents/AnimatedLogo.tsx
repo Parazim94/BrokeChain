@@ -12,9 +12,13 @@ export default function AnimatedLogo() {
   const dashLength = 300;
   const dashAnim = useRef(new Animated.Value(dashLength)).current;
   
-  // Neue Animationswerte für den Text
-  const textOpacity = useRef(new Animated.Value(0)).current;
-  const textScale = useRef(new Animated.Value(0.5)).current;
+  // Text-Arrays für die Buchstaben
+  const brokeText = "BROKE".split("");
+  const chainText = "CHAIN".split("");
+  
+  // Animationswerte für jeden Buchstaben erstellen
+  const brokeAnims = useRef(brokeText.map(() => new Animated.Value(0))).current;
+  const chainAnims = useRef(chainText.map(() => new Animated.Value(0))).current;
   
   const { theme } = useContext(ThemeContext);
   const { isLoggedIn } = useContext(AuthContext);
@@ -25,36 +29,41 @@ export default function AnimatedLogo() {
   const textColor2 = isLoggedIn ? theme.accent : "#00AEEF";
 
   useEffect(() => {
-    // Animation für Pfade starten
-    const pathAnimation = Animated.timing(dashAnim, {
+    // Funktion zur Animation eines Buchstabens mit Verzögerung
+    const animateLetters = (
+      letterAnims: Animated.Value[],
+      startDelay: number = 0,
+      letterDelay: number = 120
+    ) => {
+      return letterAnims.map((anim, index) => {
+        return Animated.timing(anim, {
+          toValue: 1,
+          duration: 300,
+          delay: startDelay + index * letterDelay,
+          useNativeDriver: false,
+        });
+      });
+    };
+
+    // Animation für Kettenglied-Pfad
+    const chainAnimation = Animated.timing(dashAnim, {
       toValue: 0,
-      duration: 2000,
+      duration: 1800,
       useNativeDriver: false,
     });
     
-    // Animation für Text mit Verzögerung starten
-    const textFadeIn = Animated.timing(textOpacity, {
-      toValue: 1,
-      duration: 800,
-      delay: 1000, // 1 Sekunde verzögern
-      useNativeDriver: false,
-    });
-    
-    const textGrow = Animated.timing(textScale, {
-      toValue: 1,
-      duration: 800,
-      delay: 1000, // 1 Sekunde verzögern
-      useNativeDriver: false,
-    });
-    
-    // Beide Animationen parallel ausführen
+    // Alle Animationen parallel ausführen
     Animated.parallel([
-      pathAnimation, 
-      textFadeIn,
-      textGrow
+      // Kettenglied animieren
+      chainAnimation,
+      
+      // Text-Animationen parallel ausführen mit sequenziellen Buchstaben
+      // Keine zusätzliche Verzögerung vor dem Start der Textanimation
+      ...animateLetters(brokeAnims, 200),           // BROKE-Text mit minimaler Verzögerung
+      ...animateLetters(chainAnims, 200 + brokeText.length * 120)  // CHAIN-Text nach BROKE
     ]).start();
     
-  }, [dashAnim, textOpacity, textScale]);
+  }, [dashAnim, brokeAnims, chainAnims, brokeText.length]);
 
   return (
     <Svg
@@ -134,39 +143,54 @@ export default function AnimatedLogo() {
         strokeDashoffset={dashAnim}
       />
 
-      {/* Text BROKE im linken Kettenglied - jetzt animiert */}
-      <AnimatedSvgText
-        x="55"
-        y="55"
-        fontFamily="Arial, sans-serif"
-        fontSize="14"
-        fill={textColor}
-        textAnchor="middle"
-        opacity={textOpacity}
-        scaleX={textScale}
-        scaleY={textScale}
-        originX="55"
-        originY="55"
-      >
-        BROKE
-      </AnimatedSvgText>
+      {/* Text BROKE als einzelne animierte Buchstaben */}
+      {brokeText.map((letter, index) => {
+        // Berechne X-Position basierend auf Buchstabenposition
+        // Erhöhter Buchstabenabstand und Position 5px weiter rechts
+        const letterWidth = 12; // Erhöht von 10 für mehr Letter-Spacing
+        const startX = 55 - ((brokeText.length - 1) * letterWidth) / 2; // Verschoben um 5px nach rechts (von 45 auf 50)
+        const x = startX + index * letterWidth;
+        
+        return (
+          <AnimatedSvgText
+            key={`broke-${index}`}
+            x={x.toString()}
+            y="55"
+            fontFamily="Arial, sans-serif"
+            fontSize="14"
+            fill={textColor}
+            textAnchor="middle"
+            opacity={brokeAnims[index]} // Jeder Buchstabe hat seine eigene Animation
+            fontWeight="bold"
+          >
+            {letter}
+          </AnimatedSvgText>
+        );
+      })}
 
-      {/* Text CHAIN im rechten Kettenglied - jetzt animiert */}
-      <AnimatedSvgText
-        x="152"
-        y="55"
-        fontFamily="Arial, sans-serif"
-        fontSize="14"
-        fill={textColor2}
-        textAnchor="middle"
-        opacity={textOpacity}
-        scaleX={textScale}
-        scaleY={textScale}
-        originX="152"
-        originY="55"
-      >
-        CHAIN
-      </AnimatedSvgText>
+      {/* Text CHAIN als einzelne animierte Buchstaben */}
+      {chainText.map((letter, index) => {
+        // Berechne X-Position basierend auf Buchstabenposition
+        const letterWidth = 10;
+        const startX = 152 - ((chainText.length - 1) * letterWidth) / 2;
+        const x = startX + index * letterWidth;
+        
+        return (
+          <AnimatedSvgText
+            key={`chain-${index}`}
+            x={x.toString()}
+            y="55"
+            fontFamily="Arial, sans-serif"
+            fontSize="14"
+            fill={textColor2}
+            textAnchor="middle"
+            opacity={chainAnims[index]} // Jeder Buchstabe hat seine eigene Animation
+            fontWeight="bold"
+          >
+            {letter}
+          </AnimatedSvgText>
+        );
+      })}
     </Svg>
   );
 }

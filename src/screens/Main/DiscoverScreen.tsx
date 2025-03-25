@@ -220,7 +220,7 @@ export default function CryptoNews() {
 
     return (
       <SafeAreaView style={styles.container}>
-        <View style={{ flex: 1, width: "100%", alignSelf: "center" }}>
+        <View style={{ flex: 1, width: "100%", alignSelf: "center", }}>
           {loading ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
               <ActivityIndicator size="large" color={styles.defaultText.color} />
@@ -234,7 +234,8 @@ export default function CryptoNews() {
                 flexDirection: "row",
                 flexWrap: "wrap",
                 justifyContent: "center",
-                padding: 8,
+                marginHorizontal: "auto",
+                maxWidth: 1600,
               }}
               renderItem={({ item }) => (
                 <Card
