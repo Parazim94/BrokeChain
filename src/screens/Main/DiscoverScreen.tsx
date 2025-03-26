@@ -23,13 +23,25 @@ import CustomModal from "@/src/components/UiComponents/CustomModal";
 import LazyImage from "@/src/components/UiComponents/LazyImage";
 
 interface NewsItem {
-  guid: string;
+  guid: {
+    _: string;
+    isPermaLink: string;
+  };
   link: string;
   title: string;
   pubDate: string;
   description: string;
-  content: string;
-  enclosure?: { link: string };
+  "content:encoded": string;
+  "media:content"?: {
+    url: string;
+    type: string;
+    height: string;
+    width: string;
+    "media:description"?: {
+      _: string;
+      type: string;
+    }
+  };
 }
 
 export default function CryptoNews() {
@@ -53,9 +65,10 @@ export default function CryptoNews() {
           "https://broke.dev-space.vip/marketData/news"
         );
         const data = await response.json();
-        newsDataRef.current = data.items;
-        setNews(data.items);   
-        if (Platform.OS === "web" && data.items?.length > 0) {
+        const newsItems = data.rss?.channel?.item || [];
+        newsDataRef.current = newsItems;
+        setNews(newsItems);   
+        if (Platform.OS === "web" && newsItems?.length > 0) {
         }
       } catch (error) {
         console.error("Fehler beim Laden der Nachrichten:", error);
@@ -76,8 +89,8 @@ export default function CryptoNews() {
       <View style={{ opacity: 0, position: 'absolute', width: 1, height: 1, overflow: 'hidden' }}>
         {newsDataRef.current.map(item => (
           <LazyImage 
-            key={item.guid}
-            source={item.enclosure?.link ? { uri: item.enclosure.link } : undefined}
+            key={item.guid?._}
+            source={item["media:content"]?.url ? { uri: item["media:content"].url } : undefined}
             style={{ width: 1, height: 1 }}
           />
         ))}
@@ -96,19 +109,19 @@ export default function CryptoNews() {
             data={news}
             style={{ padding: 5 }}
             contentContainerStyle={{ alignItems: "center" }}
-            keyExtractor={(item) => item.guid}
+            keyExtractor={(item) => item.guid?._}
             renderItem={({ item }) => (
               <Card
                 style={{ minWidth: "98%", marginTop: 16, maxWidth: 350 }}
                 onPress={() =>
-                  setExpandedNews(expandedNews === item.guid ? null : item.guid)
+                  setExpandedNews(expandedNews === item.guid?._ ? null : item.guid?._)
                 }
               >
                 {/* Obere Zeile: Bild und Header */}
                 <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
-                  {item.enclosure?.link ? (
+                  {item["media:content"]?.url ? (
                     <LazyImage
-                      source={{ uri: item.enclosure.link }}
+                      source={{ uri: item["media:content"].url }}
                       style={newsStyles.newsImage}
                       resizeMode="cover"
                     />
@@ -124,20 +137,20 @@ export default function CryptoNews() {
                 </View>
                 {/* Content unterhalb */}
                 <View style={newsStyles.newsContent}>
-                  {expandedNews === item.guid ? (
+                  {expandedNews === item.guid?._ ? (
                     <ScrollView style={{ maxHeight: 400 }} scrollEnabled={true}>
                       <Text style={newsStyles.newsDescription}>
-                        {item.content.replace(/<[^>]+>/g, "")}
+                        {item["content:encoded"].replace(/<[^>]+>/g, "")}
                       </Text>
                     </ScrollView>
                   ) : (
                     <Text style={newsStyles.newsDescription} numberOfLines={6}>
-                      {item.content.replace(/<[^>]+>/g, "")}
+                      {item["content:encoded"].replace(/<[^>]+>/g, "")}
                     </Text>
                   )}
                 </View>
                 {/* Button, um den Artikel zu öffnen */}
-                {expandedNews === item.guid && (
+                {expandedNews === item.guid?._ && (
                   <View style={{ marginTop: 8 }}>
                     <Button
                       onPress={() => Linking.openURL(item.link)}
@@ -174,8 +187,8 @@ export default function CryptoNews() {
     const loadingContent = newsDataRef.current.length > 0 && (
       <div style={{ position: 'absolute', opacity: 0, width: 0, height: 0, overflow: 'hidden' }}>
         {newsDataRef.current.map(item => 
-          item.enclosure?.link && 
-          <img key={item.guid} src={item.enclosure.link} alt="" style={{width: 1, height: 1}} />
+          item["media:content"]?.url && 
+          <img key={item.guid?._} src={item["media:content"].url} alt="" style={{width: 1, height: 1}} />
         )}
       </div>
     );
@@ -191,7 +204,7 @@ export default function CryptoNews() {
           ) : news && news.length > 0 ? (
             <FlatList
               data={news}
-              keyExtractor={(item) => item.guid}
+              keyExtractor={(item) => item.guid?._}
               contentContainerStyle={{
                 flexDirection: "row",
                 flexWrap: "wrap",
@@ -211,9 +224,9 @@ export default function CryptoNews() {
                   <View
                     style={[newsStyles.newsTopRow, { alignItems: "center" }]}
                   >
-                    {item.enclosure?.link ? (
+                    {item["media:content"]?.url ? (
                       <LazyImage
-                        source={{ uri: item.enclosure.link }}
+                        source={{ uri: item["media:content"].url }}
                         style={newsStyles.newsImage}
                         resizeMode="cover"
                       />
@@ -229,7 +242,7 @@ export default function CryptoNews() {
                   </View>
                   <View style={newsStyles.newsContent}>
                     <Text style={newsStyles.newsDescription} numberOfLines={5}>
-                      {item.content.replace(/<[^>]+>/g, "")}
+                      {item["content:encoded"].replace(/<[^>]+>/g, "")}
                     </Text>
                   </View>
                 </Card>
@@ -259,9 +272,9 @@ export default function CryptoNews() {
           >
             <View style={{ padding: 16 }}>
               <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
-                {modalNews.enclosure?.link ? (
+                {modalNews["media:content"]?.url ? (
                   <LazyImage
-                    source={{ uri: modalNews.enclosure.link }}
+                    source={{ uri: modalNews["media:content"].url }}
                     style={newsStyles.newsImage}
                     resizeMode="cover"
                   />
@@ -288,7 +301,7 @@ export default function CryptoNews() {
                 style={{ marginVertical: 8, maxHeight: 400, overflow: "scroll" }}
               >
                 <Text style={[newsStyles.newsDescription, { color: "white" }]}> 
-                  {modalNews.content.replace(/<[^>]+>/g, "")}
+                  {modalNews["content:encoded"].replace(/<[^>]+>/g, "")}
                 </Text>
               </ScrollView>
               {/* Button um den Link aufzurufen */}
@@ -310,8 +323,8 @@ export default function CryptoNews() {
   const loadingContent = newsDataRef.current.length > 0 && (
     <div style={{ position: 'absolute', opacity: 0, width: 0, height: 0, overflow: 'hidden' }}>
       {newsDataRef.current.map(item => 
-        item.enclosure?.link && 
-        <img key={item.guid} src={item.enclosure.link} alt="" style={{width: 1, height: 1}} />
+        item["media:content"]?.url && 
+        <img key={item.guid?._} src={item["media:content"].url} alt="" style={{width: 1, height: 1}} />
       )}
     </div>
   );
@@ -336,7 +349,7 @@ export default function CryptoNews() {
             }}
             numColumns={columns}
             key={columns} // Force re-render when columns change
-            keyExtractor={(item) => item.guid}
+            keyExtractor={(item) => item.guid?._}
             renderItem={({ item }) => (
               <Card
                 style={{
@@ -348,9 +361,9 @@ export default function CryptoNews() {
               >
                 {/* Obere Zeile: Bild und Header */}
                 <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
-                  {item.enclosure?.link ? (
+                  {item["media:content"]?.url ? (
                     <LazyImage
-                      source={{ uri: item.enclosure.link }}
+                      source={{ uri: item["media:content"].url }}
                       style={newsStyles.newsImage}
                       resizeMode="cover"
                     />
@@ -368,7 +381,7 @@ export default function CryptoNews() {
                 {/* Content unterhalb */}
                 <ScrollView style={newsStyles.newsContent}>
                   <Text style={newsStyles.newsDescription} numberOfLines={5}>
-                    {item.content.replace(/<[^>]+>/g, "")}
+                    {item["content:encoded"].replace(/<[^>]+>/g, "")}
                   </Text>
                 </ScrollView>
               </Card>
@@ -397,9 +410,9 @@ export default function CryptoNews() {
           >
             <View style={{ padding: 16 }}>
               <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
-                {modalNews.enclosure?.link ? (
+                {modalNews["media:content"]?.url ? (
                   <LazyImage
-                    source={{ uri: modalNews.enclosure.link }}
+                    source={{ uri: modalNews["media:content"].url }}
                     style={newsStyles.newsImage}
                     resizeMode="cover"
                   />
@@ -421,7 +434,7 @@ export default function CryptoNews() {
               </View>
               <ScrollView>
                 <Text style={[newsStyles.newsDescription, { color: "white" }]}>
-                  {modalNews.content.replace(/<[^>]+>/g, "")}
+                  {modalNews["content:encoded"].replace(/<[^>]+>/g, "")}
                 </Text>
               </ScrollView>         
             </View>
