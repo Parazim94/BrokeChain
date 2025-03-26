@@ -8,7 +8,6 @@ import Holding from "../../components/PortfolioComponents/Holding";
 import Fav from "../../components/PortfolioComponents/Fav";
 import TradeHistory from "../../components/PortfolioComponents/TradeHistory";
 import Orders from "../../components/PortfolioComponents/Orders";
-import PortfolioPieChart from "../../components/PortfolioComponents/PortfolioPieChart";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/src/types/types";
 import { AuthContext } from "../../context/AuthContext";
@@ -25,6 +24,8 @@ export default function PortfolioScreen() {
   const { marketData } = useData();
   const [selectedFilter, setSelectedFilter] = useState("Holding");
   const [sortedAscending, setSortedAscending] = useState(true);
+  // Neuer State für das History-Intervall
+  const [historyInterval, setHistoryInterval] = useState("7d");
 
   const userData = user || {
     userName: "Gast",
@@ -223,9 +224,7 @@ export default function PortfolioScreen() {
           <Text
             style={{ color: theme.text, textAlign: "center", marginTop: 20 }}
           >
-            {selectedFilter === "Orders"
-              ? "Keine offenen Bestellungen vorhanden"
-              : "Keine Daten verfügbar"}
+          No Positions jet
           </Text>
         </View>
       );
@@ -265,6 +264,8 @@ export default function PortfolioScreen() {
         theme={theme}
         styles={styles}
         positions={mergedPositions} // Pass positions to UserInfo for the pie chart
+        historyInterval={historyInterval} // Übergebe den History-Intervall-State
+        onHistoryIntervalChange={setHistoryInterval} // Übergebe den State-Handler
       />
       <Sorting
         selectedFilter={selectedFilter}

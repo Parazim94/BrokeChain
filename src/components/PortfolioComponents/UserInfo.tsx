@@ -26,6 +26,8 @@ interface UserInfoProps {
   theme: any;
   styles: any;
   positions?: any[]; // Optional positions for diversity chart
+  historyInterval: string; // Neue Prop für das History-Intervall
+  onHistoryIntervalChange: (interval: string) => void; // Neue Prop für den State-Handler
 }
 
 export default function UserInfo({
@@ -37,6 +39,8 @@ export default function UserInfo({
   theme,
   styles: propStyles,
   positions = [],
+  historyInterval, // Neue Prop
+  onHistoryIntervalChange, // Neue Prop
 }: UserInfoProps) {
   const globalStyles = createGlobalStyles();
   const navigation = useNavigation();
@@ -103,12 +107,11 @@ export default function UserInfo({
   };
 
   // Internal state
-  const [localHistory, setLocalHistory] = React.useState("7d");
   const historyOptions = ["7d", "30d", "360d"];
 
   // Calculate history data points based on selected timeframe
   let dataPoints = 7;
-  switch (localHistory) {
+  switch (historyInterval) {
     case "30d":
       dataPoints = 30;
       break;
@@ -374,15 +377,15 @@ export default function UserInfo({
             {historyOptions.map((opt) => (
               <TouchableOpacity
                 key={opt}
-                onPress={() => setLocalHistory(opt)}
+                onPress={() => onHistoryIntervalChange(opt)}
                 style={[
                   styles.historyTab,
-                  localHistory === opt && styles.historyTabActive,
+                  historyInterval === opt && styles.historyTabActive,
                 ]}
               >
                 <Text
                   style={
-                    localHistory === opt
+                    historyInterval === opt
                       ? styles.historyTabTextActive
                       : styles.historyTabText
                   }
