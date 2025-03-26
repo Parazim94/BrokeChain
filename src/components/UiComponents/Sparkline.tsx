@@ -106,7 +106,7 @@ function Sparkline({
   useEffect(() => {
     // Animation nur ausführen, wenn staticFlag false ist
     if (!staticFlag) {
-      animatedDashOffset.value = withTiming(0, { duration: 500 }); // Kürzere Animationsdauer
+      animatedDashOffset.value = withTiming(0, { duration: 500 });
     }
   }, [animatedDashOffset, points, staticFlag]);
 

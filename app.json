@@ -6,9 +6,9 @@
     "slug": "tradeyomama",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "public/favicon.png",
+    "icon": "public/logoaqare.png",
     "splash": {
-      "image": "public/favicon.png",
+      "image": "public/logoaqare.png",
       "resizeMode": "contain",
       "backgroundColor": "#1D2022"
     },
