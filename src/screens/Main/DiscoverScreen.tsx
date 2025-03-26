@@ -220,7 +220,7 @@ export default function CryptoNews() {
 
     return (
       <SafeAreaView style={styles.container}>
-        <View style={{ flex: 1, width: "100%", alignSelf: "center", }}>
+        <View style={{ flex: 1, width: "100%", alignSelf: "center",marginTop: 16 }}>
           {loading ? (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
               <ActivityIndicator size="large" color={styles.defaultText.color} />

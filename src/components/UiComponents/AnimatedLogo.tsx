@@ -33,7 +33,7 @@ export default function AnimatedLogo() {
     const animateLetters = (
       letterAnims: Animated.Value[],
       startDelay: number = 0,
-      letterDelay: number = 120
+      letterDelay: number = 100
     ) => {
       return letterAnims.map((anim, index) => {
         return Animated.timing(anim, {
@@ -57,10 +57,9 @@ export default function AnimatedLogo() {
       // Kettenglied animieren
       chainAnimation,
       
-      // Text-Animationen parallel ausführen mit sequenziellen Buchstaben
-      // Keine zusätzliche Verzögerung vor dem Start der Textanimation
-      ...animateLetters(brokeAnims, 200),           // BROKE-Text mit minimaler Verzögerung
-      ...animateLetters(chainAnims, 200 + brokeText.length * 120)  // CHAIN-Text nach BROKE
+   
+      ...animateLetters(brokeAnims, 200),          
+      ...animateLetters(chainAnims, 200 + brokeText.length * 120)  
     ]).start();
     
   }, [dashAnim, brokeAnims, chainAnims, brokeText.length]);
@@ -145,10 +144,9 @@ export default function AnimatedLogo() {
 
       {/* Text BROKE als einzelne animierte Buchstaben */}
       {brokeText.map((letter, index) => {
-        // Berechne X-Position basierend auf Buchstabenposition
-        // Erhöhter Buchstabenabstand und Position 5px weiter rechts
-        const letterWidth = 12; // Erhöht von 10 für mehr Letter-Spacing
-        const startX = 55 - ((brokeText.length - 1) * letterWidth) / 2; // Verschoben um 5px nach rechts (von 45 auf 50)
+      
+        const letterWidth = 12; 
+        const startX = 55 - ((brokeText.length - 1) * letterWidth) / 2; 
         const x = startX + index * letterWidth;
         
         return (
