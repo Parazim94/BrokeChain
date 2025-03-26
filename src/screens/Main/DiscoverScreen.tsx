@@ -53,14 +53,9 @@ export default function CryptoNews() {
           "https://broke.dev-space.vip/marketData/news"
         );
         const data = await response.json();
-        // Sofort Daten in Ref speichern, damit Bilder geladen werden können
         newsDataRef.current = data.items;
-        setNews(data.items);
-        
-        // Preload-Versuch nur für Web ohne direktes Image-Object
+        setNews(data.items);   
         if (Platform.OS === "web" && data.items?.length > 0) {
-          // Keine direkte Image Konstruktion - nur DOM-Element für preload vorbereiten
-          // Web-spezifischer Code wird in renderContent behandelt
         }
       } catch (error) {
         console.error("Fehler beim Laden der Nachrichten:", error);
@@ -73,39 +68,6 @@ export default function CryptoNews() {
     fetchNews();
   }, []);
 
-  // Render-Logik für hintergrundladende Bilder während des Loadings
-  const renderNewsItem = (item: NewsItem, isModalContent = false) => {
-    return (
-      <>
-        {/* Obere Zeile: Bild und Header */}
-        <View style={[newsStyles.newsTopRow, { alignItems: "center" }]}>
-          {item.enclosure?.link ? (
-            <LazyImage
-              source={{ uri: item.enclosure.link }}
-              style={newsStyles.newsImage}
-              resizeMode="cover"
-              // Preload aktivieren auch während des Ladens
-            />
-          ) : (
-            <View style={newsStyles.newsImage}>
-              <Text style={isModalContent ? [newsStyles.newsDate, { color: "white" }] : newsStyles.newsDate}>
-                Kein Bild
-              </Text>
-            </View>
-          )}
-          <View style={newsStyles.newsHeader}>
-            <Text style={isModalContent ? [newsStyles.newsTitle, { color: "white" }] : newsStyles.newsTitle}>
-              {item.title}
-            </Text>
-            <Text style={isModalContent ? [newsStyles.newsDate, { color: "white" }] : newsStyles.newsDate}>
-              {item.pubDate}
-            </Text>
-          </View>
-        </View>
-        {/* ...existing code... */}
-      </>
-    );
-  };
 
   // Mobile Render (Original-Implementierung)
   if (isMobile) {

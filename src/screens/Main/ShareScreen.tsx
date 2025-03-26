@@ -101,6 +101,8 @@ export default function ShareScreen() {
           style={{ width: "100%" }}
           contentContainerStyle={{
             alignItems: Platform.OS === "web" ? "flex-start" : "center",
+            maxWidth:1600,
+            marginHorizontal: "auto",
             justifyContent: "center",
             ...(Platform.OS === "web" && { flexDirection: "row", flexWrap: "wrap" })
           }}
