@@ -32,6 +32,11 @@ interface NewsItem {
   pubDate: string;
   description: string;
   "content:encoded": string;
+  "dc:creator"?: string; // Author information
+  category?: Array<{
+    _: string;
+    domain: string;
+  }>;
   "media:content"?: {
     url: string;
     type: string;
@@ -133,19 +138,38 @@ export default function CryptoNews() {
                   <View style={newsStyles.newsHeader}>
                     <Text style={newsStyles.newsTitle}>{item.title}</Text>
                     <Text style={newsStyles.newsDate}>{item.pubDate}</Text>
+                    {item["dc:creator"] && (
+                      <Text style={newsStyles.newsAuthor}>Von: {item["dc:creator"]}</Text>
+                    )}
                   </View>
                 </View>
+                
+                {/* Categories */}
+                {item.category && item.category.length > 0 && (
+                  <View style={newsStyles.categoryContainer}>
+                    {item.category.slice(0, 3).map((cat, idx) => (
+                      <View key={idx} style={newsStyles.categoryTag}>
+                        <Text style={newsStyles.categoryText}>{cat._}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+                
                 {/* Content unterhalb */}
                 <View style={newsStyles.newsContent}>
                   {expandedNews === item.guid?._ ? (
                     <ScrollView style={{ maxHeight: 400 }} scrollEnabled={true}>
+                      {/* Short description first */}
+                      <Text style={[newsStyles.newsDescription, newsStyles.newsShortDesc]}>
+                        {item.description}
+                      </Text>
                       <Text style={newsStyles.newsDescription}>
                         {item["content:encoded"].replace(/<[^>]+>/g, "")}
                       </Text>
                     </ScrollView>
                   ) : (
                     <Text style={newsStyles.newsDescription} numberOfLines={6}>
-                      {item["content:encoded"].replace(/<[^>]+>/g, "")}
+                      {item.description}
                     </Text>
                   )}
                 </View>
@@ -238,11 +262,26 @@ export default function CryptoNews() {
                     <View style={newsStyles.newsHeader}>
                       <Text style={newsStyles.newsTitle}>{item.title}</Text>
                       <Text style={newsStyles.newsDate}>{item.pubDate}</Text>
+                      {item["dc:creator"] && (
+                        <Text style={newsStyles.newsAuthor}>Von: {item["dc:creator"]}</Text>
+                      )}
                     </View>
                   </View>
+                  
+                  {/* Categories */}
+                  {item.category && item.category.length > 0 && (
+                    <View style={newsStyles.categoryContainer}>
+                      {item.category.slice(0, 3).map((cat, idx) => (
+                        <View key={idx} style={newsStyles.categoryTag}>
+                          <Text style={newsStyles.categoryText}>{cat._}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                  
                   <View style={newsStyles.newsContent}>
                     <Text style={newsStyles.newsDescription} numberOfLines={5}>
-                      {item["content:encoded"].replace(/<[^>]+>/g, "")}
+                      {item.description}
                     </Text>
                   </View>
                 </Card>
@@ -292,8 +331,30 @@ export default function CryptoNews() {
                   <Text style={[newsStyles.newsDate, { color: "white" }]}>
                     {modalNews.pubDate}
                   </Text>
+                  {modalNews["dc:creator"] && (
+                    <Text style={[newsStyles.newsAuthor, { color: "white" }]}>Von: {modalNews["dc:creator"]}</Text>
+                  )}
                 </View>
               </View>
+              
+              {/* Categories */}
+              {modalNews.category && modalNews.category.length > 0 && (
+                <View style={[newsStyles.categoryContainer, { marginTop: 8, marginBottom: 8 }]}> 
+                  {modalNews.category.map((cat, idx) => (
+                    <View key={idx} style={newsStyles.categoryTag}>
+                      <Text style={[newsStyles.categoryText, { color: "white" }]}>{cat._}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+              
+              {/* Short description */}
+              <View style={{ marginBottom: 10, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.2)" }}>
+                <Text style={[newsStyles.newsDescription, { color: "white", fontWeight: "bold" }]}> 
+                  {modalNews.description}
+                </Text>
+              </View>
+              
               {/* Vertikal scrollbarer Content */}
               <ScrollView 
                 horizontal={false}
@@ -375,13 +436,27 @@ export default function CryptoNews() {
                   <View style={newsStyles.newsHeader}>
                     <Text style={newsStyles.newsTitle}>{item.title}</Text>
                     <Text style={newsStyles.newsDate}>{item.pubDate}</Text>
+                    {item["dc:creator"] && (
+                      <Text style={newsStyles.newsAuthor}>Von: {item["dc:creator"]}</Text>
+                    )}
                   </View>
                 </View>
+
+                {/* Categories */}
+                {item.category && item.category.length > 0 && (
+                  <View style={newsStyles.categoryContainer}>
+                    {item.category.slice(0, 3).map((cat, idx) => (
+                      <View key={idx} style={newsStyles.categoryTag}>
+                        <Text style={newsStyles.categoryText}>{cat._}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
 
                 {/* Content unterhalb */}
                 <ScrollView style={newsStyles.newsContent}>
                   <Text style={newsStyles.newsDescription} numberOfLines={5}>
-                    {item["content:encoded"].replace(/<[^>]+>/g, "")}
+                    {item.description}
                   </Text>
                 </ScrollView>
               </Card>
@@ -430,8 +505,30 @@ export default function CryptoNews() {
                   <Text style={[newsStyles.newsDate, { color: "white" }]}>
                     {modalNews.pubDate}
                   </Text>
+                  {modalNews["dc:creator"] && (
+                    <Text style={[newsStyles.newsAuthor, { color: "white" }]}>Von: {modalNews["dc:creator"]}</Text>
+                  )}
                 </View>
               </View>
+              
+              {/* Categories */}
+              {modalNews.category && modalNews.category.length > 0 && (
+                <View style={[newsStyles.categoryContainer, { marginTop: 8, marginBottom: 8 }]}> 
+                  {modalNews.category.map((cat, idx) => (
+                    <View key={idx} style={newsStyles.categoryTag}>
+                      <Text style={[newsStyles.categoryText, { color: "white" }]}>{cat._}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+              
+              {/* Short description */}
+              <View style={{ marginBottom: 10, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.2)" }}>
+                <Text style={[newsStyles.newsDescription, { color: "white", fontWeight: "bold" }]}> 
+                  {modalNews.description}
+                </Text>
+              </View>
+              
               <ScrollView>
                 <Text style={[newsStyles.newsDescription, { color: "white" }]}>
                   {modalNews["content:encoded"].replace(/<[^>]+>/g, "")}
@@ -479,6 +576,37 @@ function createNewsStyles() {
     newsDescription: {
       fontSize: 14,
       color: theme.text,
+    },
+    newsAuthor: {
+      fontSize: 12,
+      color: "gray",
+      fontStyle: "italic",
+    },
+    categoryContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      marginTop: 4,
+      marginBottom: 4,
+    },
+    categoryTag: {
+      backgroundColor: `${theme.accent}40`,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 12,
+      marginRight: 6,
+      marginBottom: 4,
+    },
+    categoryText: {
+      fontSize: 11,
+      color: theme.accent,
+      fontWeight: "500",
+    },
+    newsShortDesc: {
+      fontWeight: "bold",
+      marginBottom: 10,
+      borderBottomWidth: 1,
+      paddingBottom: 8,
+      borderBottomColor: `${theme.text}20`,
     },
   });
 }
