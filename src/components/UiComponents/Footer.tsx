@@ -15,11 +15,7 @@ const Footer = () => {
       <TouchableOpacity onPress={() => navigation.navigate("Impressum" as never)}>
         <Text style={[styles.linkText, { color: theme.accent }]}>Impressum</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("PrivacyTermsScreen" as never)}>
-        <Text style={[styles.linkText, { color: theme.accent, marginHorizontal: 10 }]}>
-          Privacy & Terms
-        </Text>
-      </TouchableOpacity>
+    
       <Text style={styles.copyrightText}>
         © {new Date().getFullYear()} BrokeChain
       </Text>

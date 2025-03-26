@@ -13,16 +13,13 @@ import Card from "@/src/components/UiComponents/Card";
 const PrivacyTermsScreen = () => {
   const { theme } = useContext(ThemeContext);
   return (
-    <View
-      style={[styles.outerContainer, { backgroundColor: theme.background }]}
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
     >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={true}
-        scrollEnabled={true}
-        nestedScrollEnabled={true}
-        keyboardShouldPersistTaps="handled"
       >
         {/* Privacy Policy */}
         <Card style={cardStyles.card}>
@@ -66,42 +63,38 @@ const PrivacyTermsScreen = () => {
           </Text>
         </Card>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  outerContainer: {
+  container: {
     flex: 1,
-    height: Dimensions.get("window").height,
     width: "100%",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    overflow: "hidden",
+    height: "100%",
   },
   scrollView: {
     flex: 1,
     width: "100%",
-    height: "100%",
-    overflow: "scroll",
   },
   content: {
     padding: 20,
     maxWidth: 1024,
     marginHorizontal: "auto",
-    flexGrow: 1,
+    paddingBottom: 30,
   },
   title: {
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 10,
+    textAlign:"center"
   },
   text: {
     fontSize: 16,
     lineHeight: 24,
+    textAlign:"justify",
+    maxWidth: 600,
+    marginHorizontal: "auto",
   },
 });
 
@@ -109,6 +102,7 @@ const cardStyles = StyleSheet.create({
   card: {
     padding: 16,
     borderRadius: 8,
+    marginBottom: 16,
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { SafeAreaView, ScrollView, Text, StyleSheet } from "react-native";
+import { SafeAreaView, ScrollView, Text, StyleSheet, Linking } from "react-native";
 import { ThemeContext } from "../../context/ThemeContext";
 import Card from "@/src/components/UiComponents/Card";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
@@ -20,7 +20,10 @@ const ImpressumScreen = () => {
             49584 Fürstenau{"\n\n"}
             Kontakt{"\n"}
             E-Mail:{" "}
-            <Text style={{ color: theme.accent }}>
+            <Text
+              style={{ color: theme.accent }}
+              onPress={() => Linking.openURL("mailto:info@colinblome.dev")}
+            >
               info@colinblome.dev
             </Text>
           </Text>
@@ -29,8 +32,8 @@ const ImpressumScreen = () => {
             Google Login & Datenschutz
           </Text>
           <Text style={[styles.text, { color: theme.text }]}>
-            By loggin in with Google, Google will share your name, email address, language preference,
-            and profile picture with us. See our{" "}
+            By loggin in with Google, they will share your name, email address, language preference,
+            and profile picture with us.{"\n"} See our{" "}
             <Text
               style={{ color: theme.accent, textDecorationLine: "underline" }}
               onPress={() => navigation.navigate("PrivacyTermsScreen")}
@@ -54,26 +57,30 @@ const ImpressumScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor is set dynamically
+  
   },
   content: {
     padding: 20,
     maxWidth: 1024,
     marginHorizontal: "auto",
+    
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 8,
+    textAlign: "center",
   },
   text: {
     fontSize: 16,
     lineHeight: 22,
+    textAlign: "center",
   },
 });
 

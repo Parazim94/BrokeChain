@@ -226,8 +226,8 @@ export default function SettingsScreen() {
     } catch (error) {
       showAlert({
         type: "error",
-        title: "Error",
-        message: error instanceof Error ? error.message : "Unexpected error",
+        title: "Something went wrong",
+        message: "try logging in again",
       });
     } finally {
       setIsUpdatingDisplayTools(false);
@@ -268,8 +268,8 @@ export default function SettingsScreen() {
     } catch (error) {
       showAlert({
         type: "error",
-        title: "Error",
-        message: error instanceof Error ? error.message : "Unexpected error",
+        title: "Something went wrong",
+        message: "try logging in again",
       });
     } finally {
       setIsUpdatingFavorites(false);
@@ -388,7 +388,7 @@ export default function SettingsScreen() {
     } catch (error) {
       showAlert({
         type: "error",
-        title: "Error",
+        title: "something went wrong",
         message: error instanceof Error ? error.message : "Unexpected error",
       });
     } finally {
@@ -569,7 +569,18 @@ export default function SettingsScreen() {
 
   // Falls Benutzer nicht eingeloggt ist, zeigen wir nichts an (Navigation wird im useEffect übernommen)
   if (!user) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: theme.background }}>
+        <Text style={[styles.defaultText, { fontSize: 28, textAlign: "center" }]}>
+          Please log in first
+        </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Login" as never)}>
+          <Text style={[styles.defaultText, { fontSize: 18, color: theme.accent, marginTop: 20, textDecorationLine: "underline" }]}>
+        Go to Login
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   return (
