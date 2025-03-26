@@ -146,7 +146,7 @@ export default function AnimatedLogo() {
       {brokeText.map((letter, index) => {
       
         const letterWidth = 12; 
-        const startX = 55 - ((brokeText.length - 1) * letterWidth) / 2; 
+        const startX = 60 - ((brokeText.length - 1) * letterWidth) / 2; 
         const x = startX + index * letterWidth;
         
         return (
@@ -155,7 +155,7 @@ export default function AnimatedLogo() {
             x={x.toString()}
             y="55"
             fontFamily="Arial, sans-serif"
-            fontSize="14"
+            fontSize="16"
             fill={textColor}
             textAnchor="middle"
             opacity={brokeAnims[index]} // Jeder Buchstabe hat seine eigene Animation
@@ -170,7 +170,7 @@ export default function AnimatedLogo() {
       {chainText.map((letter, index) => {
         // Berechne X-Position basierend auf Buchstabenposition
         const letterWidth = 10;
-        const startX = 152 - ((chainText.length - 1) * letterWidth) / 2;
+        const startX = 155 - ((chainText.length - 1) * letterWidth) / 2;
         const x = startX + index * letterWidth;
         
         return (
@@ -179,7 +179,7 @@ export default function AnimatedLogo() {
             x={x.toString()}
             y="55"
             fontFamily="Arial, sans-serif"
-            fontSize="14"
+            fontSize="16"
             fill={textColor2}
             textAnchor="middle"
             opacity={chainAnims[index]} // Jeder Buchstabe hat seine eigene Animation
