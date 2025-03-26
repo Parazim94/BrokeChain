@@ -88,7 +88,7 @@ export default function AnimatedLogo() {
         "
         fill="none"
         stroke={strokeColor}
-        strokeWidth="8"
+        strokeWidth="12"
         transform="rotate(180,70,50)"
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
@@ -103,7 +103,7 @@ export default function AnimatedLogo() {
         "
         fill="none"
         stroke={`${strokeColor}00`} // 00 bedeutet vollständig transparent
-        strokeWidth="8"
+        strokeWidth="12"
         transform="rotate(180,70,50)"
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
@@ -123,7 +123,7 @@ export default function AnimatedLogo() {
         "
         fill="none"
         stroke={strokeColor}
-        strokeWidth="8"
+        strokeWidth="11"
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
       />
@@ -137,7 +137,7 @@ export default function AnimatedLogo() {
         "
         fill="none"
         stroke={`${strokeColor}00`} // 00 bedeutet vollständig transparent
-        strokeWidth="8"
+        strokeWidth="11"
         strokeDasharray={dashLength}
         strokeDashoffset={dashAnim}
       />
@@ -168,10 +168,25 @@ export default function AnimatedLogo() {
 
       {/* Text CHAIN als einzelne animierte Buchstaben */}
       {chainText.map((letter, index) => {
-        // Berechne X-Position basierend auf Buchstabenposition
-        const letterWidth = 10;
-        const startX = 155 - ((chainText.length - 1) * letterWidth) / 2;
-        const x = startX + index * letterWidth;
+        // Angepasste Buchstabenbreiten mit besonderem Fokus auf das "i"
+        const letterWidths = {
+          'C': 12,
+          'H': 12,
+          'A': 12,
+          'I': 6,  // Schmaler für das i
+          'N': 12
+        };
+        
+        // Berechne Position basierend auf den variablen Breiten
+        let x = 130; // Startposition
+        
+        // Addiere die Breiten der vorherigen Buchstaben
+        for (let i = 0; i < index; i++) {
+          x += letterWidths[chainText[i] as keyof typeof letterWidths];
+        }
+        
+        // Füge die halbe Breite des aktuellen Buchstabens hinzu für zentrierte Positionierung
+        x += letterWidths[letter as keyof typeof letterWidths] / 2;
         
         return (
           <AnimatedSvgText
@@ -182,7 +197,7 @@ export default function AnimatedLogo() {
             fontSize="16"
             fill={textColor2}
             textAnchor="middle"
-            opacity={chainAnims[index]} // Jeder Buchstabe hat seine eigene Animation
+            opacity={chainAnims[index]}
             fontWeight="bold"
           >
             {letter}

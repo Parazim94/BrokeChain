@@ -41,7 +41,7 @@ export default function ShareScreen() {
     const fetchPosts = async () => {
       try {
         const response = await fetch(
-          "https://mastodonapp.uk/api/v1/timelines/tag/crypto?limit=15"
+          "https://mastodonapp.uk/api/v1/timelines/tag/crypto?limit=24"
         );
         const data = await response.json();
         // Sofort Daten in Ref speichern für Bild-Preloading

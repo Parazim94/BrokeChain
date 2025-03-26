@@ -123,7 +123,7 @@ export default function StackNavigator() {
                         }
                       >
                         <Image
-                          source={require("../../assets/images/Brokechain3.png")}
+                          source={require("../../public/favicon.png")}
                           tintColor={theme.accent}
                           style={{ width: 120, height: 45 }}
                           resizeMode="contain"
