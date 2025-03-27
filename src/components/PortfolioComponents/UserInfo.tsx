@@ -110,16 +110,16 @@ export default function UserInfo({
   const historyOptions = ["7d", "30d", "360d"];
 
   // Calculate history data points based on selected timeframe
-  let dataPoints = 7;
+  let dataPoints = 70;
   switch (historyInterval) {
     case "30d":
-      dataPoints = 30;
+      dataPoints = 300;
       break;
     case "360d":
-      dataPoints = 360;
+      dataPoints = 3600;
       break;
     default:
-      dataPoints = 7;
+      dataPoints = 70;
   }
 
   // Prepare chart data
