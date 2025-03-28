@@ -238,12 +238,10 @@ export default function TradeControls({
   }, []);
 
   return (
-    <View style={{width: "100%", maxWidth: 600, marginTop: 16, marginHorizontal: "auto"}}>
+    <View style={{width: "100%", maxWidth: 800, marginTop: 16, marginHorizontal: "auto"}}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.sectionTitle}>
-            {tradeAction === "buy" ? "Buy" : "Sell"} ({tradeType === "spot" ? "Market" : "Limit"})
-          </Text>
+         
           
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Toggle 
@@ -266,6 +264,19 @@ export default function TradeControls({
           {marketPrice && (
             <Text style={styles.helpText}>
               Current price: <Text style={{fontWeight: "bold"}}>{marketPrice.toFixed(4)} USDT</Text>
+            </Text>
+          )}
+          {estimatedCost !== null && (
+            <Text style={[
+              styles.helpText,
+              {
+                marginTop: 4,
+                fontWeight: "500",
+                color: tradeAction === "buy" ? theme.accent : "#F44336"
+
+              }
+            ]}>
+              Total: <Text style={{fontWeight: "bold"}}>{estimatedCost.toFixed(4)} USDT</Text>
             </Text>
           )}
         </View>
@@ -301,7 +312,7 @@ export default function TradeControls({
                 <TextInput
                   style={[
                     baseStyles.input,
-                    { width: "100%", padding: 6, fontFamily: "monospace", maxWidth: 200 },
+                    { width: "100%", padding: 6, fontFamily: "monospace"},
                   ]}
                   placeholder="Price..."
                   placeholderTextColor={baseStyles.defaultText?.color}
@@ -309,19 +320,6 @@ export default function TradeControls({
                   onChangeText={setOrderPrice}
                   keyboardType="numeric"
                 />
-              </View>
-            )}
-            
-            {estimatedCost !== null && (
-              <View style={[styles.pricePreview, {marginBottom: 8, padding: 6}]}>
-                <Text style={{
-                  fontSize: 13, 
-                  fontFamily: "monospace", 
-                  fontWeight: "bold",
-                  color: tradeAction === "buy" ? theme.accent : "#F44336"
-                }}>
-                  Total: {estimatedCost.toFixed(4)} USDT
-                </Text>
               </View>
             )}
             
@@ -339,7 +337,6 @@ export default function TradeControls({
                 paddingHorizontal: 12,
                 backgroundColor: tradeAction === "buy" ? theme.accent : "#F44336",
                 width: "100%",
-                maxWidth: 180,
                 marginTop: 16,
               }}
               loading={isLoading}
@@ -347,12 +344,12 @@ export default function TradeControls({
           </View>
         ) : (
           <View style={[styles.controlsRow, {gap: 8}]}>
-            <View style={[styles.inputWrapper, {maxWidth: 150}]}>
+            <View style={[styles.inputWrapper, ]}>
               <View style={{flexDirection: "row", alignItems: "center"}}>
                 <TextInput
                   style={[
                     baseStyles.input,
-                    { flex: 1, padding: 6, fontFamily: "monospace", maxWidth: 100 },
+                    { flex: 1, padding: 6, fontFamily: "monospace", },
                   ]}
                   placeholder="Amount..."
                   placeholderTextColor={baseStyles.defaultText?.color}
@@ -371,7 +368,7 @@ export default function TradeControls({
             </View>
             
             {tradeType === "order" && (
-              <View style={[styles.inputWrapper, {maxWidth: 120}]}>
+              <View style={[styles.inputWrapper, ]}>
                 <TextInput
                   style={[
                     baseStyles.input,
@@ -386,19 +383,7 @@ export default function TradeControls({
               </View>
             )}
             
-            <View style={{marginLeft: "auto", maxWidth: 170, alignItems: "flex-end"}}>
-              {estimatedCost !== null && (
-                <Text style={{
-                  fontSize: 12, 
-                  fontFamily: "monospace", 
-                  fontWeight: "bold",
-                  color: tradeAction === "buy" ? theme.accent : "#F44336",
-                  marginBottom: 6
-                }}>
-                  Total: {estimatedCost.toFixed(4)} USDT
-                </Text>
-              )}
-              
+            <View style={{marginLeft: "auto", alignItems: "flex-end"}}>
               <Button
                 onPress={handleTrade}
                 title={

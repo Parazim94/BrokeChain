@@ -264,9 +264,7 @@ export function createTradeControlsStyles(theme: any): TradeControlsStyles {
     },
     inputWrapper: {
       flexDirection: "column",
-      marginBottom: 8,
       flex: 1,
-      maxWidth: 180,
     },
     tradeInfoBox: {
       padding: 6,
