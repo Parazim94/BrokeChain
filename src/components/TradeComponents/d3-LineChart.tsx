@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
   View,
   Text,
@@ -27,6 +27,7 @@ import { ThemeContext } from "@/src/context/ThemeContext";
 import { useData } from "@/src/context/DataContext";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import Card from "@/src/components/UiComponents/Card";
+
 interface LineData {
   timestamp: number;
   value: number;
@@ -36,49 +37,69 @@ interface LineData {
 // Hilfsfunktion zum Umrechnen des Intervalls in Millisekunden
 function intervalToMs(interval: string): number {
   const num = parseFloat(interval);
-  if (interval.endsWith("s")) return num * 1000;  // neu: Unterstützung für Sekunden
+  if (interval.endsWith("s")) return num * 1000;
   if (interval.endsWith("m")) return num * 60 * 1000;
   if (interval.endsWith("h")) return num * 60 * 60 * 1000;
   if (interval.endsWith("d")) return num * 24 * 60 * 60 * 1000;
   if (interval.endsWith("w")) return num * 7 * 24 * 60 * 60 * 1000;
   if (interval.endsWith("M")) return num * 30 * 24 * 60 * 60 * 1000;
-  // Standard: falls nichts erkannt wird
   return 60000;
 }
 
-// Neue Hilfsfunktion: Prüft, ob ein neuer Datenpunkt erstellt werden soll
+// Neue Konstanten für die stabilere Preisdarstellung
+const MIN_UPDATE_INTERVAL = 2000; // Mindestens 2 Sekunden zwischen Preisupdate-Versuchen
+const PRICE_CHANGE_THRESHOLD = 0.0005; // 0.05% Mindestpreisänderung für neuen Datenpunkt
+
+// Verbesserte Hilfsfunktion: Prüft, ob ein neuer Datenpunkt erstellt werden soll
 function shouldCreateNewDataPoint(
   currentTime: number,
   lastPointTime: number,
-  intervalString: string
+  intervalString: string,
+  newPrice: number | null,
+  lastPrice: number | null
 ): boolean {
-  // Bei 1s-Intervall: Immer neue Datenpunkte
-  if (intervalString === "1s") {
-    return currentTime - lastPointTime >= 1000;
+  if (currentTime - lastPointTime < MIN_UPDATE_INTERVAL) {
+    return false;
   }
-  
-  // Für andere Intervalle: Nur an Intervallgrenzen neue Datenpunkte
+
+  if (newPrice === null || lastPrice === null) {
+    return false;
+  }
+
+  const priceChangePercent = Math.abs((newPrice - lastPrice) / lastPrice);
+  const isSignificantChange = priceChangePercent > PRICE_CHANGE_THRESHOLD;
+
+  if (intervalString === "1s") {
+    return isSignificantChange || (currentTime - lastPointTime >= 5000);
+  }
+
   const date = new Date();
   const lastDate = new Date(lastPointTime);
-  
+
   if (intervalString.endsWith("m")) {
     const minutes = parseInt(intervalString);
-    return date.getMinutes() % minutes === 0 && 
-           date.getMinutes() !== lastDate.getMinutes();
+    return (
+      (date.getMinutes() % minutes === 0 &&
+        date.getMinutes() !== lastDate.getMinutes()) ||
+      isSignificantChange
+    );
   }
-  
+
   if (intervalString.endsWith("h")) {
     const hours = parseInt(intervalString);
-    return date.getHours() % hours === 0 && 
-           date.getHours() !== lastDate.getHours() && 
-           date.getMinutes() === 0;
+    return (
+      (date.getHours() % hours === 0 &&
+        date.getHours() !== lastDate.getHours() &&
+        date.getMinutes() === 0) ||
+      isSignificantChange
+    );
   }
-  
+
   if (intervalString.endsWith("d")) {
-    return date.getDate() !== lastDate.getDate();
+    return date.getDate() !== lastDate.getDate() || isSignificantChange;
   }
-  
-  return false;
+
+  return isSignificantChange;
 }
 
 interface D3LineChartProps {
@@ -94,7 +115,7 @@ export default function D3LineChart({
   interval,
   width = Dimensions.get("window").width,
   height = 300,
-  livePrice, // neuer Parameter
+  livePrice,
 }: D3LineChartProps) {
   const { theme } = useContext(ThemeContext);
   const { getHistoricalData } = useData();
@@ -107,52 +128,43 @@ export default function D3LineChart({
     isVisible: boolean;
   } | null>(null);
 
-  // Neuer State für den ausgewählten Datenpunkt
   const [selectedPoint, setSelectedPoint] = useState<LineData | null>(null);
-
-  // Neuer State: Toggle für MA(20)
   const [showMA, setShowMA] = useState<boolean>(true);
-
-  // Neuer State für die Zeit des letzten Datenpunkts
   const [lastDataPointTime, setLastDataPointTime] = useState<number>(0);
+  const [binancePrice, setBinancePrice] = useState<number | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Margins für Achsen
   const margin = { top: 10, right: 10, bottom: 30, left: 60 };
 
-  // Verbesserte intervalToMs-Funktion 
   function getMaxDataPoints(interval: string): number {
-    if (interval.endsWith("s")) return 50; // 15 Minuten bei 1s = 180 Punkte
+    if (interval.endsWith("s")) return 50;
     if (interval.endsWith("m")) {
       const mins = parseFloat(interval);
-      if (mins <= 5) return 60; // 5h bei 5m
-      return 48;  // 2 Tage bei 1h
+      if (mins <= 5) return 60;
+      return 48;
     }
-    if (interval.endsWith("h")) return 72; // 3 Tage bei 1h
-    if (interval.endsWith("d")) return 60; // 60 Tage
-    if (interval.endsWith("w")) return 52; // 52 Wochen
-    return 100; // Standard
+    if (interval.endsWith("h")) return 72;
+    if (interval.endsWith("d")) return 60;
+    if (interval.endsWith("w")) return 52;
+    return 100;
   }
 
-  // Daten von Binance laden (analog zum d3-Candlestick)
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      // Bei Änderung des Symbols oder Intervalls den ausgewählten Punkt zurücksetzen
       setSelectedPoint(null);
       try {
         const data = await getHistoricalData(symbol, interval);
-        // Umwandlung: label als Timestamp, und zusätzlich Volume extrahieren –
-        // setze voraus, dass getHistoricalData jetzt auch item.volume liefert.
         const mapped: LineData[] = data.map((item: any) => ({
           timestamp: new Date(item.label).getTime(),
           value: item.value,
           volume: item.volume ? Number(item.volume) : 0,
         }));
         setLineData(mapped);
-        
-        // Setze lastDataPointTime für die weitere Aktualisierung
+
         if (mapped.length > 0) {
           setLastDataPointTime(mapped[mapped.length - 1].timestamp);
+          setBinancePrice(mapped[mapped.length - 1].value);
         }
       } catch (error) {
         console.error("Fehler beim Abruf der LineChart-Daten:", error);
@@ -162,50 +174,75 @@ export default function D3LineChart({
       }
     };
     fetchData();
+
+    const setupPriceFetch = () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+
+      timerRef.current = setInterval(async () => {
+        try {
+          const newData = await getHistoricalData(symbol, interval, 1);
+          if (newData && newData.length > 0) {
+            const latestPrice = newData[0].value;
+            setBinancePrice(latestPrice);
+          }
+        } catch (error) {
+          console.error("Fehler bei Binance-Preisabfrage:", error);
+        }
+      }, 2000);
+    };
+
+    setupPriceFetch();
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
   }, [symbol, interval, getHistoricalData]);
 
-  // Dynamisches Anhängen bzw. Aktualisieren eines Datenpunkts basierend auf dem Intervall
   useEffect(() => {
-    if (livePrice == null || lineData.length === 0) return;
-    
+    if (binancePrice === null || lineData.length === 0) return;
+
     const now = Date.now();
-    
-    setLineData(prev => {
+
+    setLineData((prev) => {
       if (prev.length === 0) {
         setLastDataPointTime(now);
-        return [{ timestamp: now, value: livePrice, volume: 0 }];
+        return [{ timestamp: now, value: binancePrice, volume: 0 }];
       }
-      
+
       const newData = [...prev];
       const lastPoint = prev[prev.length - 1];
-      
-      // Bei 1s-Intervall: Immer neuen Datenpunkt erstellen
-      if (interval === "1s" && now - lastPoint.timestamp >= 1000) {
-        newData.push({ timestamp: now, value: livePrice, volume: 0 });
+      const lastPrice = lastPoint.value;
+
+      if (
+        shouldCreateNewDataPoint(
+          now,
+          lastDataPointTime,
+          interval,
+          binancePrice,
+          lastPrice
+        )
+      ) {
+        newData.push({ timestamp: now, value: binancePrice, volume: 0 });
         setLastDataPointTime(now);
-      } 
-      // Bei anderen Intervallen prüfen, ob ein neuer Datenpunkt erstellt werden sollte
-      else if (shouldCreateNewDataPoint(now, lastDataPointTime, interval)) {
-        newData.push({ timestamp: now, value: livePrice, volume: 0 });
-        setLastDataPointTime(now);
-      } 
-      // Sonst nur den letzten Datenpunkt aktualisieren
-      else {
-        // Update des letzten Punktes
-        newData[newData.length - 1] = { 
-          timestamp: lastPoint.timestamp, 
-          value: livePrice, 
-          volume: lastPoint.volume 
+      } else {
+        const smoothedValue = lastPrice + (binancePrice - lastPrice) * 0.2;
+        newData[newData.length - 1] = {
+          timestamp: lastPoint.timestamp,
+          value: smoothedValue,
+          volume: lastPoint.volume,
         };
       }
-      
-      // Begrenze die Datenpunkte auf eine sinnvolle Anzahl
+
       const maxPoints = getMaxDataPoints(interval);
       while (newData.length > maxPoints) newData.shift();
-      
+
       return newData;
     });
-  }, [livePrice, interval, lastDataPointTime]);
+  }, [binancePrice, interval, lastDataPointTime]);
 
   if (loading) {
     return (
@@ -225,7 +262,6 @@ export default function D3LineChart({
     );
   }
 
-  // Skalierung berechnen
   const effectiveWidth = window.innerWidth > 768 ? width * 0.98 : width * 0.92;
   const minValue = Math.min(...lineData.map((d) => d.value));
   const maxValue = Math.max(...lineData.map((d) => d.value));
@@ -234,7 +270,6 @@ export default function D3LineChart({
     .domain([minValue, maxValue])
     .range([height - margin.bottom, margin.top]);
 
-  // Neue Tick-Werte für die Y-Achse
   const yTicks = d3Scale.scaleLinear().domain([minValue, maxValue]).ticks(10);
 
   const xScale = d3Scale
@@ -242,12 +277,10 @@ export default function D3LineChart({
     .domain([0, lineData.length - 1])
     .range([margin.left, effectiveWidth - margin.right]);
 
-  // Punkte für Linie generieren
   const points = lineData
     .map((d, i) => `${xScale(i)},${yScale(d.value)}`)
     .join(" ");
 
-  // Berechnung des MA(20)-Indikators
   const maPeriod = 20;
   let maPoints = "";
   if (lineData.length >= maPeriod) {
@@ -260,19 +293,16 @@ export default function D3LineChart({
       const avg = sum / maPeriod;
       maData.push({ index: i, avg });
     }
-    maPoints = maData.map(d => `${xScale(d.index)},${yScale(d.avg)}`).join(" ");
+    maPoints = maData.map((d) => `${xScale(d.index)},${yScale(d.avg)}`).join(" ");
   }
 
-  // Pfad für Füllbereich unter der Linie
   const fillPath =
     `M ${margin.left} ${height - margin.bottom} ` +
     lineData.map((d, i) => `${xScale(i)} ${yScale(d.value)}`).join(" ") +
     ` L ${effectiveWidth - margin.right} ${height - margin.bottom} Z`;
 
-  // Geänderte handleTouch-Funktion, um zwischen Touch und Klick zu unterscheiden
   function handleTouch(event: GestureResponderEvent, isPersistent = false) {
     const { locationX } = event.nativeEvent;
-    // Bestimme den Index anhand der x-Koordinate
     const idx = Math.round(
       ((locationX - margin.left) /
         (effectiveWidth - margin.left - margin.right)) *
@@ -283,23 +313,19 @@ export default function D3LineChart({
       const y = yScale(lineData[idx].value);
       setTooltip({ index: idx, x, y, isVisible: true });
 
-      // Beim Klicken (isPersistent=true) den ausgewählten Punkt setzen
       if (isPersistent) {
         setSelectedPoint(lineData[idx]);
       }
     }
   }
 
-  // PanResponder für temporären Tooltip und Auswahl bei Klick
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
     onPanResponderGrant: (evt) => handleTouch(evt),
     onPanResponderMove: (evt) => handleTouch(evt),
     onPanResponderRelease: (evt) => {
-      // Bei Release als Klick behandeln und ausgewählten Punkt setzen
       handleTouch(evt, true);
-      // Tooltip temporär ausblenden
       if (tooltip) {
         setTooltip({ ...tooltip, isVisible: false });
         setTimeout(() => setTooltip(null), 500);
@@ -307,14 +333,13 @@ export default function D3LineChart({
     },
   });
 
-  // Format dates for X-axis labels anpassen:
   const getDateLabel = (index: number): string => {
     if (index < 0 || index >= lineData.length) return "";
     const date = new Date(lineData[index].timestamp);
-    let formatString = "MMM d, HH:mm"; // Default
+    let formatString = "MMM d, HH:mm";
     if (interval === "1s") {
       formatString = "HH:mm";
-    } else if (interval.endsWith("m")) {     
+    } else if (interval.endsWith("m")) {
       formatString = "HH:mm";
     } else if (interval.endsWith("h")) {
       formatString = "HH:mm";
@@ -324,20 +349,21 @@ export default function D3LineChart({
     return format(date, formatString);
   };
 
-  // X-Achsen-Beschriftungen in regelmäßigen Abständen
   const labelInterval = Math.max(1, Math.floor(lineData.length / 6));
 
-  // Direkt vor der return-Anweisung:
-  const persistentDisplayStyle = Platform.OS === "web"
-    ? { flexDirection: "row", alignItems: "center", justifyContent: "space-between" }
-    : { flexDirection: "column" };
+  const persistentDisplayStyle =
+    Platform.OS === "web"
+      ? {
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }
+      : { flexDirection: "column" };
 
-  return (  
+  return (
     <View>
-   
       <View style={styles.container} {...panResponder.panHandlers}>
         <Svg width={"100%"} height={height}>
-          {/* Grid-Linien */}
           {yTicks.map((tick) => (
             <Line
               key={`grid-${tick}`}
@@ -357,16 +383,13 @@ export default function D3LineChart({
               <Stop offset="100%" stopColor={theme.accent} stopOpacity="0" />
             </LinearGradient>
           </Defs>
-          {/* Füllbereich */}
           <Path d={fillPath} fill="url(#lineGradient)" />
-          {/* Linie */}
           <Polyline
             points={points}
             fill="none"
             stroke={theme.accent}
             strokeWidth={2}
           />
-          {/* MA(20) Indikator (nur bei showMA=true) */}
           {showMA && maPoints && (
             <Polyline
               points={maPoints}
@@ -376,7 +399,6 @@ export default function D3LineChart({
               strokeDasharray="4,4"
             />
           )}
-          {/* X-Achsen-Beschriftungen */}
           {lineData.map((d, i) => {
             if (i % labelInterval === 0) {
               return (
@@ -394,7 +416,6 @@ export default function D3LineChart({
             }
             return null;
           })}
-          {/* Y-Achsen-Beschriftungen */}
           {yTicks.map((tick) => (
             <SvgText
               key={`ytick-${tick}`}
@@ -406,8 +427,6 @@ export default function D3LineChart({
               {tick.toFixed(2)}
             </SvgText>
           ))}
-
-          {/* Markierung für ausgewählten Datenpunkt */}
           {selectedPoint && (
             <Circle
               cx={xScale(
@@ -423,17 +442,17 @@ export default function D3LineChart({
             />
           )}
         </Svg>
-        {/* Legend/Controls, analog zum Candlestick-Chart */}
         <View style={styles.legend}>
           <TouchableOpacity
             style={[styles.legendItem, showMA ? styles.legendItemActive : {}]}
             onPress={() => setShowMA(!showMA)}
           >
-            <View style={[styles.legendColor, { backgroundColor: theme.accent }]} />
+            <View
+              style={[styles.legendColor, { backgroundColor: theme.accent }]}
+            />
             <Text style={{ color: theme.text, fontSize: 10 }}>MA(20)</Text>
           </TouchableOpacity>
         </View>
-        {/* Temporärer Tooltip */}
         {tooltip && tooltip.isVisible && (
           <View
             style={[
@@ -452,32 +471,89 @@ export default function D3LineChart({
         )}
       </View>
 
-      {/* Persistente Datenanzeige unter dem Chart */}
       {selectedPoint && (
-        <View style={[
-          styles.dataDisplay,
-          {
-            backgroundColor: `${theme.accent}15`,
-            borderColor: `${theme.accent}40`,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-            ...(Platform.OS === "web" ? {} : { maxWidth: 768, alignSelf: "flex-start" })
-          }
-        ]}>
-          <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <Text style={[styles.dataLabel, { color: theme.text, width: "10%" }]}>Date:</Text><Text style={[styles.dataValue, { color: theme.text, width: "40%" }]}>{format(new Date(selectedPoint.timestamp), "dd.MM.yyyy HH:mm")}</Text><Text style={[styles.dataLabel, { color: theme.text, width: "10%" }]}>Price:</Text><Text style={[styles.dataValue, { color: theme.accent, fontWeight: "bold", width: "40%" }]}>{formatCurrency(selectedPoint.value)}</Text>
-          </View>{selectedPoint.volume > 0 && (
+        <View
+          style={[
+            styles.dataDisplay,
+            {
+              backgroundColor: `${theme.accent}15`,
+              borderColor: `${theme.accent}40`,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+              ...(Platform.OS === "web"
+                ? {}
+                : { maxWidth: 768, alignSelf: "flex-start" }),
+            },
+          ]}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={[
+                styles.dataLabel,
+                { color: theme.text, width: "10%" },
+              ]}
+            >
+              Date:
+            </Text>
+            <Text
+              style={[
+                styles.dataValue,
+                { color: theme.text, width: "40%" },
+              ]}
+            >
+              {format(
+                new Date(selectedPoint.timestamp),
+                "dd.MM.yyyy HH:mm"
+              )}
+            </Text>
+            <Text
+              style={[
+                styles.dataLabel,
+                { color: theme.text, width: "10%" },
+              ]}
+            >
+              Price:
+            </Text>
+            <Text
+              style={[
+                styles.dataValue,
+                {
+                  color: theme.accent,
+                  fontWeight: "bold",
+                  width: "40%",
+                },
+              ]}
+            >
+              {formatCurrency(selectedPoint.value)}
+            </Text>
+          </View>
+          {selectedPoint.volume > 0 && (
             <View style={{ flex: 1 }}>
-              <Text style={[styles.dataLabel, { color: theme.text }]}>Volume:</Text><Text style={[styles.dataValue, { color: theme.text }]}>{selectedPoint.volume.toLocaleString()}</Text>
+              <Text style={[styles.dataLabel, { color: theme.text }]}>
+                Volume:
+              </Text>
+              <Text style={[styles.dataValue, { color: theme.text }]}>
+                {selectedPoint.volume.toLocaleString()}
+              </Text>
             </View>
           )}
-          <TouchableOpacity onPress={() => setSelectedPoint(null)} style={{ marginLeft: 8 }}>
+          <TouchableOpacity
+            onPress={() => setSelectedPoint(null)}
+            style={{ marginLeft: 8 }}
+          >
             <Ionicons name="close-circle" size={24} color="red" />
           </TouchableOpacity>
         </View>
-      )}      
+      )}
     </View>
   );
 }
@@ -504,7 +580,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 10,
   },
-  // Neue Stile für die Datenanzeige
   dataDisplay: {
     padding: 12,
     borderRadius: 8,
@@ -550,7 +625,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginRight: 4,
   },
-  // Neuer Style für einzelne Daten-Elemente in einer Zeile
   dataItem: {
     flex: 1,
     alignItems: "center",

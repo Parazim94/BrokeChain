@@ -162,6 +162,10 @@ export const createStyles = (theme: Theme) =>
     },
     sparklineContainer: {
       marginTop: 8,
+      position: "relative",
+      width: "100%",
+      alignSelf: "flex-end", 
+      alignItems: "flex-end",
     },
     chartContainer: {
       width: "100%",
@@ -179,5 +183,112 @@ export const createStyles = (theme: Theme) =>
       width: "100%",
       backgroundColor: theme.background,
       borderRadius: 8,
+    },
+
+    // Karten und Container Styles
+    cardContainer: {
+      backgroundColor: theme.background,
+      maxWidth: "100%",
+      minWidth: 280,
+      marginTop: 8,
+      padding: 12,
+      borderRadius: 4,
+    },
+    
+    // Erweiterte Grid-Layout Styles
+    cardContent: { 
+      flexDirection: "row", 
+      width: "100%" 
+    },
+    logoContainer: { 
+      padding: 8, 
+      alignItems: "center", 
+      justifyContent: "center" 
+    },
+    detailsContainer: { 
+      flex: 1, 
+      paddingLeft: 8, 
+      width: "100%" 
+    },
+    
+    // Text-Styling
+    monoText: { 
+      fontFamily: "monospace", 
+      fontWeight: "bold" 
+    },
+    priceText: { 
+      fontSize: 16, 
+      fontWeight: "bold", 
+      color: theme.accent, 
+      fontFamily: "monospace" 
+    },
+    accentText: {
+      color: theme.accent,
+      fontWeight: "bold",
+    },
+    
+    // Button und Interaktionselemente
+    actionButton: {
+      padding: 8,
+      borderRadius: 4,
+    },
+    
+    // Chart-Komponenten
+    tooltip: {
+      position: "absolute",
+      padding: 8,
+      borderRadius: 6,
+      width: 150,
+      zIndex: 1000,
+    },
+    tooltipHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 4,
+    },
+    tooltipDate: {
+      fontSize: 12,
+      fontWeight: "bold",
+    },
+    tooltipValue: {
+      fontSize: 14,
+    },
+    
+    // Badge-Styles
+    badge: {
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 4,
+      alignSelf: "flex-start",
+    },
+    badgeText: {
+      color: "white",
+      fontWeight: "bold",
+    },
+    buyBadge: {
+      backgroundColor: "green",
+    },
+    sellBadge: {
+      backgroundColor: "red",
+    },
+    
+    // Tabellen und Listen
+    twoColumnRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: '100%',
+      marginVertical: 4,
+    },
+    twoColumnContainer: {
+      flexDirection: 'row',
+      width: '100%',
+      justifyContent: 'space-between'
+    },
+    divider: {
+      height: 1,
+      backgroundColor: `${theme.text}20`,
+      marginVertical: 4,
     },
   });

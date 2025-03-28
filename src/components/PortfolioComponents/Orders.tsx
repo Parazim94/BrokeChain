@@ -150,13 +150,13 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                   marginHorizontal: screenWidth < 1024 ? "auto" : (Platform.OS === "web" ? 0 : "auto")
                 }}
               >                
-                <View style={{ flexDirection: 'row', width: '100%' }}>
+                <View style={styles.cardContent}>
                   {Platform.OS === "web" && window.innerWidth >= 768 ? (
-                    <View style={{ flexDirection: "row", alignItems: "center", padding: 10,width: '100%' }}>
-                      {/* --- Linkes Segment: Logo, Name und Order-Typ --- */}
+                    <View style={{ flexDirection: "row", alignItems: "center", padding: 10, width: '100%' }}>
+                      {/* Linkes Segment */}
                       <View style={{ flex: 3, flexDirection: "row", alignItems: "center" }}>
                         {coinData?.image && (
-                          <View style={{ justifyContent: "center", paddingRight: 10 }}>
+                          <View style={styles.logoContainer}>
                             <Image
                               source={{ uri: coinData.image }}
                               style={{ width: 50, height: 50, borderRadius: 25 }}
@@ -168,21 +168,19 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                             {coinData?.name || item.symbol.toUpperCase()}
                           </Text>
                           <View 
-                            style={{
-                              backgroundColor: item.amount > 0 ? "green" : "red",
-                              paddingHorizontal: 8,
-                              paddingVertical: 4,
-                              borderRadius: 4,
-                              alignSelf: "flex-start"
-                            }}
+                            style={[
+                              styles.badge,
+                              item.amount > 0 ? styles.buyBadge : styles.sellBadge
+                            ]}
                           >
-                            <Text style={{ color: "white", fontWeight: "bold" }}>
+                            <Text style={styles.badgeText}>
                               {item.amount > 0 ? "BUY" : "SELL"}
                             </Text>
                           </View>
                         </View>
                       </View>
-                      {/* --- Mittleres Segment: Amount und Limit als Label/Wert-Paare --- */}
+                      
+                      {/* Mittleres Segment */}
                       <View style={{ flex: 4, flexDirection: "row", alignItems: "center", justifyContent: "space-evenly" }}>
                         <View style={{ flexDirection: "row", alignItems: "center" }}>
                           <Text style={{ fontWeight: "bold", color: theme.text }}>Amount: </Text>
@@ -197,7 +195,8 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                           </Text>
                         </View>
                       </View>
-                      {/* --- Rechtes Segment: Price und Edit-/Delete-Buttons, ganz rechts --- */}
+                      
+                      {/* Rechtes Segment */}
                       <View style={{ flex: 2, flexDirection: "row", alignItems: "center", justifyContent: "flex-end" }}>
                         <View style={{ marginRight: 8 }}>
                           <Text style={{ fontWeight: "bold", color: theme.text }}>Price: </Text>
@@ -218,12 +217,11 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                           </TouchableOpacity>
                         )}
                       </View>
-                      {/* --- Ende Web-Ansicht --- */}
                     </View>
                   ) : (
                     <>
                       {coinData?.image && (
-                        <View style={{ justifyContent: 'center', paddingRight: 10 }}>
+                        <View style={styles.logoContainer}>
                           <Image
                             source={{ uri: coinData.image }}
                             style={{ 
@@ -236,7 +234,7 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                       )}
                       
                       {/* Inhalt rechts */}
-                      <View style={{ flex: 1 }}>
+                      <View style={styles.detailsContainer}>
                         {/* Zeile 1: Symbol und Typ der Order */}
                         <View style={[styles.row, { width: '100%' }]}>
                           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -244,22 +242,19 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                               {item.symbol.toUpperCase()}
                             </Text>
                             <View 
-                              style={{
-                                backgroundColor: item.amount > 0 ? "green" : "red",
-                                paddingHorizontal: 8,
-                                paddingVertical: 4,
-                                borderRadius: 4
-                              }}
+                              style={[
+                                styles.badge,
+                                item.amount > 0 ? styles.buyBadge : styles.sellBadge
+                              ]}
                             >
-                              <Text style={{ color: "white", fontWeight: "bold" }}>
+                              <Text style={styles.badgeText}>
                                 {item.amount > 0 ? "BUY" : "SELL"}
                               </Text>
                             </View>
                           </View>
                           
-                          {/* Aktions-Buttons (Bearbeiten und Löschen) */}
+                          {/* Aktions-Buttons */}
                           <View style={{ flexDirection: 'row' }}>
-                            {/* Edit Button */}
                             <TouchableOpacity
                               onPress={() => handleEditPress(item)}
                               style={{ padding: 8 }}
@@ -267,7 +262,6 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                               <Ionicons name="create-outline" size={22} color={theme.accent} />
                             </TouchableOpacity>
                             
-                            {/* Delete Button */}
                             {onDeleteOrder && orderId && (
                               <TouchableOpacity
                                 onPress={() => onDeleteOrder(orderId)}
@@ -299,7 +293,7 @@ export default function Orders({ data, theme, onDeleteOrder }: OrderProps) {
                           </View>
                         </View>
                         
-                        {/* Optionale Zeile 3: Aktuelle Marktdaten, falls verfügbar */}
+                        {/* Optionale Zeile 3: Aktuelle Marktdaten */}
                         {coinData && (
                           <View style={styles.gridRow}>
                             <View style={{width: '100%'}}>

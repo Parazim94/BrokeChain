@@ -1,13 +1,14 @@
-import React, { useMemo, useContext, useState } from "react";
+import React, { useMemo, useContext, useState, useRef } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Platform,
+  PanResponder,
+  GestureResponderEvent,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Sparkline from "@/src/components/UiComponents/Sparkline";
 import { formatCurrency } from "@/src/utils/formatCurrency";
 import { createStyles as createGlobalStyles } from "@/src/styles/style";
 import PortfolioPieChart from "./PortfolioPieChart";
@@ -16,6 +17,8 @@ import { useAlert } from "@/src/context/AlertContext";
 import Button from "@/src/components/UiComponents/Button";
 import Card from "@/src/components/UiComponents/Card";
 import { useNavigation } from "@react-navigation/native";
+import { format } from "date-fns";
+import EnhancedSparkline from "./EnhancedSparkline"; // Neue Komponente importieren
 
 interface UserInfoProps {
   userName: string;
@@ -25,9 +28,9 @@ interface UserInfoProps {
   history: { total: number; date: string }[];
   theme: any;
   styles: any;
-  positions?: any[]; // Optional positions for diversity chart
-  historyInterval: string; // Neue Prop für das History-Intervall
-  onHistoryIntervalChange: (interval: string) => void; // Neue Prop für den State-Handler
+  positions?: any[];
+  historyInterval: string;
+  onHistoryIntervalChange: (interval: string) => void;
 }
 
 export default function UserInfo({
@@ -39,13 +42,12 @@ export default function UserInfo({
   theme,
   styles: propStyles,
   positions = [],
-  historyInterval, // Neue Prop
-  onHistoryIntervalChange, // Neue Prop
+  historyInterval,
+  onHistoryIntervalChange,
 }: UserInfoProps) {
   const globalStyles = createGlobalStyles();
   const navigation = useNavigation();
 
-  // Neue Hooks für Logout/Login
   const { setIsLoggedIn, setUser, isLoggedIn } = useContext(AuthContext);
   const { showAlert } = useAlert();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -60,7 +62,7 @@ export default function UserInfo({
       showAlert({
         type: "success",
         title: "Logged Out",
-        message: "You have been successfully logged out."
+        message: "You have been successfully logged out.",
       });
     }, 500);
   };
@@ -73,11 +75,9 @@ export default function UserInfo({
     }, 300);
   };
 
-  // Funktion zum Rendern des Avatar/Benutzer-Icons
   const renderUserAvatar = () => {
     const user = useContext(AuthContext).user;
-    
-    // Wenn der Benutzer einen benutzerdefinierten Avatar hat
+
     if (user && user.icon && user.iconColor) {
       return (
         <View
@@ -91,25 +91,18 @@ export default function UserInfo({
             marginRight: 8,
           }}
         >
-          <Ionicons
-            name={user.icon}
-            size={20}
-            color="#FFFFFF"
-          />
+          <Ionicons name={user.icon} size={20} color="#FFFFFF" />
         </View>
       );
     }
-    
-    // Standard-Icon als Fallback
+
     return (
       <Ionicons name="person-circle" size={30} style={styles.profileIcon} />
     );
   };
 
-  // Internal state
   const historyOptions = ["7d", "30d", "360d"];
 
-  // Calculate history data points based on selected timeframe
   let dataPoints = 70;
   switch (historyInterval) {
     case "30d":
@@ -122,11 +115,10 @@ export default function UserInfo({
       dataPoints = 70;
   }
 
-  // Prepare chart data
   const historyData = Array.isArray(history) ? history.slice(-dataPoints) : [];
   const historyValues = historyData.map((item) => item.total);
+  const historyDates = historyData.map((item) => item.date);
 
-  // Calculate performance metrics
   const performanceMetrics = useMemo(() => {
     if (historyValues.length < 2)
       return { change: 0, percentage: 0, isPositive: true };
@@ -143,10 +135,9 @@ export default function UserInfo({
     };
   }, [historyValues]);
 
-  // Calculate portfolio composition percentages
   const portfolioComposition = useMemo(() => {
     const total = cash + positionsValue;
-    if (total <= 0) return { cash: 50, positions: 50 }; // Default equal split if no data
+    if (total <= 0) return { cash: 50, positions: 50 };
 
     return {
       cash: (cash / total) * 100,
@@ -154,12 +145,10 @@ export default function UserInfo({
     };
   }, [cash, positionsValue]);
 
-  // Check if we have valid portfolio positions to display
   const hasValidPositions =
     positions.length > 0 &&
     positions.some((pos) => pos.marketInfo && pos.amount > 0);
 
-  // Local styles
   const styles = StyleSheet.create({
     container: {
       maxWidth: 1024,
@@ -170,10 +159,7 @@ export default function UserInfo({
       padding: 16,
       backgroundColor: theme.background,
       borderRadius: 8,
-      overflow: "hidden",    
-      // boxShadow: `0px 0px 11px ${theme.accent}`,    
-      // borderWidth: 1.5,
-      // borderColor: theme.accent,
+      overflow: "hidden",
     },
     headerRow: {
       flexDirection: "row",
@@ -252,7 +238,7 @@ export default function UserInfo({
     },
     positionsPortion: {
       height: "100%",
-      backgroundColor: theme.accent + "80", // Using accent with opacity for better visibility in dark mode
+      backgroundColor: theme.accent + "80",
       width: `${portfolioComposition.positions}%`,
     },
     legendContainer: {
@@ -321,11 +307,8 @@ export default function UserInfo({
 
   return (
     <Card style={styles.container}>
-          
-      {/* Header mit Name, Performance und Login/Logout-Button */}
       <View style={styles.headerRow}>
         <View style={styles.userNameContainer}>
-          {/* Hier wird der Avatar angezeigt */}
           {renderUserAvatar()}
           <Text style={styles.userName}>{userName}</Text>
           <View style={[styles.performanceContainer, { marginLeft: 10 }]}>
@@ -343,7 +326,7 @@ export default function UserInfo({
             </Text>
           </View>
         </View>
-        
+
         {isLoggedIn ? (
           <Button
             onPress={handleLogout}
@@ -365,12 +348,16 @@ export default function UserInfo({
         )}
       </View>
 
-      {/* Value history chart */}
       <View style={styles.historyContainer}>
         <View style={styles.historyHeader}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Ionicons name="time-outline" size={20} color={theme.accent} style={{ marginRight: 6 }} />
-            <Text style={styles.historyTitle}>Value History</Text>
+            <Ionicons
+              name="time-outline"
+              size={20}
+              color={theme.accent}
+              style={{ marginRight: 6 }}
+            />
+            <Text style={styles.historyTitle}>History</Text>
           </View>
 
           <View style={styles.historyTabsContainer}>
@@ -398,18 +385,18 @@ export default function UserInfo({
         </View>
 
         <View style={styles.sparklineContainer}>
-          <Sparkline
+          <EnhancedSparkline
             prices={historyValues}
+            dates={historyDates}
             width="100%"
             height={80}
             stroke={performanceMetrics.isPositive ? "#4CAF50" : "#F44336"}
             strokeWidth={2}
-            staticFlag={true}
+            theme={theme}
           />
         </View>
       </View>
 
-      {/* Key metrics in boxes */}
       <View style={styles.metricsContainer}>
         <View style={styles.metricBox}>
           <Text style={styles.metricLabel}>Cash</Text>
@@ -427,16 +414,18 @@ export default function UserInfo({
           style={[styles.metricBox, { backgroundColor: `${theme.accent}20` }]}
         >
           <Text style={styles.metricLabel}>Total Value</Text>
-          <Text style={styles.metricValue}>
-            {formatCurrency(combinedValue)}
-          </Text>
+          <Text style={styles.metricValue}>{formatCurrency(combinedValue)}</Text>
         </View>
       </View>
 
-      {/* Portfolio composition */}
       <View style={styles.compositionContainer}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Ionicons name="pie-chart-outline" size={20} color={theme.accent} style={{ marginRight: 6 }} />
+          <Ionicons
+            name="pie-chart-outline"
+            size={20}
+            color={theme.accent}
+            style={{ marginRight: 6 }}
+          />
           <Text style={styles.historyTitle}>Distribution</Text>
         </View>
 
@@ -469,16 +458,12 @@ export default function UserInfo({
         </View>
       </View>
 
-      {/* Portfolio Pie Chart */}
       {hasValidPositions && (
         <PortfolioPieChart
           portfolioPositions={positions}
           totalValue={positionsValue}
         />
       )}
-
-    
-      </Card>
-    
+    </Card>
   );
 }

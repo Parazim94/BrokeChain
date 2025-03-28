@@ -35,6 +35,18 @@ export interface TradeControlsStyles {
   controlsGroup: object;
   inputContainer: object;
   buttonContainer: object;
+  inputLabel: object;
+  helpText: object;
+  inputWrapper: object;
+  tradeInfoBox: object;
+  pricePreview: object;
+  divider: object;
+  sectionTitle: object;
+  toggleContainer: object;
+  toggleButton: object;
+  toggleButtonActive: object;
+  toggleButtonText: object;
+  toggleButtonTextActive: object;
 }
 
 /**
@@ -202,19 +214,16 @@ export function createTradeControlsStyles(theme: any): TradeControlsStyles {
   return StyleSheet.create({
     container: {
       flexDirection: "column", 
-      marginTop: 16,
+      marginTop: 12,
       marginHorizontal: 4,
-      backgroundColor: `${theme.background}AA`,
       borderRadius: 8,
       padding: 12,
-      borderWidth: 2,
-      borderColor: `${theme.accent}30`,
-      boxShadow: `0 0 8px ${theme.accent}30`,
     },
     header: {
       flexDirection: "row", 
       justifyContent: "space-between", 
-      marginBottom: 12
+      marginBottom: 8,
+      alignItems: "center",
     },
     controlsRow: {
       flexDirection: "row", 
@@ -222,10 +231,11 @@ export function createTradeControlsStyles(theme: any): TradeControlsStyles {
       justifyContent: "space-between",
       flexWrap: "wrap",
       gap: 8,
+      width: "100%",
     },
     controlsGroup: {
       flexDirection: "row", 
-      alignItems: "center",
+      alignItems: "flex-start",
       flex: 1,
       minWidth: 200,
       maxWidth: 400,
@@ -233,11 +243,90 @@ export function createTradeControlsStyles(theme: any): TradeControlsStyles {
     },
     inputContainer: {
       flexDirection: "row",
-      marginBottom: 12,
+      marginBottom: 8,
+      alignItems: "center",
     },
     buttonContainer: {
       flexDirection: "row",
-      gap: 8,
+      gap: 6,
+    },
+    inputLabel: {
+      fontSize: 12,
+      color: theme.text,
+      marginBottom: 4,
+      fontWeight: "500",
+    },
+    helpText: {
+      fontSize: 11,
+      color: `${theme.text}99`,
+      marginTop: 2,
+      marginBottom: 4,
+    },
+    inputWrapper: {
+      flexDirection: "column",
+      marginBottom: 8,
+      flex: 1,
+      maxWidth: 180,
+    },
+    tradeInfoBox: {
+      padding: 6,
+      backgroundColor: `${theme.background}88`,
+      borderRadius: 6,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: `${theme.accent}30`,
+    },
+    pricePreview: {
+      marginTop: 6,
+      padding: 6,
+      borderRadius: 4,
+      backgroundColor: `${theme.background}50`,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: `${theme.accent}30`,
+      width: "100%",
+      marginVertical: 8,
+    },
+    sectionTitle: {
+      fontSize: 14,
+      fontWeight: "bold",
+      color: theme.text,
+      marginBottom: 4,
+    },
+    toggleContainer: {
+      flexDirection: 'row',
+      borderRadius: 6,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: `${theme.accent}40`,
+      backgroundColor: `${theme.background}80`,
+      height: 36,
+      marginLeft: 8,
+    },
+    toggleButton: {
+      paddingHorizontal: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      flex: 1,
+      height: '100%',
+      minWidth: 60,
+      // Note: React Native doesn't support CSS transitions
+      // Use Animated API in your component for animations
+    },
+    toggleButtonActive: {
+      backgroundColor: theme.accent,
+      borderWidth: 0,
+    },
+    toggleButtonText: {
+      color: theme.text,
+      fontSize: 13,
+      fontWeight: '500',
+      pointerEvents: 'none',
+    },
+    toggleButtonTextActive: {
+      color: '#FFFFFF',
+      fontWeight: '600',
     },
   }) as TradeControlsStyles;
 }
@@ -249,7 +338,7 @@ export function createTradeScreenStyles(theme: any) {
   return StyleSheet.create({
     chartContainer: {
       flex: 1,
-      backgroundColor: theme.background+"28",
+      backgroundColor: theme.background + "28",
       borderRadius: 8,
       marginTop: 8,
     },
@@ -267,7 +356,7 @@ export function createTradeScreenStyles(theme: any) {
       flex: 1,
     },
     coinTitle: {
-      fontSize: 20, 
+      fontSize: 20,
       marginBottom: 12,
       color: theme.text,
       backgroundColor: "transparent",
@@ -279,6 +368,8 @@ export function createTradeScreenStyles(theme: any) {
     },
     searchContainer: {
       marginVertical: 10,
+      backgroundColor: theme.background,
+      borderRadius: 8,
     },
     searchResults: {
       maxHeight: 200,
@@ -294,19 +385,18 @@ export function createTradeScreenStyles(theme: any) {
       borderBottomColor: theme.text,
       flexDirection: "row",
       justifyContent: "space-between",
+      alignItems: "center",
     },
     timeIntervalContainer: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      marginHorizontal:8,
-      marginRight:2,
-      maxWidth: 1600,
+      marginHorizontal: 8,
     },
     timeIntervalButtonsContainer: {
-      flexDirection: "row", 
-      flexWrap: "wrap", 
-      flex: 1
+      flexDirection: "row",
+      flexWrap: "wrap",
+      flex: 1,
     },
   });
 }
