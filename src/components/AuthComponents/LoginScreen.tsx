@@ -75,22 +75,29 @@ export default function LoginScreen() {
   };
 
   // Initialisiere den Google Auth Request
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: ID,
-    androidClientId: ANDROID_ID,
-    iosClientId: IOS_ID,
-    redirectUri: Platform.select({
-      ios: "vip.dev-space.broke:/oauth2redirect", // iOS redirect URI
-      android: "com.k0miker.tradeyomama:/oauth2redirect", // Android redirect URI
-    }),
-
-    webClientId: ID,
-    // scopes: ['profile', 'email'],
-  });
+  // Initialisiere den Google Auth Request
+  const [request, response, promptAsync] =
+    Platform.OS !== "android"
+      ? Google.useAuthRequest({
+          clientId: ID,
+          androidClientId: ANDROID_ID,
+          iosClientId: IOS_ID,
+          redirectUri: Platform.select({
+            ios: "vip.devspace.broke:/oauth2redirect", // iOS redirect URI
+            android: "vip.devspace.broke:/oauth2redirect", // Android redirect URI
+          }),
+          webClientId: ID,
+          // scopes: ['profile', 'email'],
+        })
+      : [null, null, () => Promise.resolve({ type: "cancel" })]; // Dummy implementation for Android
 
   // Verarbeite die Google Antwort
   useEffect(() => {
-    if (response?.type === "success" && response.authentication) {
+    if (
+      Platform.OS !== "android" &&
+      response?.type === "success" &&
+      response.authentication
+    ) {
       // Get user info using the access token
       console.log(response.authentication.accessToken);
       async function fetchUser(token: String) {
@@ -204,17 +211,19 @@ export default function LoginScreen() {
             Forgot Password?
           </Text>
         </View>
-        <Button
-          onPress={() => promptAsync()}
-          title="Login with Google"
-          loading={isLoading}
-          icon="logo-google"
-          iconPosition="left"
-          type="secondary"
-          size="small"
-          style={{ marginTop: 8 }}
+        {Platform.OS !== "android" && (
+          <Button
+            onPress={() => promptAsync()}
+            title="Login with Google"
+            loading={isLoading}
+            icon="logo-google"
+            iconPosition="left"
+            type="secondary"
+            size="small"
+            style={{ marginTop: 8 }}
           />
-          {/* Added Privacy Policy & Terms link below the Google Login button */}
+        )}
+        {/* Added Privacy Policy & Terms link below the Google Login button */}
         <View style={{ alignItems: "center", marginTop: 8 }}>
           <Text
             style={{
