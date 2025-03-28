@@ -2,7 +2,7 @@
 
 <div align="center">
   <img src="assets/logo.png" alt="BrokeChain Logo" width="200" />
-  <p><i>Ein modernes React Native Expo-Projekt für fortschrittliches Krypto-Trading mit Echtzeit-Daten.</i></p>
+  <p><i>Ein modernes React Native Expo-Projekt für fortschrittliches Krypto-Trading mit Echtzeit-Daten und demo Trading funktionen.</i></p>
   <p><b>Entwickelt von Colin, Jörg und Denis</b></p>
   
   ![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -97,7 +97,7 @@ npx expo start
 
 - **React Native + Expo**: Für plattformübergreifende mobile Entwicklung
 - **React Navigation**: Für nahtlose Navigation zwischen Screens (Stack & Tabs)
-- **Styled Components/Tailwind CSS**: Für modernes, responsives Styling
+- **Styled Components**: Für modernes, responsives Styling
 
 ### State Management
 
@@ -149,12 +149,14 @@ BrokeChain/
 - Entwicklung der Server-Architektur
 - Implementation der Krypto-APIs
 - Sicherstellung der Datensicherheit
+- Serverarchitektur
 
 👨‍💻 **Colin** – Fullstack & Architektur
 
 - Projektkoordination und Architektur
 - Integration von Frontend und Backend
 - Performance-Optimierung und Testing
+- Serverarchitektur
 
 ---
 
