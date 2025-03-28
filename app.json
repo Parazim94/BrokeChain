@@ -29,7 +29,7 @@
         "ACCESS_NETWORK_STATE"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "public/favicon.png",
+        "foregroundImage": "public/logosqare.png",
         "backgroundColor": "#1D2022"
       },
       "package": "com.k0miker.tradeyomama"
