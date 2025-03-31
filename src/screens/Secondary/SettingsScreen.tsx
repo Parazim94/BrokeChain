@@ -22,6 +22,7 @@ import EmailCard from "@/src/components/SettingsComponents/EmailCard";
 import PasswordCard from "@/src/components/SettingsComponents/PasswordCard";
 import FavoritesCard from "@/src/components/SettingsComponents/FavoritesCard";
 import DisplayToolsCard from "@/src/components/SettingsComponents/DisplayToolsCard";
+import DeleteAccountCard from "@/src/components/SettingsComponents/DeleteAccountCard";
 import { useNavigation } from "@react-navigation/native";
 
 export default function SettingsScreen() {
@@ -72,6 +73,9 @@ export default function SettingsScreen() {
     quiz: user?.displayedTools?.quiz !== false,
   });
   const [isUpdatingDisplayTools, setIsUpdatingDisplayTools] = useState(false);
+
+  // State for account deletion
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   // Filtered coins based on search query
   const filteredCoins = useMemo(() => {
@@ -396,6 +400,45 @@ export default function SettingsScreen() {
     }
   };
 
+  // Handle account deletion
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+    setIsDeletingAccount(true);
+
+    try {
+      const response = await fetch("https://broke.dev-space.vip/user/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: user?.token }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Account deletion failed");
+      }
+
+      // Logout after successful deletion
+      setUser(null);
+
+      showAlert({
+        type: "success",
+        title: "Account Deleted",
+        message: "Your account has been successfully deleted.",
+      });
+
+      // Navigate to login screen
+      navigation.navigate("Login" as never);
+    } catch (error) {
+      showAlert({
+        type: "error",
+        title: "Error",
+        message: error instanceof Error ? error.message : "Unexpected error during account deletion",
+      });
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   // Save settings
   const handleSave = async () => {
     if (!user) return;
@@ -681,6 +724,14 @@ export default function SettingsScreen() {
             removeFavorite={removeFavorite}
             handleFavoritesUpdate={handleFavoritesUpdate}
             isUpdatingFavorites={isUpdatingFavorites}
+            theme={theme}
+            styles={settingsStyles}
+            defaultText={styles.defaultText}
+          />
+
+          <DeleteAccountCard
+            handleDeleteAccount={handleDeleteAccount}
+            isDeleting={isDeletingAccount}
             theme={theme}
             styles={settingsStyles}
             defaultText={styles.defaultText}

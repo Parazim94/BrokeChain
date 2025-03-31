@@ -31,10 +31,10 @@ const Footer = () => {
       <Text style={styles.copyrightText}>
         © {new Date().getFullYear()} BrokeChain
       </Text>
-      
+     
       <TouchableOpacity style={styles.downloadLink} onPress={handleDownload}>
+      <Text style={[styles.linkText, { color: theme.accent }]}>Download</Text>
         <AntDesign name="android1" size={16} color={theme.accent} style={styles.downloadIcon} />
-        <Text style={[styles.linkText, { color: theme.accent }]}>App</Text>
       </TouchableOpacity>
     </View>
   );
@@ -52,14 +52,13 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   copyrightText: {
-    marginLeft: 10,
+    marginHorizontal: 10,
     fontSize: 12,
     color: "#777",
   },
   downloadLink: {
     flexDirection: "row",
     alignItems: "center",
-    marginLeft: 15,
   },
   downloadIcon: {
     marginRight: 4,
