@@ -43,6 +43,8 @@ export interface TradeControlsStyles {
   divider: object;
   sectionTitle: object;
   toggleContainer: object;
+  simpleToggleButton: object;
+  simpleToggleText: object;
   toggleButton: object;
   toggleButtonActive: object;
   toggleButtonText: object;
@@ -302,6 +304,21 @@ export function createTradeControlsStyles(theme: any): TradeControlsStyles {
       height: 36,
       marginLeft: 8,
     },
+    simpleToggleButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      minWidth: 70,
+      borderRadius: 0,
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 0,
+    },
+    simpleToggleText: {
+      fontSize: 13,
+      fontWeight: '500',
+      color: theme.text,
+    },
     toggleButton: {
       paddingHorizontal: 12,
       justifyContent: 'center',
@@ -309,8 +326,8 @@ export function createTradeControlsStyles(theme: any): TradeControlsStyles {
       flex: 1,
       height: '100%',
       minWidth: 60,
-      // Note: React Native doesn't support CSS transitions
-      // Use Animated API in your component for animations
+      paddingVertical: 8,
+      zIndex: 1,
     },
     toggleButtonActive: {
       backgroundColor: theme.accent,
@@ -320,7 +337,6 @@ export function createTradeControlsStyles(theme: any): TradeControlsStyles {
       color: theme.text,
       fontSize: 13,
       fontWeight: '500',
-      pointerEvents: 'none',
     },
     toggleButtonTextActive: {
       color: '#FFFFFF',

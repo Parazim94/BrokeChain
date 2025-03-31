@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "icon": "public/favicon.png",
-      "expo.ios.bundleIdentifier": "vip.dev-space.broke"
+      "bundleIdentifier": "vip.dev-space.broke"
     },
     "android": {
       "permissions": [
@@ -35,10 +35,10 @@
       "package": "com.k0miker.tradeyomama"
     },
     "web": {
-      "favicon": "public/favicon.png",
+      "favicon": "public/favicon2.png",
       "build": {
         "favicon": {
-          "src": "public/favicon.png",
+          "src": "public/favicon2.png",
           "sizes": [
             96,
             192,
