@@ -103,16 +103,16 @@ export default function UserInfo({
 
   const historyOptions = ["7d", "30d", "360d"];
 
-  let dataPoints = 70;
+  let dataPoints = 14;
   switch (historyInterval) {
     case "30d":
-      dataPoints = 300;
+      dataPoints = 60;
       break;
     case "360d":
-      dataPoints = 3600;
+      dataPoints = 730;
       break;
     default:
-      dataPoints = 70;
+      dataPoints = 14;
   }
 
   const historyData = Array.isArray(history) ? history.slice(-dataPoints) : [];
