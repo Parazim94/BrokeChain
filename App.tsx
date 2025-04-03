@@ -17,7 +17,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 // NEUE Linking-Konfiguration mit NETLIFY Domain:
 const linking = {
-  prefixes: ["https://broke.dev-space.vip/", "broke-chain://"],
+  prefixes: ["https://broke-end.vercel.app/", "broke-chain://"],
   config: {
     screens: {
       LandingPage: "",

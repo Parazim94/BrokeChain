@@ -47,7 +47,7 @@ export default function RegisterScreen() {
   const handleRegister = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("https://broke.dev-space.vip/auth/register", {
+      const response = await fetch("https://broke-end.vercel.app/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userName, email, age, password }),

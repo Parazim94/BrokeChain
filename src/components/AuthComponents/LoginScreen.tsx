@@ -38,7 +38,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("https://broke.dev-space.vip/auth/login", {
+      const response = await fetch("https://broke-end.vercel.app/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -103,7 +103,7 @@ export default function LoginScreen() {
       async function fetchUser(token: String) {
         try {
           const response = await fetch(
-            "https://broke.dev-space.vip/auth/google/",
+            "https://broke-end.vercel.app/auth/google/",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -143,7 +143,7 @@ export default function LoginScreen() {
       setEmailError(false);
       try {
         const response = await fetch(
-          "https://broke.dev-space.vip/auth/new_password",
+          "https://broke-end.vercel.app/auth/new_password",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
