@@ -18,7 +18,7 @@ const Footer = () => {
       window.location.href = '/BrokeChain.apk';
     } else {
       // Für mobile Geräte öffnen wir einen externen Link
-      Linking.openURL('https://broke-end.vercel.app/BrokeChain.apk');
+      Linking.openURL('https://broke.dev-space.vip/BrokeChain.apk');
     }
   };
   

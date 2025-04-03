@@ -128,7 +128,7 @@ export default function SettingsScreen() {
 
     try {
       const response = await fetch(
-        "https://broke-end.vercel.app/user/settings",
+        "https://broke.dev-space.vip/user/settings",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -194,7 +194,7 @@ export default function SettingsScreen() {
       console.log("Formatted Display Tools:", formattedDisplayTools);
 
       const response = await fetch(
-        "https://broke-end.vercel.app/user/settings",
+        "https://broke.dev-space.vip/user/settings",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -245,7 +245,7 @@ export default function SettingsScreen() {
 
     try {
       const response = await fetch(
-        "https://broke-end.vercel.app/user/settings",
+        "https://broke.dev-space.vip/user/settings",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -301,7 +301,7 @@ export default function SettingsScreen() {
     try {
       // Implement password change API call here
       const response = await fetch(
-        "https://broke-end.vercel.app/user/change_password",
+        "https://broke.dev-space.vip/user/change_password",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -365,7 +365,7 @@ export default function SettingsScreen() {
 
       // Implement email change API call here
       const response = await fetch(
-        "https://broke-end.vercel.app/user/change_email",
+        "https://broke.dev-space.vip/user/change_email",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -406,7 +406,7 @@ export default function SettingsScreen() {
     setIsDeletingAccount(true);
 
     try {
-      const response = await fetch("https://broke-end.vercel.app/user/delete", {
+      const response = await fetch("https://broke.dev-space.vip/user/delete", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: user?.token }),
@@ -466,7 +466,7 @@ export default function SettingsScreen() {
 
     try {
       const response = await fetch(
-        "https://broke-end.vercel.app/user/settings",
+        "https://broke.dev-space.vip/user/settings",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

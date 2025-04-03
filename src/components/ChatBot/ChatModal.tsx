@@ -148,7 +148,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
     const fetchNews = async () => {
       try {
         const response = await fetch(
-          "https://broke-end.vercel.app/marketData/news"
+          "https://broke.dev-space.vip/marketData/news"
         );
         const data = await response.json();
         setNews(data.items);
@@ -165,7 +165,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ visible, onClose }) => {
   const generateAIResponse = async (userPrompt: string): Promise<string> => {
     console.log("user", user);
     try {
-      const response = await fetch("https://broke-end.vercel.app/ai", {
+      const response = await fetch("https://broke.dev-space.vip/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userPrompt, token: user.token }),
