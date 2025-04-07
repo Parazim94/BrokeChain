@@ -49,9 +49,10 @@
     },
     "extra": {
       "eas": {
-        "projectId": "6119d9da-901c-4534-9dd1-fceeb2607562"
+        "projectId": "c6d797bf-e3df-432d-9983-d3029c312c63"
       }
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "owner": "sackler"
   }
 }
