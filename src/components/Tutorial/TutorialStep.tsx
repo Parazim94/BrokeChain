@@ -24,7 +24,7 @@ export const isWeb = Platform.OS === "web";
 export const getMobileSteps = (): TutorialStepData[] => [
   {
     id: "welcome",
-    title: "Welcome to TradeYoMama",
+    title: "Welcome to BrokeChain",
     description:
       "Let's take a quick tour of the app. You can skip or exit the tutorial at any time.",
     icon: "rocket-outline",
@@ -82,7 +82,7 @@ export const getMobileSteps = (): TutorialStepData[] => [
 export const getDesktopSteps = (): TutorialStepData[] => [
   {
     id: "welcome",
-    title: "Welcome to TradeYoMama",
+    title: "Welcome to BrokeChain",
     description:
       "Let's take a quick tour of the app. You can skip or exit the tutorial at any time.",
     icon: "rocket-outline",
@@ -176,7 +176,7 @@ export const getCommonSteps = (): TutorialStepData[] => [
     id: "finish",
     title: "You're all set!",
     description:
-      "Now you know the basics of TradeYoMama. Start exploring and happy trading!",
+      "Now you know the basics of BrokeChain. Start exploring and happy trading!",
     icon: "checkmark-circle-outline",
     onlyShowOn: "all",
   },
