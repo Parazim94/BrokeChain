@@ -12,6 +12,7 @@ import Card from "@/src/components/UiComponents/Card";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import { ID, IOS_ID, ANDROID_ID } from "@env";
+import DisclaimerModal from "./DisclaimerModal";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -25,6 +26,8 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState(false);
+  const [disclaimerModalVisible, setDisclaimerModalVisible] = useState(false);
+  const [pendingGoogleAuth, setPendingGoogleAuth] = useState(false);
   const cardPadding = Platform.OS === "web" ? 32 : 16;
 
   const isMobile = Platform.OS !== "web";
@@ -74,7 +77,6 @@ export default function LoginScreen() {
     }
   };
 
-  // Initialisiere den Google Auth Request
   // Initialisiere den Google Auth Request
   const [request, response, promptAsync] =
     Platform.OS !== "android"
@@ -167,6 +169,36 @@ export default function LoginScreen() {
     }
   };
 
+  // Google Login mit Disclaimer
+  const handleGoogleLoginClick = () => {
+    setPendingGoogleAuth(true);
+    setDisclaimerModalVisible(true);
+  };
+
+  // Nur den Disclaimer anzeigen
+  const handleDisclaimerInfoClick = () => {
+    setPendingGoogleAuth(false);
+    setDisclaimerModalVisible(true);
+  };
+
+  const handleDisclaimerAccept = () => {
+    setDisclaimerModalVisible(false);
+    if (pendingGoogleAuth) {
+      setPendingGoogleAuth(false);
+      promptAsync();
+    }
+  };
+
+  const handleDisclaimerDecline = () => {
+    setDisclaimerModalVisible(false);
+    setPendingGoogleAuth(false);
+    showAlert({
+      type: "info",
+      title: "Google Login Cancelled",
+      message: "You must accept the Terms of Use and Disclaimer to proceed.",
+    });
+  };
+
   return (
     <View style={[styles.container, auth.center]}>
       <Card onPress={() => {}} style={{ padding: cardPadding }}>
@@ -213,7 +245,7 @@ export default function LoginScreen() {
         </View>
         {Platform.OS !== "android" && (
           <Button
-            onPress={() => promptAsync()}
+            onPress={handleGoogleLoginClick}
             title="Login with Google"
             loading={isLoading}
             icon="logo-google"
@@ -235,6 +267,19 @@ export default function LoginScreen() {
           >
             Privacy Policy & Terms of Service
           </Text>
+          
+          {/* Neuer Link zum Öffnen des Disclaimers */}
+          <Text
+            style={{
+              color: styles.accent.color,
+              textDecorationLine: "underline",
+              fontSize: 10,
+              marginTop: 5,
+            }}
+            onPress={handleDisclaimerInfoClick}
+          >
+            View Terms of Use & Disclaimer
+          </Text>
         </View>
         <Button
           onPress={() => navigation.navigate("Register" as never)}
@@ -244,6 +289,13 @@ export default function LoginScreen() {
           style={{ marginTop: 8 }}
         />
       </Card>
+
+      {/* Disclaimer Modal */}
+      <DisclaimerModal
+        visible={disclaimerModalVisible}
+        onAccept={handleDisclaimerAccept}
+        onDecline={handleDisclaimerDecline}
+      />
     </View>
   );
 }
